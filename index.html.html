@@ -1,0 +1,1668 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitTrack — Tu gimnasio en un solo lugar</title>
+<style>
+  :root{
+    --bg:#121212;
+    --surface:#1c1c1e;
+    --elevated:#262628;
+    --border:#2e2e30;
+    --accent:#c6ff3a;
+    --accent-dim:#8fbf20;
+    --muted:#9a9a9e;
+    --danger:#ff5c5c;
+    --blue:#4da3ff;
+    --orange:#ffb454;
+    --radius:14px;
+    font-size:16px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:#f4f4f5;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding-bottom:78px;
+  }
+  h1,h2,h3,h4{margin:0;}
+  button{font-family:inherit;cursor:pointer;}
+  input,select,textarea{font-family:inherit;}
+
+  /* ===== Layout general ===== */
+  .app{max-width:1100px;margin:0 auto;padding:0 16px;}
+  header.topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 16px 10px;max-width:1100px;margin:0 auto;
+  }
+  header.topbar .brand{display:flex;align-items:center;gap:10px;}
+  header.topbar .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);}
+  header.topbar h1{font-size:1.25rem;font-weight:800;letter-spacing:-0.01em;}
+  header.topbar .date{color:var(--muted);font-size:.85rem;}
+
+  nav.desktop-tabs{display:none;}
+
+  section.view{display:none;padding:8px 0 24px;}
+  section.view.active{display:block;}
+
+  .grid{display:grid;gap:12px;}
+  .cards-3{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));}
+  .cards-2{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));}
+
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px;
+  }
+  .card h3{font-size:.95rem;color:var(--muted);font-weight:600;margin-bottom:6px;}
+  .stat-value{font-size:1.6rem;font-weight:800;}
+  .stat-sub{font-size:.78rem;color:var(--muted);margin-top:2px;}
+
+  .section-title{display:flex;align-items:center;justify-content:space-between;margin:20px 0 10px;}
+  .section-title h2{font-size:1.1rem;font-weight:800;}
+
+  .btn{
+    border:none;border-radius:10px;padding:11px 16px;font-weight:700;font-size:.9rem;
+    display:inline-flex;align-items:center;gap:6px;justify-content:center;
+  }
+  .btn-primary{background:var(--accent);color:#101201;}
+  .btn-primary:active{transform:scale(.97);}
+  .btn-ghost{background:var(--elevated);color:#fff;border:1px solid var(--border);}
+  .btn-danger{background:rgba(255,92,92,.12);color:var(--danger);}
+  .btn-block{width:100%;}
+  .btn-sm{padding:7px 10px;font-size:.78rem;border-radius:8px;}
+
+  .empty{
+    text-align:center;color:var(--muted);padding:28px 10px;border:1px dashed var(--border);
+    border-radius:var(--radius);font-size:.9rem;
+  }
+
+  /* ===== Rutinas ===== */
+  .routine-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px;}
+  .routine-card .head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+  .routine-card .head h3{font-size:1.02rem;font-weight:800;color:#fff;}
+  .routine-card .meta{color:var(--muted);font-size:.78rem;margin-top:2px;}
+  .exercise-row{
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--elevated);border-radius:10px;padding:9px 12px;margin-top:8px;font-size:.85rem;
+  }
+  .tag{font-size:.68rem;font-weight:700;background:rgba(198,255,58,.14);color:var(--accent);padding:2px 8px;border-radius:100px;text-transform:uppercase;letter-spacing:.03em;}
+  .row-actions{display:flex;gap:8px;flex-shrink:0;}
+  .icon-btn{background:none;border:none;color:var(--muted);padding:4px;}
+  .icon-btn:hover{color:#fff;}
+
+  /* ===== Formularios / Modal ===== */
+  .modal-backdrop{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);
+    align-items:flex-end;justify-content:center;z-index:50;
+  }
+  .modal-backdrop.open{display:flex;}
+  .modal{
+    background:var(--surface);border-top:1px solid var(--border);
+    border-radius:20px 20px 0 0;padding:20px 18px 28px;width:100%;max-width:520px;
+    max-height:88vh;overflow-y:auto;
+  }
+  @media(min-width:640px){
+    .modal-backdrop{align-items:center;}
+    .modal{border-radius:20px;}
+  }
+  .modal h3{font-size:1.1rem;font-weight:800;margin-bottom:14px;}
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:5px;font-weight:600;}
+  .field input,.field select,.field textarea{
+    width:100%;background:var(--elevated);border:1px solid var(--border);color:#fff;
+    border-radius:9px;padding:10px 11px;font-size:.9rem;outline:none;
+  }
+  .field textarea{resize:vertical;min-height:60px;}
+  .field-row{display:flex;gap:10px;}
+  .field-row .field{flex:1;}
+  .modal-actions{display:flex;gap:10px;margin-top:16px;}
+  .sub-block{border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px;background:var(--elevated);}
+  .sub-block .sub-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+  .set-row{display:grid;grid-template-columns:24px 1fr 1fr 28px;gap:8px;align-items:center;margin-bottom:6px;}
+  .set-row span{font-size:.75rem;color:var(--muted);text-align:center;}
+  .close-x{background:none;border:none;color:var(--muted);font-size:1.2rem;line-height:1;}
+
+  /* ===== Progreso ===== */
+  .measure-item{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:.88rem;}
+  .measure-item:last-child{border-bottom:none;}
+  canvas{width:100%;height:180px;display:block;}
+  .photo-thumb{width:56px;height:56px;border-radius:8px;object-fit:cover;border:1px solid var(--border);}
+
+  /* ===== Nutrición ===== */
+  .macro-bar{height:8px;border-radius:100px;background:var(--elevated);overflow:hidden;display:flex;margin:8px 0;}
+  .macro-seg-p{background:var(--blue);height:100%;}
+  .macro-seg-c{background:var(--accent);height:100%;}
+  .macro-seg-g{background:var(--orange);height:100%;}
+  .macro-legend{display:flex;gap:14px;font-size:.72rem;color:var(--muted);flex-wrap:wrap;}
+  .macro-legend span::before{content:'';display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;vertical-align:middle;}
+  .leg-p::before{background:var(--blue);}
+  .leg-c::before{background:var(--accent);}
+  .leg-g::before{background:var(--orange);}
+  .meal-line{display:flex;justify-content:space-between;font-size:.85rem;padding:6px 0;border-bottom:1px solid var(--border);}
+  .meal-line:last-child{border-bottom:none;}
+
+  /* ===== Calendario ===== */
+  .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;}
+  .cal-grid .dow{font-size:.68rem;color:var(--muted);font-weight:700;padding-bottom:4px;}
+  .cal-day{
+    aspect-ratio:1;background:var(--elevated);border-radius:8px;font-size:.8rem;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    border:1px solid transparent;position:relative;
+  }
+  .cal-day.empty-cell{background:transparent;}
+  .cal-day.today{border-color:var(--accent);}
+  .cal-day .mark{width:5px;height:5px;border-radius:50%;background:var(--accent);position:absolute;bottom:5px;}
+  .session-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:10px;}
+  .session-item .top{display:flex;justify-content:space-between;font-size:.85rem;color:var(--muted);}
+  .session-item h4{font-size:.95rem;font-weight:700;margin:3px 0 6px;}
+  .feeling-badge{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:100px;}
+  .feel-genial{background:rgba(198,255,58,.15);color:var(--accent);}
+  .feel-normal{background:rgba(77,163,255,.15);color:var(--blue);}
+  .feel-dificil{background:rgba(255,92,92,.15);color:var(--danger);}
+
+  /* ===== Autenticación ===== */
+  .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px;}
+  .auth-card{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px 20px;}
+  .auth-tabs{display:flex;gap:6px;margin-bottom:18px;background:var(--elevated);border-radius:10px;padding:4px;}
+  .auth-tabs button{flex:1;background:none;border:none;color:var(--muted);font-weight:700;font-size:.82rem;padding:9px;border-radius:8px;}
+  .auth-tabs button.active{background:var(--accent);color:#101201;}
+  .auth-panel{display:none;}
+  .auth-panel.active{display:block;}
+  .auth-error{color:var(--danger);font-size:.8rem;margin:-4px 0 10px;min-height:14px;}
+  .auth-note{color:var(--muted);font-size:.8rem;margin-bottom:12px;line-height:1.4;}
+  .pw-checklist{list-style:none;padding:0;margin:0 0 14px;display:flex;flex-direction:column;gap:4px;}
+  .pw-checklist li{font-size:.75rem;color:var(--muted);padding-left:18px;position:relative;}
+  .pw-checklist li::before{content:'○';position:absolute;left:0;}
+  .pw-checklist li.ok{color:var(--accent);}
+  .pw-checklist li.ok::before{content:'●';}
+  .google-btn{
+    width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
+    background:#fff;color:#3c4043;border:1px solid #dadce0;border-radius:10px;
+    padding:11px 16px;font-weight:600;font-size:.9rem;
+  }
+  .google-btn:hover{background:#f8f9fa;}
+  .google-btn:disabled{opacity:.6;cursor:default;}
+  .auth-divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--muted);font-size:.75rem;}
+  .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+  .auth-card.verifying .google-btn,
+  .auth-card.verifying .auth-divider,
+  .auth-card.verifying .auth-tabs{display:none;}
+
+  /* ===== Bottom nav ===== */
+  nav.bottom-nav{
+    position:fixed;bottom:0;left:0;right:0;background:rgba(28,28,30,.97);
+    backdrop-filter:blur(6px);border-top:1px solid var(--border);
+    display:flex;justify-content:space-around;padding:8px 4px 18px;z-index:40;
+  }
+  nav.bottom-nav button{
+    background:none;border:none;color:var(--muted);display:flex;flex-direction:column;
+    align-items:center;gap:3px;font-size:.65rem;font-weight:600;flex:1;padding:4px 2px;
+  }
+  nav.bottom-nav button.active{color:var(--accent);}
+  nav.bottom-nav svg{width:22px;height:22px;}
+
+  @media(min-width:860px){
+    body{padding-bottom:24px;}
+    nav.bottom-nav{display:none;}
+    nav.desktop-tabs{
+      display:flex;gap:6px;max-width:1100px;margin:0 auto;padding:0 16px 14px;border-bottom:1px solid var(--border);
+    }
+    nav.desktop-tabs button{
+      background:none;border:none;color:var(--muted);font-weight:700;font-size:.85rem;
+      padding:10px 14px;border-radius:9px;
+    }
+    nav.desktop-tabs button.active{background:var(--elevated);color:var(--accent);}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== AUTENTICACIÓN ===================== -->
+<div id="authScreen" class="auth-wrap">
+  <div class="auth-card">
+    <div class="brand" style="justify-content:center;margin-bottom:18px;"><span class="dot"></span><h1>FitTrack</h1></div>
+
+    <button type="button" class="google-btn" id="btnGoogleAuth">
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+        <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84c-.21 1.13-.85 2.09-1.81 2.73v2.27h2.92c1.71-1.57 2.69-3.88 2.69-6.64z"/>
+        <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.17l-2.92-2.27c-.81.54-1.85.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.34C2.44 15.98 5.48 18 9 18z"/>
+        <path fill="#FBBC05" d="M3.97 10.72c-.18-.54-.28-1.11-.28-1.72s.1-1.18.28-1.72V4.94H.96A8.99 8.99 0 0 0 0 9c0 1.45.35 2.82.96 4.06l3.01-2.34z"/>
+        <path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.59-2.59C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.94l3.01 2.34C4.68 5.16 6.66 3.58 9 3.58z"/>
+      </svg>
+      Continuar con Google
+    </button>
+
+    <div class="auth-divider">o con tu correo</div>
+
+    <div class="auth-tabs">
+      <button type="button" class="auth-tab active" data-auth="login">Iniciar sesión</button>
+      <button type="button" class="auth-tab" data-auth="register">Crear cuenta</button>
+    </div>
+
+    <!-- LOGIN -->
+    <form id="loginForm" class="auth-panel active">
+      <div class="field"><label>Correo</label><input type="email" id="loginEmail" required autocomplete="username"></div>
+      <div class="field"><label>Contraseña</label><input type="password" id="loginPassword" required autocomplete="current-password"></div>
+      <div class="auth-error" id="loginError"></div>
+      <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+      <button type="button" class="btn btn-ghost btn-block" id="goToRecover" style="margin-top:8px;">¿Olvidaste tu contraseña?</button>
+    </form>
+
+    <!-- REGISTRO -->
+    <form id="registerForm" class="auth-panel">
+      <div class="field"><label>Nombre</label><input type="text" id="regName" required></div>
+      <div class="field"><label>Correo</label><input type="email" id="regEmail" required autocomplete="username"></div>
+      <div class="field"><label>Contraseña</label><input type="password" id="regPassword" required autocomplete="new-password"></div>
+      <ul class="pw-checklist" id="pwChecklist">
+        <li data-check="length">Mínimo 8 caracteres</li>
+        <li data-check="upper">Una mayúscula</li>
+        <li data-check="number">Un número</li>
+        <li data-check="symbol">Un símbolo</li>
+      </ul>
+      <div class="field"><label>Confirmar contraseña</label><input type="password" id="regPassword2" required autocomplete="new-password"></div>
+      <div class="auth-error" id="registerError"></div>
+      <button type="submit" class="btn btn-primary btn-block">Crear cuenta</button>
+    </form>
+
+    <!-- RECUPERAR CONTRASEÑA -->
+    <form id="recoverForm1" class="auth-panel">
+      <p class="auth-note">Ingresa tu correo. Si tiene una cuenta registrada, te enviaremos un enlace real para restablecer tu contraseña.</p>
+      <div class="field"><label>Correo</label><input type="email" id="recEmail" required></div>
+      <div class="auth-error" id="recover1Error"></div>
+      <button type="submit" class="btn btn-primary btn-block">Enviar enlace</button>
+      <button type="button" class="btn btn-ghost btn-block" id="backToLoginFromRec1" style="margin-top:8px;">Volver a iniciar sesión</button>
+    </form>
+
+    <!-- VERIFICACIÓN DE CORREO -->
+    <div class="auth-panel" id="verifyPanel">
+      <p class="auth-note">Te enviamos un correo de verificación a <strong id="verifyEmailLabel"></strong>. Abre el enlace para activar tu cuenta y luego vuelve aquí.</p>
+      <div class="auth-error" id="verifyError" style="color:var(--accent);"></div>
+      <button type="button" class="btn btn-primary btn-block" id="btnCheckVerified">Ya verifiqué mi correo</button>
+      <button type="button" class="btn btn-ghost btn-block" id="btnResendVerify" style="margin-top:8px;">Reenviar correo</button>
+      <button type="button" class="btn btn-ghost btn-block" id="btnBackFromVerify" style="margin-top:8px;">Cerrar sesión</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== APP (visible tras iniciar sesión) ===================== -->
+<div id="appRoot" style="display:none;">
+
+<header class="topbar">
+  <div class="brand"><span class="dot"></span><h1>FitTrack</h1></div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span class="date" id="todayLabel"></span>
+    <button class="icon-btn" id="btnOpenProfile" title="Mi perfil" style="border:1px solid var(--border);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 4-6 8-6s8 2 8 6"></path></svg>
+    </button>
+    <button class="btn btn-ghost btn-sm" id="btnLogout">Salir</button>
+  </div>
+</header>
+
+<nav class="desktop-tabs" id="desktopTabs"></nav>
+
+<div class="app">
+
+  <!-- ===================== INICIO ===================== -->
+  <section class="view active" id="view-inicio">
+    <div class="card" id="profileCard" style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
+      <div>
+        <h3 style="margin-bottom:4px;">Mi perfil</h3>
+        <div id="profileSummary" class="stat-sub">Aún no completas tus datos.</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="btnEditProfileInline">Editar</button>
+    </div>
+
+    <div class="grid cards-3">
+      <div class="card">
+        <h3>Peso actual</h3>
+        <div class="stat-value" id="stat-weight">—</div>
+        <div class="stat-sub" id="stat-weight-sub">Sin registros</div>
+      </div>
+      <div class="card">
+        <h3>Sesiones esta semana</h3>
+        <div class="stat-value" id="stat-sessions-week">0</div>
+        <div class="stat-sub">Últimos 7 días</div>
+      </div>
+      <div class="card">
+        <h3>Rutinas guardadas</h3>
+        <div class="stat-value" id="stat-routines">0</div>
+        <div class="stat-sub">Listas para entrenar</div>
+      </div>
+    </div>
+
+    <div class="section-title"><h2>Progreso de peso</h2></div>
+    <div class="card"><canvas id="chartWeightMini"></canvas></div>
+
+    <div class="section-title"><h2>Últimas sesiones</h2></div>
+    <div id="recentSessions"></div>
+  </section>
+
+  <!-- ===================== RUTINAS ===================== -->
+  <section class="view" id="view-rutinas">
+    <div class="section-title">
+      <h2>Mis rutinas</h2>
+      <button class="btn btn-ghost btn-sm" id="btnManageExercises">Ejercicios</button>
+    </div>
+    <button class="btn btn-primary btn-block" id="btnNewRoutine">+ Nueva rutina</button>
+    <div id="routinesList" style="margin-top:14px;"></div>
+  </section>
+
+  <!-- ===================== PROGRESO ===================== -->
+  <section class="view" id="view-progreso">
+    <div class="section-title">
+      <h2>Progreso corporal</h2>
+      <button class="btn btn-primary btn-sm" id="btnAddProgress">+ Registrar</button>
+    </div>
+
+    <div class="grid cards-2">
+      <div class="card">
+        <h3>Peso corporal (kg)</h3>
+        <canvas id="chartWeight"></canvas>
+      </div>
+      <div class="card">
+        <h3>Volumen estimado por sesión</h3>
+        <canvas id="chartVolume"></canvas>
+      </div>
+    </div>
+
+    <div class="section-title"><h2>Historial de mediciones</h2></div>
+    <div id="progressList"></div>
+  </section>
+
+  <!-- ===================== NUTRICIÓN ===================== -->
+  <section class="view" id="view-nutricion">
+    <div class="section-title">
+      <h2>Planes de alimentación</h2>
+    </div>
+    <button class="btn btn-primary btn-block" id="btnNewPlan">+ Nuevo plan</button>
+    <div id="nutritionList" style="margin-top:14px;"></div>
+  </section>
+
+  <!-- ===================== HISTORIAL ===================== -->
+  <section class="view" id="view-historial">
+    <div class="section-title">
+      <h2>Calendario</h2>
+      <button class="btn btn-primary btn-sm" id="btnLogSession">+ Registrar sesión</button>
+    </div>
+    <div class="card">
+      <div class="cal-head">
+        <button class="icon-btn" id="calPrev">◀</button>
+        <strong id="calLabel">—</strong>
+        <button class="icon-btn" id="calNext">▶</button>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+    </div>
+
+    <div class="section-title"><h2>Sesiones completadas</h2></div>
+    <div id="sessionsList"></div>
+  </section>
+
+</div>
+
+<nav class="bottom-nav" id="bottomNav"></nav>
+
+</div><!-- /#appRoot -->
+
+<!-- ===================== MODAL GENÉRICO ===================== -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" id="modalBody"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script>
+/* =========================================================
+   AUTENTICACIÓN CON FIREBASE (correo real + Google)
+   -----------------------------------------------------------
+   1) Crea un proyecto gratis en https://console.firebase.google.com
+   2) Ve a "Compilación" -> "Authentication" -> pestaña "Sign-in method"
+      y activa los proveedores "Correo electrónico/contraseña" y "Google".
+   3) Ve a Configuración del proyecto -> pestaña "General" -> "Tus apps"
+      -> agrega una app web (ícono </>) y copia aquí el objeto de config.
+   4) En Authentication -> Settings -> "Dominios autorizados", agrega el
+      dominio donde publiques este archivo (localhost ya está incluido).
+   ========================================================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyD5KxUdt-HGJZWn3UB90lC0r63CEV1YyTE",
+  authDomain: "body-254d5.firebaseapp.com",
+  projectId: "body-254d5",
+  storageBucket: "body-254d5.firebasestorage.app",
+  messagingSenderId: "92810639144",
+  appId: "1:92810639144:web:fe581760f1ea9b0a43821d",
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+function isValidEmail(email){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+function passwordChecks(pw){
+  return {
+    length: pw.length>=8,
+    upper: /[A-Z]/.test(pw),
+    number: /[0-9]/.test(pw),
+    symbol: /[^A-Za-z0-9]/.test(pw),
+  };
+}
+function passwordIsStrong(pw){ return Object.values(passwordChecks(pw)).every(Boolean); }
+
+function firebaseErrorMessage(err){
+  const map = {
+    'auth/email-already-in-use': 'Ya existe una cuenta con este correo.',
+    'auth/invalid-email': 'Correo inválido.',
+    'auth/weak-password': 'La contraseña es demasiado débil.',
+    'auth/user-not-found': 'Credenciales inválidas.',
+    'auth/wrong-password': 'Credenciales inválidas.',
+    'auth/invalid-credential': 'Credenciales inválidas.',
+    'auth/too-many-requests': 'Demasiados intentos fallidos. Intenta más tarde.',
+    'auth/popup-closed-by-user': 'Se cerró la ventana de Google antes de terminar.',
+    'auth/cancelled-popup-request': 'Se canceló la ventana de Google.',
+    'auth/network-request-failed': 'Error de conexión. Revisa tu internet.',
+  };
+  return map[err.code] || ('Ocurrió un error: ' + (err.message || 'inténtalo de nuevo.'));
+}
+
+/* ---------- Perfil de app por usuario (datos extra que Firebase no guarda) ---------- */
+function profileKeyFor(uid){ return 'fittrack_profile_v1_' + uid; }
+function loadProfile(uid){
+  try{
+    const raw = localStorage.getItem(profileKeyFor(uid));
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {name:'', age:null, sex:'', height:null, goal:'', photo:null, units:'kg'};
+}
+function saveProfile(uid, profile){
+  try{ localStorage.setItem(profileKeyFor(uid), JSON.stringify(profile)); }
+  catch(e){ alert('No se pudo guardar el perfil (almacenamiento local lleno).'); }
+}
+
+/* ---------- Datos de la app, aislados por usuario ---------- */
+const defaultExerciseLibrary = [
+  {name:'Press de banca', group:'pecho'},
+  {name:'Press inclinado con mancuernas', group:'pecho'},
+  {name:'Aperturas en polea', group:'pecho'},
+  {name:'Dominadas', group:'espalda'},
+  {name:'Remo con barra', group:'espalda'},
+  {name:'Jalón al pecho', group:'espalda'},
+  {name:'Sentadilla', group:'piernas'},
+  {name:'Prensa de piernas', group:'piernas'},
+  {name:'Peso muerto rumano', group:'piernas'},
+  {name:'Curl de bíceps', group:'brazos'},
+  {name:'Extensión de tríceps', group:'brazos'},
+  {name:'Press militar', group:'hombros'},
+  {name:'Elevaciones laterales', group:'hombros'},
+  {name:'Plancha', group:'core'},
+  {name:'Elevación de piernas', group:'core'},
+];
+
+function dataKeyFor(userId){ return 'fittrack_data_v1_' + userId; }
+
+function loadUserData(userId){
+  try{
+    const raw = localStorage.getItem(dataKeyFor(userId));
+    if(raw) return JSON.parse(raw);
+  }catch(e){ console.warn('No se pudo leer localStorage', e); }
+  return {
+    routines: [],
+    exercises: JSON.parse(JSON.stringify(defaultExerciseLibrary)),
+    bodyStats: [],
+    nutritionPlans: [],
+    sessions: [],
+  };
+}
+
+let currentUser = null; // objeto de usuario autenticado (incluye .profile)
+let state = null;       // datos de app del usuario actual (rutinas, progreso, etc.)
+
+function saveState(){
+  if(!currentUser) return;
+  try{
+    localStorage.setItem(dataKeyFor(currentUser.id), JSON.stringify(state));
+  }catch(e){
+    alert('No se pudo guardar (posiblemente el almacenamiento local está lleno, sobre todo si subiste fotos pesadas).');
+  }
+}
+function saveCurrentUser(){
+  if(!currentUser) return;
+  saveProfile(currentUser.id, Object.assign({}, currentUser.profile, {name: currentUser.name}));
+}
+
+/* =========================================================
+   PANTALLA DE AUTENTICACIÓN
+   ========================================================= */
+const authPanelIds = {login:'loginForm', register:'registerForm', recover1:'recoverForm1', verify:'verifyPanel'};
+
+function showAuthPanel(name){
+  Object.values(authPanelIds).forEach(id=>document.getElementById(id).classList.remove('active'));
+  document.getElementById(authPanelIds[name]).classList.add('active');
+  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.toggle('active', t.dataset.auth===name));
+  document.querySelectorAll('.auth-error').forEach(e=>{ e.textContent=''; e.style.color='var(--danger)'; });
+  document.querySelector('#authScreen .auth-card').classList.toggle('verifying', name==='verify');
+}
+
+document.querySelectorAll('.auth-tab').forEach(tab=>{
+  tab.addEventListener('click', ()=> showAuthPanel(tab.dataset.auth));
+});
+document.getElementById('goToRecover').addEventListener('click', ()=> showAuthPanel('recover1'));
+document.getElementById('backToLoginFromRec1').addEventListener('click', ()=> showAuthPanel('login'));
+
+function attachPwChecklist(inputId, listId){
+  const input = document.getElementById(inputId);
+  const list = document.getElementById(listId);
+  input.addEventListener('input', ()=>{
+    const checks = passwordChecks(input.value);
+    list.querySelectorAll('li').forEach(li=> li.classList.toggle('ok', !!checks[li.dataset.check]));
+  });
+}
+attachPwChecklist('regPassword','pwChecklist');
+
+/* ---------- Iniciar sesión con Google ---------- */
+document.getElementById('btnGoogleAuth').addEventListener('click', async ()=>{
+  document.querySelectorAll('.auth-error').forEach(e=>e.textContent='');
+  try{
+    await auth.signInWithPopup(googleProvider);
+    /* onAuthStateChanged() se encarga de entrar a la app */
+  }catch(err){
+    const target = document.querySelector('.auth-panel.active .auth-error') || document.getElementById('loginError');
+    target.textContent = firebaseErrorMessage(err);
+  }
+});
+
+/* ---------- Registro ---------- */
+document.getElementById('registerForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const errorEl = document.getElementById('registerError');
+  errorEl.textContent = '';
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim().toLowerCase();
+  const pw = document.getElementById('regPassword').value;
+  const pw2 = document.getElementById('regPassword2').value;
+
+  if(!name){ errorEl.textContent = 'Ingresa tu nombre.'; return; }
+  if(!isValidEmail(email)){ errorEl.textContent = 'Correo inválido.'; return; }
+  if(!passwordIsStrong(pw)){ errorEl.textContent = 'La contraseña no cumple todos los requisitos.'; return; }
+  if(pw !== pw2){ errorEl.textContent = 'Las contraseñas no coinciden.'; return; }
+
+  const submitBtn = e.target.querySelector('button[type=submit]');
+  submitBtn.disabled = true;
+  try{
+    const cred = await auth.createUserWithEmailAndPassword(email, pw);
+    await cred.user.updateProfile({displayName: name});
+    saveProfile(cred.user.uid, {name, age:null, sex:'', height:null, goal:'', photo:null, units:'kg'});
+    await cred.user.sendEmailVerification();
+    document.getElementById('registerForm').reset();
+    document.getElementById('verifyEmailLabel').textContent = email;
+    showAuthPanel('verify');
+  }catch(err){
+    errorEl.textContent = firebaseErrorMessage(err);
+  }finally{
+    submitBtn.disabled = false;
+  }
+});
+
+/* ---------- Login ---------- */
+document.getElementById('loginForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const errorEl = document.getElementById('loginError');
+  errorEl.textContent = '';
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pw = document.getElementById('loginPassword').value;
+  const submitBtn = e.target.querySelector('button[type=submit]');
+  submitBtn.disabled = true;
+  try{
+    await auth.signInWithEmailAndPassword(email, pw);
+    document.getElementById('loginForm').reset();
+    /* onAuthStateChanged() decide si entra a la app o pide verificar el correo */
+  }catch(err){
+    errorEl.textContent = firebaseErrorMessage(err);
+  }finally{
+    submitBtn.disabled = false;
+  }
+});
+
+/* ---------- Recuperar contraseña (correo real vía Firebase) ---------- */
+document.getElementById('recoverForm1').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const errorEl = document.getElementById('recover1Error');
+  errorEl.textContent = '';
+  const email = document.getElementById('recEmail').value.trim().toLowerCase();
+  if(!isValidEmail(email)){ errorEl.textContent = 'Correo inválido.'; return; }
+  try{
+    await auth.sendPasswordResetEmail(email);
+    document.getElementById('recoverForm1').reset();
+    errorEl.style.color = 'var(--accent)';
+    errorEl.textContent = 'Si ese correo tiene una cuenta, te enviamos un enlace para restablecer tu contraseña.';
+  }catch(err){
+    errorEl.textContent = firebaseErrorMessage(err);
+  }
+});
+
+/* ---------- Verificación de correo ---------- */
+document.getElementById('btnCheckVerified').addEventListener('click', async ()=>{
+  const errorEl = document.getElementById('verifyError');
+  errorEl.textContent = '';
+  const user = auth.currentUser;
+  if(!user){ showAuthPanel('login'); return; }
+  await user.reload();
+  if(user.emailVerified){
+    enterApp(user);
+  }else{
+    errorEl.style.color = 'var(--danger)';
+    errorEl.textContent = 'Todavía no detectamos la verificación. Revisa tu correo (y la carpeta de spam).';
+  }
+});
+document.getElementById('btnResendVerify').addEventListener('click', async ()=>{
+  const errorEl = document.getElementById('verifyError');
+  errorEl.textContent = '';
+  try{
+    await auth.currentUser.sendEmailVerification();
+    errorEl.style.color = 'var(--accent)';
+    errorEl.textContent = 'Correo de verificación reenviado.';
+  }catch(err){
+    errorEl.style.color = 'var(--danger)';
+    errorEl.textContent = firebaseErrorMessage(err);
+  }
+});
+document.getElementById('btnBackFromVerify').addEventListener('click', ()=> auth.signOut());
+
+/* ---------- Entrar / salir de la app ---------- */
+function enterApp(fbUser){
+  const stored = loadProfile(fbUser.uid);
+  currentUser = {
+    id: fbUser.uid,
+    email: fbUser.email,
+    name: stored.name || fbUser.displayName || (fbUser.email ? fbUser.email.split('@')[0] : 'Usuario'),
+    profile: {
+      age: (stored.age===undefined?null:stored.age),
+      sex: stored.sex || '',
+      height: (stored.height===undefined?null:stored.height),
+      goal: stored.goal || '',
+      units: stored.units || 'kg',
+      photo: stored.photo || fbUser.photoURL || null,
+    },
+  };
+  state = loadUserData(fbUser.uid);
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('appRoot').style.display = 'block';
+  buildNav();
+  showView('inicio');
+}
+
+document.getElementById('btnLogout').addEventListener('click', ()=>{
+  if(!confirm('¿Cerrar sesión?')) return;
+  auth.signOut();
+});
+
+auth.onAuthStateChanged(async (fbUser)=>{
+  if(fbUser){
+    await fbUser.reload();
+    if(!fbUser.emailVerified){
+      document.getElementById('verifyEmailLabel').textContent = fbUser.email;
+      showAuthPanel('verify');
+      return;
+    }
+    enterApp(fbUser);
+  }else{
+    currentUser = null;
+    state = null;
+    document.getElementById('appRoot').style.display = 'none';
+    document.getElementById('authScreen').style.display = 'flex';
+    showAuthPanel('login');
+  }
+});
+
+/* =========================================================
+   NAVEGACIÓN
+   ========================================================= */
+const TABS = [
+  {id:'inicio', label:'Inicio', icon:'home'},
+  {id:'rutinas', label:'Rutinas', icon:'dumbbell'},
+  {id:'progreso', label:'Progreso', icon:'chart'},
+  {id:'nutricion', label:'Nutrición', icon:'apple'},
+  {id:'historial', label:'Historial', icon:'calendar'},
+];
+
+const ICONS = {
+  home: '<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
+  dumbbell: '<path d="M6.5 6.5 17.5 17.5"/><path d="M3 9l3-3 2 2-3 3-2-2z"/><path d="M15 21l3-3 2 2-3 3-2-2z"/><path d="M18 6l-3 3"/><path d="M6 18l3-3"/>',
+  chart: '<path d="M4 19V9"/><path d="M11 19V5"/><path d="M18 19v-7"/>',
+  apple: '<path d="M12 8c-3 0-5 2-5 5.5S9 20 12 20s5-2.5 5-6.5S15 8 12 8z"/><path d="M12 8c0-2 1-3 3-3.5"/>',
+  calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M8 3v4M16 3v4"/>',
+};
+
+function svgIcon(name){
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]}</svg>`;
+}
+
+function buildNav(){
+  const bottom = document.getElementById('bottomNav');
+  const desktop = document.getElementById('desktopTabs');
+  bottom.innerHTML = TABS.map(t=>`<button data-view="${t.id}">${svgIcon(t.icon)}<span>${t.label}</span></button>`).join('');
+  desktop.innerHTML = TABS.map(t=>`<button data-view="${t.id}">${t.label}</button>`).join('');
+  [...bottom.children, ...desktop.children].forEach(btn=>{
+    btn.addEventListener('click', ()=> showView(btn.dataset.view));
+  });
+}
+
+function showView(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.querySelectorAll('#bottomNav button, #desktopTabs button').forEach(b=>{
+    b.classList.toggle('active', b.dataset.view===id);
+  });
+  renderAll();
+}
+
+/* =========================================================
+   MODAL HELPERS
+   ========================================================= */
+const backdrop = document.getElementById('modalBackdrop');
+const modalBody = document.getElementById('modalBody');
+
+function openModal(html){
+  modalBody.innerHTML = html;
+  backdrop.classList.add('open');
+}
+function closeModal(){
+  backdrop.classList.remove('open');
+  modalBody.innerHTML = '';
+}
+backdrop.addEventListener('click', e=>{ if(e.target===backdrop) closeModal(); });
+
+/* =========================================================
+   FORMATEO
+   ========================================================= */
+function fmtDate(d){
+  const opts = {day:'numeric', month:'short'};
+  return new Date(d).toLocaleDateString('es-ES', opts);
+}
+function todayISO(){ return new Date().toISOString().slice(0,10); }
+
+/* =========================================================
+   RUTINAS
+   ========================================================= */
+document.getElementById('btnNewRoutine').addEventListener('click', ()=> openRoutineForm());
+document.getElementById('btnManageExercises').addEventListener('click', openExerciseManager);
+
+function groupOptions(selected){
+  const groups = ['pecho','espalda','piernas','brazos','hombros','core'];
+  return groups.map(g=>`<option value="${g}" ${g===selected?'selected':''}>${g[0].toUpperCase()+g.slice(1)}</option>`).join('');
+}
+
+function exerciseOptionsForGroup(group, selectedName){
+  return state.exercises.filter(e=>e.group===group)
+    .map(e=>`<option value="${e.name}" ${e.name===selectedName?'selected':''}>${e.name}</option>`).join('');
+}
+
+function openRoutineForm(routineId){
+  const editing = routineId ? state.routines.find(r=>r.id===routineId) : null;
+  const exercises = editing ? JSON.parse(JSON.stringify(editing.exercises)) : [];
+
+  function exerciseBlockHtml(ex, idx){
+    const group = ex.group || 'pecho';
+    return `
+    <div class="sub-block" data-ex-idx="${idx}">
+      <div class="sub-head">
+        <strong>Ejercicio ${idx+1}</strong>
+        <button type="button" class="close-x" data-remove-ex="${idx}">✕</button>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Grupo muscular</label>
+          <select data-field="group" data-idx="${idx}">${groupOptions(group)}</select>
+        </div>
+        <div class="field">
+          <label>Ejercicio</label>
+          <select data-field="name" data-idx="${idx}">${exerciseOptionsForGroup(group, ex.name)}</select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Series</label>
+          <input type="number" min="1" value="${ex.sets ?? 3}" data-field="sets" data-idx="${idx}">
+        </div>
+        <div class="field">
+          <label>Repeticiones</label>
+          <input type="number" min="1" value="${ex.reps ?? 10}" data-field="reps" data-idx="${idx}">
+        </div>
+        <div class="field">
+          <label>Peso (kg)</label>
+          <input type="number" min="0" step="0.5" value="${ex.weight ?? 0}" data-field="weight" data-idx="${idx}">
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function renderExerciseBlocks(){
+    return exercises.map(exerciseBlockHtml).join('') || '<p class="empty" style="padding:14px;">Añade al menos un ejercicio.</p>';
+  }
+
+  openModal(`
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h3>${editing ? 'Editar rutina' : 'Nueva rutina'}</h3>
+      <button class="close-x" id="mClose">✕</button>
+    </div>
+    <div class="field">
+      <label>Nombre de la rutina</label>
+      <input type="text" id="rName" placeholder="Ej. Día de Empuje" value="${editing ? editing.name : ''}">
+    </div>
+    <div id="exerciseBlocks">${renderExerciseBlocks()}</div>
+    <button type="button" class="btn btn-ghost btn-block" id="addExerciseBtn">+ Añadir ejercicio</button>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-block" id="mCancel">Cancelar</button>
+      <button class="btn btn-primary btn-block" id="mSave">Guardar rutina</button>
+    </div>
+  `);
+
+  const blocksWrap = document.getElementById('exerciseBlocks');
+
+  function refreshBlocks(){
+    blocksWrap.innerHTML = renderExerciseBlocks();
+    attachBlockEvents();
+  }
+
+  function attachBlockEvents(){
+    blocksWrap.querySelectorAll('[data-remove-ex]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        exercises.splice(Number(btn.dataset.removeEx),1);
+        refreshBlocks();
+      });
+    });
+    blocksWrap.querySelectorAll('select[data-field="group"]').forEach(sel=>{
+      sel.addEventListener('change', ()=>{
+        const idx = Number(sel.dataset.idx);
+        exercises[idx].group = sel.value;
+        exercises[idx].name = state.exercises.find(e=>e.group===sel.value)?.name || '';
+        refreshBlocks();
+      });
+    });
+    blocksWrap.querySelectorAll('select[data-field="name"]').forEach(sel=>{
+      sel.addEventListener('change', ()=>{
+        exercises[Number(sel.dataset.idx)].name = sel.value;
+      });
+    });
+    blocksWrap.querySelectorAll('input[data-field]').forEach(inp=>{
+      inp.addEventListener('input', ()=>{
+        exercises[Number(inp.dataset.idx)][inp.dataset.field] = Number(inp.value);
+      });
+    });
+  }
+  attachBlockEvents();
+
+  document.getElementById('addExerciseBtn').addEventListener('click', ()=>{
+    const firstGroup = 'pecho';
+    exercises.push({group:firstGroup, name: state.exercises.find(e=>e.group===firstGroup)?.name || '', sets:3, reps:10, weight:0});
+    refreshBlocks();
+  });
+
+  document.getElementById('mClose').addEventListener('click', closeModal);
+  document.getElementById('mCancel').addEventListener('click', closeModal);
+  document.getElementById('mSave').addEventListener('click', ()=>{
+    const name = document.getElementById('rName').value.trim();
+    if(!name){ alert('Ponle un nombre a la rutina.'); return; }
+    if(exercises.length===0){ alert('Añade al menos un ejercicio.'); return; }
+    if(editing){
+      editing.name = name;
+      editing.exercises = exercises;
+    }else{
+      state.routines.push({id:uid(), name, exercises});
+    }
+    saveState();
+    closeModal();
+    renderRoutines();
+    renderInicio();
+  });
+}
+
+function deleteRoutine(id){
+  if(!confirm('¿Eliminar esta rutina?')) return;
+  state.routines = state.routines.filter(r=>r.id!==id);
+  saveState();
+  renderRoutines();
+  renderInicio();
+}
+
+function renderRoutines(){
+  const wrap = document.getElementById('routinesList');
+  if(state.routines.length===0){
+    wrap.innerHTML = '<div class="empty">Aún no tienes rutinas. Crea la primera con el botón de arriba.</div>';
+    return;
+  }
+  wrap.innerHTML = state.routines.map(r=>`
+    <div class="routine-card">
+      <div class="head">
+        <div>
+          <h3>${r.name}</h3>
+          <div class="meta">${r.exercises.length} ejercicio${r.exercises.length===1?'':'s'}</div>
+        </div>
+        <div class="row-actions">
+          <button class="icon-btn" title="Editar" data-edit-routine="${r.id}">✎</button>
+          <button class="icon-btn" title="Eliminar" data-del-routine="${r.id}">🗑</button>
+        </div>
+      </div>
+      ${r.exercises.map(ex=>`
+        <div class="exercise-row">
+          <span>${ex.name || '(sin definir)'} <span class="tag">${ex.group}</span></span>
+          <span>${ex.sets}×${ex.reps} · ${ex.weight}kg</span>
+        </div>
+      `).join('')}
+      <button class="btn btn-primary btn-block" style="margin-top:10px;" data-start-routine="${r.id}">Registrar esta sesión</button>
+    </div>
+  `).join('');
+
+  wrap.querySelectorAll('[data-edit-routine]').forEach(b=>b.addEventListener('click', ()=>openRoutineForm(b.dataset.editRoutine)));
+  wrap.querySelectorAll('[data-del-routine]').forEach(b=>b.addEventListener('click', ()=>deleteRoutine(b.dataset.delRoutine)));
+  wrap.querySelectorAll('[data-start-routine]').forEach(b=>b.addEventListener('click', ()=>openSessionForm(b.dataset.startRoutine)));
+}
+
+/* =========================================================
+   BIBLIOTECA DE EJERCICIOS
+   ========================================================= */
+function openExerciseManager(){
+  function listHtml(){
+    const groups = ['pecho','espalda','piernas','brazos','hombros','core'];
+    return groups.map(g=>`
+      <div class="sub-block">
+        <div class="sub-head"><strong>${g[0].toUpperCase()+g.slice(1)}</strong></div>
+        ${state.exercises.filter(e=>e.group===g).map(e=>`
+          <div class="exercise-row">
+            <span>${e.name}</span>
+            <button class="icon-btn" data-del-ex="${e.name}|${g}">🗑</button>
+          </div>
+        `).join('') || '<p class="stat-sub">Sin ejercicios en este grupo.</p>'}
+      </div>
+    `).join('');
+  }
+
+  openModal(`
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h3>Biblioteca de ejercicios</h3>
+      <button class="close-x" id="mClose">✕</button>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>Nuevo ejercicio</label>
+        <input type="text" id="newExName" placeholder="Ej. Zancadas">
+      </div>
+      <div class="field" style="max-width:130px;">
+        <label>Grupo</label>
+        <select id="newExGroup">${groupOptions('pecho')}</select>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-block" id="addExLibBtn">+ Añadir a la biblioteca</button>
+    <div id="exLibList" style="margin-top:14px;">${listHtml()}</div>
+  `);
+
+  document.getElementById('mClose').addEventListener('click', closeModal);
+  document.getElementById('addExLibBtn').addEventListener('click', ()=>{
+    const name = document.getElementById('newExName').value.trim();
+    const group = document.getElementById('newExGroup').value;
+    if(!name){ alert('Escribe un nombre.'); return; }
+    state.exercises.push({name, group});
+    saveState();
+    document.getElementById('exLibList').innerHTML = listHtml();
+    document.getElementById('newExName').value='';
+    attachExDelete();
+  });
+  attachExDelete();
+
+  function attachExDelete(){
+    document.querySelectorAll('[data-del-ex]').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        const [name, group] = b.dataset.delEx.split('|');
+        state.exercises = state.exercises.filter(e=>!(e.name===name && e.group===group));
+        saveState();
+        document.getElementById('exLibList').innerHTML = listHtml();
+        attachExDelete();
+      });
+    });
+  }
+}
+
+/* =========================================================
+   PERFIL DE USUARIO
+   ========================================================= */
+document.getElementById('btnOpenProfile').addEventListener('click', openProfileForm);
+document.getElementById('btnEditProfileInline').addEventListener('click', openProfileForm);
+
+function openProfileForm(){
+  const p = currentUser.profile;
+  openModal(`
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h3>Mi perfil</h3>
+      <button class="close-x" id="mClose">✕</button>
+    </div>
+    <div class="field"><label>Nombre</label><input type="text" id="prName" placeholder="Tu nombre" value="${currentUser.name||''}"></div>
+    <div class="field"><label>Correo</label><input type="text" value="${currentUser.email}" disabled style="opacity:.6;"></div>
+    <div class="field-row">
+      <div class="field"><label>Edad</label><input type="number" min="0" id="prAge" placeholder="Ej. 28" value="${p.age||''}"></div>
+      <div class="field">
+        <label>Sexo</label>
+        <select id="prSex">
+          <option value="">—</option>
+          <option value="masculino" ${p.sex==='masculino'?'selected':''}>Masculino</option>
+          <option value="femenino" ${p.sex==='femenino'?'selected':''}>Femenino</option>
+          <option value="otro" ${p.sex==='otro'?'selected':''}>Otro</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Altura (cm)</label><input type="number" min="0" id="prHeight" placeholder="Ej. 175" value="${p.height||''}"></div>
+      <div class="field">
+        <label>Objetivo</label>
+        <select id="prGoal">
+          <option value="">—</option>
+          <option value="ganar musculo" ${p.goal==='ganar musculo'?'selected':''}>Ganar músculo</option>
+          <option value="perder grasa" ${p.goal==='perder grasa'?'selected':''}>Perder grasa</option>
+          <option value="mantener" ${p.goal==='mantener'?'selected':''}>Mantener</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Unidad de peso preferida</label>
+      <select id="prUnits">
+        <option value="kg" ${p.units==='kg'?'selected':''}>Kilogramos (kg)</option>
+        <option value="lb" ${p.units==='lb'?'selected':''}>Libras (lb)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Foto de perfil (opcional)</label>
+      ${p.photo?`<img src="${p.photo}" class="photo-thumb" style="margin-bottom:8px;">`:''}
+      <input type="file" id="prPhoto" accept="image/*">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-block" id="mCancel">Cancelar</button>
+      <button class="btn btn-primary btn-block" id="mSave">Guardar perfil</button>
+    </div>
+  `);
+  document.getElementById('mClose').addEventListener('click', closeModal);
+  document.getElementById('mCancel').addEventListener('click', closeModal);
+  document.getElementById('mSave').addEventListener('click', async ()=>{
+    let photo = p.photo || null;
+    const file = document.getElementById('prPhoto').files[0];
+    if(file){ photo = await fileToDataURL(file); }
+    currentUser.name = document.getElementById('prName').value.trim() || currentUser.name;
+    currentUser.profile = {
+      age: Number(document.getElementById('prAge').value) || null,
+      sex: document.getElementById('prSex').value,
+      height: Number(document.getElementById('prHeight').value) || null,
+      goal: document.getElementById('prGoal').value,
+      units: document.getElementById('prUnits').value,
+      photo,
+    };
+    saveCurrentUser();
+    closeModal();
+    renderInicio();
+  });
+}
+
+function convertWeight(kg){
+  if(!kg && kg!==0) return '—';
+  const units = currentUser?.profile?.units || 'kg';
+  if(units==='lb') return `${(kg*2.20462).toFixed(1)} lb`;
+  return `${kg} kg`;
+}
+
+function renderProfileSummary(){
+  const p = currentUser.profile;
+  const summary = document.getElementById('profileSummary');
+  const parts = [currentUser.name];
+  if(p.age) parts.push(`${p.age} años`);
+  if(p.height) parts.push(`${p.height} cm`);
+  if(p.goal) parts.push(p.goal);
+  const lastWeight = state.bodyStats[state.bodyStats.length-1];
+  if(lastWeight && p.height){
+    const heightM = p.height/100;
+    const bmi = (lastWeight.weight/(heightM*heightM)).toFixed(1);
+    parts.push(`IMC ${bmi}`);
+  }
+  summary.textContent = parts.filter(Boolean).join(' · ');
+}
+
+/* =========================================================
+   PROGRESO CORPORAL
+   ========================================================= */
+document.getElementById('btnAddProgress').addEventListener('click', openProgressForm);
+
+function openProgressForm(){
+  openModal(`
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h3>Registrar medición</h3>
+      <button class="close-x" id="mClose">✕</button>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Fecha</label><input type="date" id="pDate" value="${todayISO()}"></div>
+      <div class="field"><label>Peso (kg)</label><input type="number" step="0.1" id="pWeight" placeholder="Ej. 78.5"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Pecho (cm)</label><input type="number" step="0.1" id="pChest"></div>
+      <div class="field"><label>Cintura (cm)</label><input type="number" step="0.1" id="pWaist"></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Cadera (cm)</label><input type="number" step="0.1" id="pHips"></div>
+      <div class="field"><label>Brazo (cm)</label><input type="number" step="0.1" id="pArm"></div>
+    </div>
+    <div class="field">
+      <label>Foto de progreso (opcional)</label>
+      <input type="file" id="pPhoto" accept="image/*">
+    </div>
+    <div class="field"><label>Notas</label><textarea id="pNotes" placeholder="¿Cómo te sientes con tu progreso?"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-block" id="mCancel">Cancelar</button>
+      <button class="btn btn-primary btn-block" id="mSave">Guardar</button>
+    </div>
+  `);
+  document.getElementById('mClose').addEventListener('click', closeModal);
+  document.getElementById('mCancel').addEventListener('click', closeModal);
+  document.getElementById('mSave').addEventListener('click', async ()=>{
+    const weight = Number(document.getElementById('pWeight').value);
+    if(!weight){ alert('Ingresa al menos el peso corporal.'); return; }
+    const entry = {
+      id:uid(),
+      date: document.getElementById('pDate').value || todayISO(),
+      weight,
+      measurements:{
+        chest: Number(document.getElementById('pChest').value)||null,
+        waist: Number(document.getElementById('pWaist').value)||null,
+        hips: Number(document.getElementById('pHips').value)||null,
+        arm: Number(document.getElementById('pArm').value)||null,
+      },
+      notes: document.getElementById('pNotes').value.trim(),
+      photo: null,
+    };
+    const file = document.getElementById('pPhoto').files[0];
+    if(file){
+      entry.photo = await fileToDataURL(file);
+    }
+    state.bodyStats.push(entry);
+    state.bodyStats.sort((a,b)=> new Date(a.date)-new Date(b.date));
+    saveState();
+    closeModal();
+    renderProgress();
+    renderInicio();
+  });
+}
+
+function fileToDataURL(file){
+  return new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=>resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function deleteProgress(id){
+  if(!confirm('¿Eliminar este registro?')) return;
+  state.bodyStats = state.bodyStats.filter(p=>p.id!==id);
+  saveState();
+  renderProgress();
+  renderInicio();
+}
+
+function renderProgress(){
+  const wrap = document.getElementById('progressList');
+  if(state.bodyStats.length===0){
+    wrap.innerHTML = '<div class="empty">Sin mediciones todavía. Registra tu primer peso corporal.</div>';
+  }else{
+    wrap.innerHTML = [...state.bodyStats].reverse().map(p=>`
+      <div class="card" style="margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;">
+        ${p.photo ? `<img src="${p.photo}" class="photo-thumb">` : ''}
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;">
+            <strong>${fmtDate(p.date)} — ${p.weight} kg</strong>
+            <button class="icon-btn" data-del-progress="${p.id}">🗑</button>
+          </div>
+          <div class="stat-sub">
+            ${p.measurements.chest?`Pecho: ${p.measurements.chest}cm `:''}
+            ${p.measurements.waist?`· Cintura: ${p.measurements.waist}cm `:''}
+            ${p.measurements.hips?`· Cadera: ${p.measurements.hips}cm `:''}
+            ${p.measurements.arm?`· Brazo: ${p.measurements.arm}cm`:''}
+          </div>
+          ${p.notes?`<div class="stat-sub" style="margin-top:4px;">"${p.notes}"</div>`:''}
+        </div>
+      </div>
+    `).join('');
+    wrap.querySelectorAll('[data-del-progress]').forEach(b=>b.addEventListener('click', ()=>deleteProgress(b.dataset.delProgress)));
+  }
+  drawWeightChart('chartWeight');
+  drawWeightChart('chartWeightMini', true);
+  drawVolumeChart();
+}
+
+/* =========================================================
+   GRÁFICOS (Canvas, sin librerías)
+   ========================================================= */
+function drawWeightChart(canvasId, mini){
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth || 300, h = canvas.clientHeight || 180;
+  canvas.width = w*dpr; canvas.height = h*dpr;
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,w,h);
+
+  const data = state.bodyStats;
+  if(data.length < 2){
+    ctx.fillStyle = '#9a9a9e';
+    ctx.font = '13px sans-serif';
+    ctx.fillText('Registra al menos 2 mediciones para ver la curva.', 10, h/2);
+    return;
+  }
+  const weights = data.map(d=>d.weight);
+  const min = Math.min(...weights)-1, max = Math.max(...weights)+1;
+  const padL = 34, padB = mini?14:20, padT = 10, padR = 10;
+  const plotW = w-padL-padR, plotH = h-padT-padB;
+
+  // ejes guía
+  ctx.strokeStyle = '#2e2e30';
+  ctx.lineWidth = 1;
+  for(let i=0;i<=3;i++){
+    const y = padT + (plotH/3)*i;
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); ctx.stroke();
+    if(!mini){
+      const val = max - ((max-min)/3)*i;
+      ctx.fillStyle = '#9a9a9e'; ctx.font='10px sans-serif';
+      ctx.fillText(val.toFixed(1), 2, y+3);
+    }
+  }
+
+  // línea
+  ctx.beginPath();
+  data.forEach((d,i)=>{
+    const x = padL + (plotW/(data.length-1))*i;
+    const y = padT + plotH - ((d.weight-min)/(max-min))*plotH;
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle = '#c6ff3a';
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin='round';
+  ctx.stroke();
+
+  // puntos
+  data.forEach((d,i)=>{
+    const x = padL + (plotW/(data.length-1))*i;
+    const y = padT + plotH - ((d.weight-min)/(max-min))*plotH;
+    ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2);
+    ctx.fillStyle = '#c6ff3a'; ctx.fill();
+  });
+}
+
+function estimateSessionVolume(session){
+  let vol = 0;
+  session.exercisesDone.forEach(ex=>{
+    ex.sets.forEach(s=>{ vol += (Number(s.weight)||0) * (Number(s.reps)||0); });
+  });
+  return vol;
+}
+
+function drawVolumeChart(){
+  const canvas = document.getElementById('chartVolume');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.clientWidth || 300, h = canvas.clientHeight || 180;
+  canvas.width = w*dpr; canvas.height = h*dpr;
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,w,h);
+
+  const sessions = [...state.sessions].sort((a,b)=> new Date(a.date)-new Date(b.date)).slice(-10);
+  if(sessions.length===0){
+    ctx.fillStyle = '#9a9a9e'; ctx.font='13px sans-serif';
+    ctx.fillText('Registra sesiones para ver tu volumen de entrenamiento.', 10, h/2);
+    return;
+  }
+  const vols = sessions.map(estimateSessionVolume);
+  const max = Math.max(...vols, 1);
+  const padL=10, padB=20, padT=10, padR=10;
+  const plotW = w-padL-padR, plotH = h-padT-padB;
+  const barW = plotW/sessions.length*0.6;
+  const gap = plotW/sessions.length;
+
+  sessions.forEach((s,i)=>{
+    const bh = (vols[i]/max)*plotH;
+    const x = padL + gap*i + (gap-barW)/2;
+    const y = padT + plotH - bh;
+    ctx.fillStyle = '#4da3ff';
+    ctx.fillRect(x,y,barW,bh);
+    ctx.fillStyle = '#9a9a9e'; ctx.font='9px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(fmtDate(s.date), x+barW/2, h-6);
+  });
+  ctx.textAlign='left';
+}
+
+/* =========================================================
+   NUTRICIÓN
+   ========================================================= */
+document.getElementById('btnNewPlan').addEventListener('click', ()=>openNutritionForm());
+
+function openNutritionForm(planId){
+  const editing = planId ? state.nutritionPlans.find(p=>p.id===planId) : null;
+  const meals = editing ? JSON.parse(JSON.stringify(editing.meals)) : [];
+
+  function mealBlock(m, idx){
+    return `
+    <div class="sub-block" data-meal-idx="${idx}">
+      <div class="sub-head">
+        <input type="text" placeholder="Nombre de la comida (ej. Desayuno)" value="${m.name||''}" data-mfield="name" data-idx="${idx}" style="background:transparent;border:none;color:#fff;font-weight:700;font-size:.9rem;width:70%;">
+        <button type="button" class="close-x" data-remove-meal="${idx}">✕</button>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Proteína (g)</label><input type="number" min="0" value="${m.protein||0}" data-mfield="protein" data-idx="${idx}"></div>
+        <div class="field"><label>Carbos (g)</label><input type="number" min="0" value="${m.carbs||0}" data-mfield="carbs" data-idx="${idx}"></div>
+        <div class="field"><label>Grasas (g)</label><input type="number" min="0" value="${m.fat||0}" data-mfield="fat" data-idx="${idx}"></div>
+      </div>
+    </div>`;
+  }
+  function renderMeals(){ return meals.map(mealBlock).join('') || '<p class="empty" style="padding:14px;">Añade al menos una comida.</p>'; }
+
+  openModal(`
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h3>${editing?'Editar plan':'Nuevo plan de alimentación'}</h3>
+      <button class="close-x" id="mClose">✕</button>
+    </div>
+    <div class="field"><label>Nombre del plan</label><input type="text" id="planName" placeholder="Ej. Fase de volumen" value="${editing?editing.name:''}"></div>
+    <div id="mealsWrap">${renderMeals()}</div>
+    <button type="button" class="btn btn-ghost btn-block" id="addMealBtn">+ Añadir comida</button>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-block" id="mCancel">Cancelar</button>
+      <button class="btn btn-primary btn-block" id="mSave">Guardar plan</button>
+    </div>
+  `);
+
+  const wrap = document.getElementById('mealsWrap');
+  function refresh(){ wrap.innerHTML = renderMeals(); attach(); }
+  function attach(){
+    wrap.querySelectorAll('[data-remove-meal]').forEach(b=>b.addEventListener('click',()=>{ meals.splice(Number(b.dataset.removeMeal),1); refresh(); }));
+    wrap.querySelectorAll('[data-mfield]').forEach(inp=>{
+      inp.addEventListener('input', ()=>{
+        const idx = Number(inp.dataset.idx), field = inp.dataset.mfield;
+        meals[idx][field] = field==='name' ? inp.value : Number(inp.value);
+      });
+    });
+  }
+  attach();
+  document.getElementById('addMealBtn').addEventListener('click', ()=>{ meals.push({name:'',protein:0,carbs:0,fat:0}); refresh(); });
+  document.getElementById('mClose').addEventListener('click', closeModal);
+  document.getElementById('mCancel').addEventListener('click', closeModal);
+  document.getElementById('mSave').addEventListener('click', ()=>{
+    const name = document.getElementById('planName').value.trim();
+    if(!name){ alert('Ponle un nombre al plan.'); return; }
+    if(meals.length===0){ alert('Añade al menos una comida.'); return; }
+    if(editing){ editing.name=name; editing.meals=meals; }
+    else{ state.nutritionPlans.push({id:uid(), name, meals}); }
+    saveState();
+    closeModal();
+    renderNutrition();
+  });
+}
+
+function deletePlan(id){
+  if(!confirm('¿Eliminar este plan?')) return;
+  state.nutritionPlans = state.nutritionPlans.filter(p=>p.id!==id);
+  saveState();
+  renderNutrition();
+}
+
+function renderNutrition(){
+  const wrap = document.getElementById('nutritionList');
+  if(state.nutritionPlans.length===0){
+    wrap.innerHTML = '<div class="empty">No tienes planes de alimentación. Crea uno para calcular tus macros.</div>';
+    return;
+  }
+  wrap.innerHTML = state.nutritionPlans.map(plan=>{
+    const totals = plan.meals.reduce((acc,m)=>{
+      acc.protein+=Number(m.protein)||0; acc.carbs+=Number(m.carbs)||0; acc.fat+=Number(m.fat)||0;
+      return acc;
+    }, {protein:0,carbs:0,fat:0});
+    const kcal = totals.protein*4 + totals.carbs*4 + totals.fat*9;
+    const totalG = totals.protein+totals.carbs+totals.fat || 1;
+    return `
+    <div class="card" style="margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <h3 style="color:#fff;font-size:1rem;">${plan.name}</h3>
+          <div class="stat-sub">${kcal.toFixed(0)} kcal/día estimadas</div>
+        </div>
+        <div class="row-actions">
+          <button class="icon-btn" data-edit-plan="${plan.id}">✎</button>
+          <button class="icon-btn" data-del-plan="${plan.id}">🗑</button>
+        </div>
+      </div>
+      <div class="macro-bar">
+        <div class="macro-seg-p" style="width:${totals.protein/totalG*100}%"></div>
+        <div class="macro-seg-c" style="width:${totals.carbs/totalG*100}%"></div>
+        <div class="macro-seg-g" style="width:${totals.fat/totalG*100}%"></div>
+      </div>
+      <div class="macro-legend">
+        <span class="leg-p">Proteína ${totals.protein}g</span>
+        <span class="leg-c">Carbos ${totals.carbs}g</span>
+        <span class="leg-g">Grasas ${totals.fat}g</span>
+      </div>
+      <div style="margin-top:10px;">
+        ${plan.meals.map(m=>`
+          <div class="meal-line"><span>${m.name||'Comida'}</span><span>${m.protein}P / ${m.carbs}C / ${m.fat}G</span></div>
+        `).join('')}
+      </div>
+    </div>`;
+  }).join('');
+  wrap.querySelectorAll('[data-edit-plan]').forEach(b=>b.addEventListener('click',()=>openNutritionForm(b.dataset.editPlan)));
+  wrap.querySelectorAll('[data-del-plan]').forEach(b=>b.addEventListener('click',()=>deletePlan(b.dataset.delPlan)));
+}
+
+/* =========================================================
+   SESIONES / CALENDARIO / HISTORIAL
+   ========================================================= */
+document.getElementById('btnLogSession').addEventListener('click', ()=>openSessionForm());
+
+function openSessionForm(routineId){
+  const routineOptions = state.routines.map(r=>`<option value="${r.id}" ${r.id===routineId?'selected':''}>${r.name}</option>`).join('');
+
+  function buildFromRoutine(rid){
+    const r = state.routines.find(x=>x.id===rid);
+    if(!r) return [];
+    return r.exercises.map(ex=>({
+      name: ex.name,
+      sets: Array.from({length: ex.sets||1}, ()=>({weight: ex.weight||0, reps: ex.reps||0}))
+    }));
+  }
+
+  let exercisesDone = routineId ? buildFromRoutine(routineId) : [];
+
+  openModal(`
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <h3>Registrar sesión</h3>
+      <button class="close-x" id="mClose">✕</button>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Rutina</label><select id="sRoutine"><option value="">— Sesión libre —</option>${routineOptions}</select></div>
+      <div class="field"><label>Fecha</label><input type="date" id="sDate" value="${todayISO()}"></div>
+    </div>
+    <div id="sExercises"></div>
+    <div class="field">
+      <label>¿Cómo te sentiste?</label>
+      <select id="sFeeling">
+        <option value="genial">Genial 💪</option>
+        <option value="normal" selected>Normal</option>
+        <option value="dificil">Difícil</option>
+      </select>
+    </div>
+    <div class="field"><label>Notas de la sesión</label><textarea id="sNotes" placeholder="Ej. Sentí buena fuerza en press de banca..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost btn-block" id="mCancel">Cancelar</button>
+      <button class="btn btn-primary btn-block" id="mSave">Guardar sesión</button>
+    </div>
+  `);
+
+  function renderExDone(){
+    const wrap = document.getElementById('sExercises');
+    if(exercisesDone.length===0){
+      wrap.innerHTML = '<p class="empty">Selecciona una rutina para cargar sus ejercicios, o guarda una sesión libre.</p>';
+      return;
+    }
+    wrap.innerHTML = exercisesDone.map((ex,i)=>`
+      <div class="sub-block">
+        <div class="sub-head"><strong>${ex.name}</strong></div>
+        <div class="set-row" style="grid-template-columns:24px 1fr 1fr;">
+          <span>#</span><span>Kg</span><span>Reps</span>
+        </div>
+        ${ex.sets.map((s,si)=>`
+          <div class="set-row" style="grid-template-columns:24px 1fr 1fr;">
+            <span>${si+1}</span>
+            <input type="number" value="${s.weight}" data-ex="${i}" data-set="${si}" data-f="weight">
+            <input type="number" value="${s.reps}" data-ex="${i}" data-set="${si}" data-f="reps">
+          </div>
+        `).join('')}
+      </div>
+    `).join('');
+    wrap.querySelectorAll('input[data-ex]').forEach(inp=>{
+      inp.addEventListener('input', ()=>{
+        exercisesDone[inp.dataset.ex].sets[inp.dataset.set][inp.dataset.f] = Number(inp.value);
+      });
+    });
+  }
+  renderExDone();
+
+  document.getElementById('sRoutine').addEventListener('change', (e)=>{
+    exercisesDone = e.target.value ? buildFromRoutine(e.target.value) : [];
+    renderExDone();
+  });
+
+  document.getElementById('mClose').addEventListener('click', closeModal);
+  document.getElementById('mCancel').addEventListener('click', closeModal);
+  document.getElementById('mSave').addEventListener('click', ()=>{
+    const rid = document.getElementById('sRoutine').value;
+    const routine = state.routines.find(r=>r.id===rid);
+    state.sessions.push({
+      id: uid(),
+      date: document.getElementById('sDate').value || todayISO(),
+      routineName: routine ? routine.name : 'Sesión libre',
+      exercisesDone,
+      feeling: document.getElementById('sFeeling').value,
+      notes: document.getElementById('sNotes').value.trim(),
+    });
+    saveState();
+    closeModal();
+    renderHistorial();
+    renderInicio();
+    renderProgress();
+  });
+}
+
+function deleteSession(id){
+  if(!confirm('¿Eliminar esta sesión?')) return;
+  state.sessions = state.sessions.filter(s=>s.id!==id);
+  saveState();
+  renderHistorial();
+  renderInicio();
+  renderProgress();
+}
+
+const feelLabel = {genial:'Genial 💪', normal:'Normal', dificil:'Difícil'};
+const feelClass = {genial:'feel-genial', normal:'feel-normal', dificil:'feel-dificil'};
+
+function renderSessionsList(targetId, sessions){
+  const wrap = document.getElementById(targetId);
+  if(sessions.length===0){
+    wrap.innerHTML = '<div class="empty">Aún no registras sesiones completadas.</div>';
+    return;
+  }
+  wrap.innerHTML = [...sessions].reverse().map(s=>`
+    <div class="session-item">
+      <div class="top">
+        <span>${fmtDate(s.date)}</span>
+        <span class="feeling-badge ${feelClass[s.feeling]||''}">${feelLabel[s.feeling]||s.feeling}</span>
+      </div>
+      <h4>${s.routineName}</h4>
+      <div class="stat-sub">Volumen estimado: ${estimateSessionVolume(s).toLocaleString()} kg·rep</div>
+      ${s.notes?`<div class="stat-sub" style="margin-top:4px;">"${s.notes}"</div>`:''}
+      <div style="text-align:right;margin-top:6px;">
+        <button class="icon-btn" data-del-session="${s.id}">🗑</button>
+      </div>
+    </div>
+  `).join('');
+  wrap.querySelectorAll('[data-del-session]').forEach(b=>b.addEventListener('click',()=>deleteSession(b.dataset.delSession)));
+}
+
+let calDate = new Date();
+
+function renderCalendar(){
+  const label = document.getElementById('calLabel');
+  const grid = document.getElementById('calGrid');
+  const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  label.textContent = `${monthNames[calDate.getMonth()]} ${calDate.getFullYear()}`;
+
+  const year = calDate.getFullYear(), month = calDate.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const startOffset = (firstDay.getDay()+6)%7; // lunes=0
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const todayStr = todayISO();
+
+  const sessionDates = new Set(state.sessions.map(s=>s.date));
+
+  let html = ['L','M','X','J','V','S','D'].map(d=>`<div class="dow">${d}</div>`).join('');
+  for(let i=0;i<startOffset;i++) html += '<div class="cal-day empty-cell"></div>';
+  for(let d=1; d<=daysInMonth; d++){
+    const iso = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = iso===todayStr;
+    html += `<div class="cal-day ${isToday?'today':''}">${d}${sessionDates.has(iso)?'<span class="mark"></span>':''}</div>`;
+  }
+  grid.innerHTML = html;
+}
+
+document.getElementById('calPrev').addEventListener('click', ()=>{ calDate.setMonth(calDate.getMonth()-1); renderCalendar(); });
+document.getElementById('calNext').addEventListener('click', ()=>{ calDate.setMonth(calDate.getMonth()+1); renderCalendar(); });
+
+function renderHistorial(){
+  renderCalendar();
+  renderSessionsList('sessionsList', state.sessions);
+}
+
+/* =========================================================
+   INICIO / DASHBOARD
+   ========================================================= */
+function renderInicio(){
+  renderProfileSummary();
+  const lastWeight = state.bodyStats[state.bodyStats.length-1];
+  document.getElementById('stat-weight').textContent = lastWeight ? convertWeight(lastWeight.weight) : '—';
+  if(lastWeight && state.bodyStats.length>1){
+    const prev = state.bodyStats[state.bodyStats.length-2];
+    const diff = (lastWeight.weight - prev.weight).toFixed(1);
+    document.getElementById('stat-weight-sub').textContent = `${diff>0?'+':''}${diff} kg desde el último registro`;
+  }else{
+    document.getElementById('stat-weight-sub').textContent = lastWeight? fmtDate(lastWeight.date) : 'Sin registros';
+  }
+
+  const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate()-7);
+  const sessionsWeek = state.sessions.filter(s=> new Date(s.date) >= weekAgo).length;
+  document.getElementById('stat-sessions-week').textContent = sessionsWeek;
+  document.getElementById('stat-routines').textContent = state.routines.length;
+
+  renderSessionsList('recentSessions', state.sessions.slice(-3));
+  drawWeightChart('chartWeightMini', true);
+}
+
+/* =========================================================
+   INICIALIZACIÓN
+   ========================================================= */
+function renderAll(){
+  renderInicio();
+  renderRoutines();
+  renderProgress();
+  renderNutrition();
+  renderHistorial();
+}
+
+document.getElementById('todayLabel').textContent = new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
+
+window.addEventListener('resize', ()=>{ if(currentUser){ renderInicio(); renderProgress(); } });
+</script>
+</body>
+</html>
