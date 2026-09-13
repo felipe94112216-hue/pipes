@@ -401,6 +401,11 @@
         Nota: esto corre 100% en tu navegador (no se envía video a ningún servidor). Si la cámara no responde,
         revisa que le hayas dado permiso de cámara a este sitio y que estés en una conexión https.
       </p>
+      <p class="coach-note">
+        Para que te detecte bien: colócate de perfil (de lado) a la cámara, con buena luz de frente (evita quedar a contraluz),
+        deja espacio suficiente para que se vea todo tu cuerpo de pies a cabeza, usa ropa ajustada y evita fondos muy cargados
+        o con otras personas moviéndose detrás.
+      </p>
     </div>
   </section>
 
@@ -1777,6 +1782,16 @@ function renderHistorial(){
   let lastPostureSpeakAt = 0;
   const POSTURE_SPEAK_INTERVAL_MS = 3000;
 
+  // ---- Ajustes para evitar falsos conteos y mejorar la detección ----
+  let angleHistory = [];
+  const ANGLE_SMOOTHING_FRAMES = 5;   // promedia los últimos N cuadros para eliminar ruido
+  let downFrames = 0;
+  let upFrames = 0;
+  const REQUIRED_STABLE_FRAMES = 4;   // cuántos cuadros seguidos se necesitan para confirmar bajada/subida
+  let lastRepAt = 0;
+  const MIN_REP_INTERVAL_MS = 700;    // tiempo mínimo entre repeticiones contadas
+  const MIN_VISIBILITY = 0.55;        // qué tan visible debe estar cada punto clave para confiar en el ángulo
+
   function speak(text, { force = false } = {}) {
     if (!coachVoiceToggle.checked) return;
     if (!('speechSynthesis' in window)) return;
@@ -1819,6 +1834,26 @@ function renderHistorial(){
       : { hip: lm[24], knee: lm[26], ankle: lm[28], shoulder: lm[12] };
   }
 
+  function sideIsVisible(side) {
+    // solo confiamos en el ángulo si el modelo realmente ve estos 4 puntos con claridad
+    return (side.hip.visibility || 0) >= MIN_VISIBILITY &&
+           (side.knee.visibility || 0) >= MIN_VISIBILITY &&
+           (side.ankle.visibility || 0) >= MIN_VISIBILITY &&
+           (side.shoulder.visibility || 0) >= MIN_VISIBILITY;
+  }
+
+  function smoothAngle(raw) {
+    angleHistory.push(raw);
+    if (angleHistory.length > ANGLE_SMOOTHING_FRAMES) angleHistory.shift();
+    return angleHistory.reduce((a, b) => a + b, 0) / angleHistory.length;
+  }
+
+  function resetDetectionState() {
+    angleHistory = [];
+    downFrames = 0;
+    upFrames = 0;
+  }
+
   function drawSkeleton(lm) {
     const connections = [
       [11,13],[13,15],[12,14],[14,16],
@@ -1858,6 +1893,7 @@ function renderHistorial(){
 
     if (!results.poseLandmarks) {
       setCoachStatus('No se detecta el cuerpo completo. Aléjate un poco de la cámara.');
+      resetDetectionState();
       coachCtx.restore();
       return;
     }
@@ -1866,22 +1902,49 @@ function renderHistorial(){
     drawSkeleton(lm);
 
     const side = pickSide(lm);
-    const kneeAngle = angleBetween(side.hip, side.knee, side.ankle);
+
+    // Si no se ve con claridad cadera+rodilla+tobillo+hombro, no confiamos en el ángulo
+    // (esto es lo que antes causaba conteos falsos y ángulos erráticos).
+    if (!sideIsVisible(side)) {
+      setCoachStatus('No veo bien tu cuerpo completo. Ubícate de perfil, con buena luz, sin ropa muy holgada y con espacio suficiente para ver cadera, rodilla y tobillo.', 'bad');
+      coachAngleVal.textContent = '--°';
+      resetDetectionState();
+      coachCtx.restore();
+      return;
+    }
+
+    const rawKneeAngle = angleBetween(side.hip, side.knee, side.ankle);
     const backAngle = angleBetween(side.shoulder, side.hip, side.knee);
+    const kneeAngle = smoothAngle(rawKneeAngle); // promedio de varios cuadros para eliminar ruido
 
     coachAngleVal.textContent = Math.round(kneeAngle) + '°';
 
-    // máquina de estados de la sentadilla
+    // máquina de estados de la sentadilla: exige varios cuadros seguidos antes de
+    // confirmar bajada/subida, y un tiempo mínimo entre repeticiones, para que un
+    // temblor puntual del modelo no cuente como una repetición.
     if (kneeAngle < 100) {
-      if (stage !== 'down') stage = 'down';
-    }
-    if (kneeAngle > 160) {
-      if (stage === 'down') {
-        repCount++;
-        coachRepVal.textContent = repCount;
-        speak(String(repCount), { force: true });
+      downFrames++;
+      upFrames = 0;
+      if (downFrames >= REQUIRED_STABLE_FRAMES) stage = 'down';
+    } else if (kneeAngle > 160) {
+      upFrames++;
+      downFrames = 0;
+      if (upFrames >= REQUIRED_STABLE_FRAMES) {
+        if (stage === 'down') {
+          const now = Date.now();
+          if (now - lastRepAt > MIN_REP_INTERVAL_MS) {
+            repCount++;
+            coachRepVal.textContent = repCount;
+            speak(String(repCount), { force: true });
+            lastRepAt = now;
+          }
+        }
+        stage = 'up';
       }
-      stage = 'up';
+    } else {
+      // zona de transición: exige volver a acumular cuadros estables antes de confirmar
+      downFrames = 0;
+      upFrames = 0;
     }
 
     // retroalimentación
@@ -1908,8 +1971,8 @@ function renderHistorial(){
   coachPose.setOptions({
     modelComplexity: 1,
     smoothLandmarks: true,
-    minDetectionConfidence: 0.6,
-    minTrackingConfidence: 0.6
+    minDetectionConfidence: 0.7,
+    minTrackingConfidence: 0.7
   });
   coachPose.onResults(onCoachResults);
 
@@ -1957,6 +2020,8 @@ function renderHistorial(){
     repCount = 0;
     coachRepVal.textContent = '0';
     stage = null;
+    lastRepAt = 0;
+    resetDetectionState();
     speak('Contador reiniciado', { force: true });
   });
 })();
