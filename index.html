@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FitTrack — Tu gimnasio en un solo lugar</title>
+<title>Entrenador Virtual — Tu gimnasio en un solo lugar</title>
 <script src="https://accounts.google.com/gsi/client" async defer onload="if(window.initGoogleSignIn) initGoogleSignIn();"></script>
 <style>
   :root{
@@ -207,6 +207,39 @@
     }
     nav.desktop-tabs button.active{background:var(--elevated);color:var(--accent);}
   }
+
+  /* ===== Entrenador Virtual (detector de sentadillas con cámara) ===== */
+  .coach-wrap{max-width:640px;margin:0 auto;}
+  .coach-title{font-size:1.05rem;font-weight:800;margin:0 0 4px;color:#fff;}
+  .coach-sub{color:var(--muted);font-size:.85rem;margin:0 0 16px;line-height:1.4;}
+  .coach-stage{
+    position:relative;background:#000;border-radius:12px;overflow:hidden;
+    aspect-ratio:3/4;border:1px solid var(--border);
+  }
+  .coach-stage video,.coach-stage canvas{
+    position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;
+  }
+  .coach-stage video.mirrored,.coach-stage canvas.mirrored{transform:scaleX(-1);}
+  .coach-status{
+    position:absolute;bottom:12px;left:12px;right:12px;padding:12px 14px;border-radius:10px;
+    background:rgba(10,14,18,.75);backdrop-filter:blur(6px);font-size:.88rem;line-height:1.3;
+    border-left:3px solid var(--blue);
+  }
+  .coach-status.good{border-left-color:#4fd18b;}
+  .coach-status.bad{border-left-color:var(--danger);}
+  .coach-controls{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+  .coach-controls button{
+    flex:1;min-width:110px;padding:12px;border-radius:10px;border:1px solid var(--border);
+    background:var(--elevated);color:#fff;font-size:.88rem;font-weight:700;
+  }
+  .coach-controls button.primary{background:var(--blue);border-color:var(--blue);color:#06131c;}
+  .coach-metrics{display:flex;gap:10px;margin-top:16px;}
+  .coach-metric{flex:1;background:var(--elevated);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;}
+  .coach-metric .val{font-size:1.5rem;font-weight:800;}
+  .coach-metric .lbl{font-size:.7rem;color:var(--muted);margin-top:2px;}
+  .coach-voice-toggle{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:.85rem;color:var(--muted);}
+  .coach-voice-toggle input{width:18px;height:18px;}
+  .coach-note{margin-top:18px;font-size:.76rem;color:var(--muted);line-height:1.5;}
 </style>
 </head>
 <body>
@@ -214,7 +247,7 @@
 <!-- ===================== AUTENTICACIÓN ===================== -->
 <div id="authScreen" class="auth-wrap">
   <div class="auth-card">
-    <div class="brand" style="justify-content:center;margin-bottom:18px;"><span class="dot"></span><h1>FitTrack</h1></div>
+    <div class="brand" style="justify-content:center;margin-bottom:18px;"><span class="dot"></span><h1>Entrenador Virtual</h1></div>
 
     <div id="googleBtnContainer" style="display:flex;justify-content:center;margin-bottom:8px;min-height:44px;"></div>
     <div id="googleSetupNote" class="auth-note" style="text-align:center;"></div>
@@ -281,7 +314,7 @@
 <div id="appRoot" style="display:none;">
 
 <header class="topbar">
-  <div class="brand"><span class="dot"></span><h1>FitTrack</h1></div>
+  <div class="brand"><span class="dot"></span><h1>Entrenador Virtual</h1></div>
   <div style="display:flex;align-items:center;gap:8px;">
     <span class="date" id="todayLabel"></span>
     <button class="icon-btn" id="btnOpenProfile" title="Mi perfil" style="border:1px solid var(--border);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
@@ -328,6 +361,47 @@
 
     <div class="section-title"><h2>Últimas sesiones</h2></div>
     <div id="recentSessions"></div>
+  </section>
+
+  <!-- ===================== ENTRENADOR VIRTUAL ===================== -->
+  <section class="view" id="view-entrenador">
+    <div class="coach-wrap">
+      <h2 class="coach-title">Entrenador Virtual — Detector de sentadillas</h2>
+      <p class="coach-sub">Prototipo con MediaPipe Pose. Colócate de perfil frente a la cámara, con espacio suficiente para ver cadera y rodilla completas.</p>
+
+      <div class="coach-stage">
+        <video id="coachVideo" playsinline muted></video>
+        <canvas id="coachCanvas"></canvas>
+        <div class="coach-status" id="coachStatus">Presiona "Iniciar cámara" para comenzar</div>
+      </div>
+
+      <div class="coach-controls">
+        <button type="button" class="primary" id="coachStartBtn">Iniciar cámara</button>
+        <button type="button" id="coachSwitchBtn">Cambiar cámara</button>
+        <button type="button" id="coachResetBtn">Reiniciar conteo</button>
+      </div>
+
+      <label class="coach-voice-toggle">
+        <input type="checkbox" id="coachVoiceToggle" checked>
+        Retroalimentación por voz
+      </label>
+
+      <div class="coach-metrics">
+        <div class="coach-metric">
+          <div class="val" id="coachAngleVal">--°</div>
+          <div class="lbl">Ángulo de rodilla</div>
+        </div>
+        <div class="coach-metric">
+          <div class="val" id="coachRepVal">0</div>
+          <div class="lbl">Repeticiones</div>
+        </div>
+      </div>
+
+      <p class="coach-note">
+        Nota: esto corre 100% en tu navegador (no se envía video a ningún servidor). Si la cámara no responde,
+        revisa que le hayas dado permiso de cámara a este sitio y que estés en una conexión https.
+      </p>
+    </div>
   </section>
 
   <!-- ===================== RUTINAS ===================== -->
@@ -401,6 +475,8 @@
   <div class="modal" id="modalBody"></div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
 <script>
 /* =========================================================
    AUTENTICACIÓN Y PERSISTENCIA MULTIUSUARIO
@@ -773,6 +849,7 @@ document.getElementById('btnLogout').addEventListener('click', ()=>{
    ========================================================= */
 const TABS = [
   {id:'inicio', label:'Inicio', icon:'home'},
+  {id:'entrenador', label:'Entrenador', icon:'camera'},
   {id:'rutinas', label:'Rutinas', icon:'dumbbell'},
   {id:'progreso', label:'Progreso', icon:'chart'},
   {id:'nutricion', label:'Nutrición', icon:'apple'},
@@ -781,6 +858,7 @@ const TABS = [
 
 const ICONS = {
   home: '<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
+  camera: '<rect x="2" y="7" width="14" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/>',
   dumbbell: '<path d="M6.5 6.5 17.5 17.5"/><path d="M3 9l3-3 2 2-3 3-2-2z"/><path d="M15 21l3-3 2 2-3 3-2-2z"/><path d="M18 6l-3 3"/><path d="M6 18l3-3"/>',
   chart: '<path d="M4 19V9"/><path d="M11 19V5"/><path d="M18 19v-7"/>',
   apple: '<path d="M12 8c-3 0-5 2-5 5.5S9 20 12 20s5-2.5 5-6.5S15 8 12 8z"/><path d="M12 8c0-2 1-3 3-3.5"/>',
@@ -1675,6 +1753,213 @@ function renderHistorial(){
   renderCalendar();
   renderSessionsList('sessionsList', state.sessions);
 }
+
+/* =========================================================
+   ENTRENADOR VIRTUAL — Detector de sentadillas (MediaPipe Pose)
+   ========================================================= */
+(function(){
+  const coachVideo = document.getElementById('coachVideo');
+  const coachCanvas = document.getElementById('coachCanvas');
+  const coachCtx = coachCanvas.getContext('2d');
+  const coachStatusEl = document.getElementById('coachStatus');
+  const coachAngleVal = document.getElementById('coachAngleVal');
+  const coachRepVal = document.getElementById('coachRepVal');
+  const coachStartBtn = document.getElementById('coachStartBtn');
+  const coachSwitchBtn = document.getElementById('coachSwitchBtn');
+  const coachResetBtn = document.getElementById('coachResetBtn');
+  const coachVoiceToggle = document.getElementById('coachVoiceToggle');
+
+  let repCount = 0;
+  let stage = null; // 'up' | 'down'
+  let camera = null;
+  let started = false;
+  let facingMode = 'user'; // 'user' = frontal, 'environment' = trasera
+  let lastPostureSpeakAt = 0;
+  const POSTURE_SPEAK_INTERVAL_MS = 3000;
+
+  function speak(text, { force = false } = {}) {
+    if (!coachVoiceToggle.checked) return;
+    if (!('speechSynthesis' in window)) return;
+    const now = Date.now();
+    if (!force) {
+      if ((now - lastPostureSpeakAt) < POSTURE_SPEAK_INTERVAL_MS) return;
+      if (window.speechSynthesis.speaking) return;
+      lastPostureSpeakAt = now;
+    }
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'es-ES';
+    utter.rate = 0.95;
+    window.speechSynthesis.speak(utter);
+  }
+
+  function updateMirror() {
+    const isFront = facingMode === 'user';
+    coachVideo.classList.toggle('mirrored', isFront);
+    coachCanvas.classList.toggle('mirrored', isFront);
+  }
+
+  function angleBetween(a, b, c) {
+    // ángulo en el punto b, formado por a-b-c
+    const ab = { x: a.x - b.x, y: a.y - b.y };
+    const cb = { x: c.x - b.x, y: c.y - b.y };
+    const dot = ab.x * cb.x + ab.y * cb.y;
+    const magAb = Math.hypot(ab.x, ab.y);
+    const magCb = Math.hypot(cb.x, cb.y);
+    const cos = dot / (magAb * magCb);
+    return Math.acos(Math.min(1, Math.max(-1, cos))) * (180 / Math.PI);
+  }
+
+  function pickSide(lm) {
+    // elige el lado (izquierdo/derecho) más visible
+    const leftVis = (lm[23].visibility || 0) + (lm[25].visibility || 0) + (lm[27].visibility || 0);
+    const rightVis = (lm[24].visibility || 0) + (lm[26].visibility || 0) + (lm[28].visibility || 0);
+    return leftVis >= rightVis
+      ? { hip: lm[23], knee: lm[25], ankle: lm[27], shoulder: lm[11] }
+      : { hip: lm[24], knee: lm[26], ankle: lm[28], shoulder: lm[12] };
+  }
+
+  function drawSkeleton(lm) {
+    const connections = [
+      [11,13],[13,15],[12,14],[14,16],
+      [11,12],[11,23],[12,24],[23,24],
+      [23,25],[25,27],[24,26],[26,28],
+      [27,29],[27,31],[28,30],[28,32]
+    ];
+    coachCtx.strokeStyle = '#4da3ff';
+    coachCtx.lineWidth = 3;
+    connections.forEach(([i, j]) => {
+      const p1 = lm[i], p2 = lm[j];
+      if (!p1 || !p2) return;
+      coachCtx.beginPath();
+      coachCtx.moveTo(p1.x * coachCanvas.width, p1.y * coachCanvas.height);
+      coachCtx.lineTo(p2.x * coachCanvas.width, p2.y * coachCanvas.height);
+      coachCtx.stroke();
+    });
+    lm.forEach(p => {
+      if (!p) return;
+      coachCtx.fillStyle = '#f4f4f5';
+      coachCtx.beginPath();
+      coachCtx.arc(p.x * coachCanvas.width, p.y * coachCanvas.height, 4, 0, 2 * Math.PI);
+      coachCtx.fill();
+    });
+  }
+
+  function setCoachStatus(text, kind) {
+    coachStatusEl.textContent = text;
+    coachStatusEl.className = 'coach-status' + (kind ? ' ' + kind : '');
+  }
+
+  function onCoachResults(results) {
+    coachCanvas.width = coachVideo.videoWidth;
+    coachCanvas.height = coachVideo.videoHeight;
+    coachCtx.save();
+    coachCtx.clearRect(0, 0, coachCanvas.width, coachCanvas.height);
+
+    if (!results.poseLandmarks) {
+      setCoachStatus('No se detecta el cuerpo completo. Aléjate un poco de la cámara.');
+      coachCtx.restore();
+      return;
+    }
+
+    const lm = results.poseLandmarks;
+    drawSkeleton(lm);
+
+    const side = pickSide(lm);
+    const kneeAngle = angleBetween(side.hip, side.knee, side.ankle);
+    const backAngle = angleBetween(side.shoulder, side.hip, side.knee);
+
+    coachAngleVal.textContent = Math.round(kneeAngle) + '°';
+
+    // máquina de estados de la sentadilla
+    if (kneeAngle < 100) {
+      if (stage !== 'down') stage = 'down';
+    }
+    if (kneeAngle > 160) {
+      if (stage === 'down') {
+        repCount++;
+        coachRepVal.textContent = repCount;
+        speak(String(repCount), { force: true });
+      }
+      stage = 'up';
+    }
+
+    // retroalimentación
+    if (kneeAngle < 100 && backAngle < 45) {
+      setCoachStatus('Espalda muy inclinada hacia adelante — mantén el pecho más erguido.', 'bad');
+      speak('Espalda más recta');
+    } else if (kneeAngle < 100 && kneeAngle > 70) {
+      setCoachStatus('Buena profundidad de sentadilla. Sigue así.', 'good');
+    } else if (kneeAngle <= 70) {
+      setCoachStatus('Bajaste mucho — cuidado con la presión en las rodillas.', 'bad');
+      speak('Cuidado, no bajes tanto');
+    } else if (kneeAngle >= 160) {
+      setCoachStatus('Posición de pie. Empieza a bajar controlando el movimiento.');
+    } else {
+      setCoachStatus('Bajando... mantén las rodillas alineadas con los pies.');
+    }
+
+    coachCtx.restore();
+  }
+
+  const coachPose = new Pose({
+    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
+  });
+  coachPose.setOptions({
+    modelComplexity: 1,
+    smoothLandmarks: true,
+    minDetectionConfidence: 0.6,
+    minTrackingConfidence: 0.6
+  });
+  coachPose.onResults(onCoachResults);
+
+  async function startCoachCamera() {
+    setCoachStatus('Solicitando acceso a la cámara...');
+    try {
+      if (camera) {
+        camera.stop();
+        camera = null;
+      }
+      updateMirror();
+      camera = new Camera(coachVideo, {
+        onFrame: async () => { await coachPose.send({ image: coachVideo }); },
+        width: 480,
+        height: 640,
+        facingMode: facingMode
+      });
+      await camera.start();
+      started = true;
+      setCoachStatus('Cámara activa (' + (facingMode === 'user' ? 'frontal' : 'trasera') + '). Ubícate de perfil para ver tu sentadilla.');
+      coachStartBtn.textContent = 'Cámara activa';
+      speak('Cámara lista. Comienza cuando quieras.', { force: true });
+    } catch (err) {
+      setCoachStatus('No se pudo acceder a la cámara: ' + err.message, 'bad');
+      started = false;
+    }
+  }
+
+  coachStartBtn.addEventListener('click', () => {
+    if (started) return;
+    startCoachCamera();
+  });
+
+  coachSwitchBtn.addEventListener('click', () => {
+    facingMode = facingMode === 'user' ? 'environment' : 'user';
+    if (started) {
+      startCoachCamera();
+    } else {
+      updateMirror();
+      setCoachStatus('Cámara seleccionada: ' + (facingMode === 'user' ? 'frontal' : 'trasera') + '. Presiona "Iniciar cámara".');
+    }
+  });
+
+  coachResetBtn.addEventListener('click', () => {
+    repCount = 0;
+    coachRepVal.textContent = '0';
+    stage = null;
+    speak('Contador reiniciado', { force: true });
+  });
+})();
 
 /* =========================================================
    INICIO / DASHBOARD
