@@ -214,7 +214,8 @@
   .coach-sub{color:var(--muted);font-size:.85rem;margin:0 0 16px;line-height:1.4;}
   .coach-stage{
     position:relative;background:#000;border-radius:12px;overflow:hidden;
-    aspect-ratio:3/4;border:1px solid var(--border);
+    aspect-ratio:9/16; /* valor inicial de respaldo; se ajusta por JS a la cámara real del dispositivo */
+    border:1px solid var(--border);
   }
   .coach-stage video,.coach-stage canvas{
     position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;
@@ -369,7 +370,7 @@
       <h2 class="coach-title">Entrenador Virtual — Detector de sentadillas</h2>
       <p class="coach-sub">Prototipo con MediaPipe Pose. Colócate de perfil frente a la cámara, con espacio suficiente para ver cadera y rodilla completas.</p>
 
-      <div class="coach-stage">
+      <div class="coach-stage" id="coachStage">
         <video id="coachVideo" playsinline muted></video>
         <canvas id="coachCanvas"></canvas>
         <div class="coach-status" id="coachStatus">Presiona "Iniciar cámara" para comenzar</div>
@@ -481,7 +482,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
 <script>
 /* =========================================================
    AUTENTICACIÓN Y PERSISTENCIA MULTIUSUARIO
@@ -1765,6 +1765,7 @@ function renderHistorial(){
 (function(){
   const coachVideo = document.getElementById('coachVideo');
   const coachCanvas = document.getElementById('coachCanvas');
+  const coachStage = document.getElementById('coachStage');
   const coachCtx = coachCanvas.getContext('2d');
   const coachStatusEl = document.getElementById('coachStatus');
   const coachAngleVal = document.getElementById('coachAngleVal');
@@ -1776,7 +1777,8 @@ function renderHistorial(){
 
   let repCount = 0;
   let stage = null; // 'up' | 'down'
-  let camera = null;
+  let currentStream = null;
+  let coachRAF = null;
   let started = false;
   let facingMode = 'user'; // 'user' = frontal, 'environment' = trasera
   let lastPostureSpeakAt = 0;
@@ -1790,7 +1792,11 @@ function renderHistorial(){
   const REQUIRED_STABLE_FRAMES = 4;   // cuántos cuadros seguidos se necesitan para confirmar bajada/subida
   let lastRepAt = 0;
   const MIN_REP_INTERVAL_MS = 700;    // tiempo mínimo entre repeticiones contadas
-  const MIN_VISIBILITY = 0.55;        // qué tan visible debe estar cada punto clave para confiar en el ángulo
+  const MIN_VISIBILITY = 0.75;        // qué tan visible debe estar cada punto clave para confiar en el ángulo
+  const MIN_LEG_SPAN = 0.15;          // qué tan "estirada" debe verse la pierna en la imagen (evita piernas inventadas/juntas)
+  const FRAME_EDGE_MARGIN = 0.03;     // márgen de borde: puntos muy pegados al borde se consideran fuera de cuadro
+  let prevHipPos = null;
+  const MAX_HIP_JUMP = 0.09;          // salto máximo de la cadera entre cuadros; más que esto = sacudida de cámara, no movimiento real
 
   function speak(text, { force = false } = {}) {
     if (!coachVoiceToggle.checked) return;
@@ -1842,6 +1848,38 @@ function renderHistorial(){
            (side.shoulder.visibility || 0) >= MIN_VISIBILITY;
   }
 
+  function withinFrame(p) {
+    return p.x > FRAME_EDGE_MARGIN && p.x < (1 - FRAME_EDGE_MARGIN) &&
+           p.y > FRAME_EDGE_MARGIN && p.y < (1 - FRAME_EDGE_MARGIN);
+  }
+
+  function legIsPlausible(side) {
+    // MediaPipe a veces "inventa" dónde estarían cadera/rodilla/tobillo aunque no
+    // aparezcan en cuadro (por ejemplo si solo se ve la cara), y les da igual un
+    // puntaje de visibilidad alto. Por eso, además de la visibilidad, chequeamos
+    // que los puntos estén dentro del cuadro, en el orden vertical anatómico
+    // correcto (hombro arriba, cadera, rodilla y tobillo hacia abajo), y que la
+    // pierna tenga una extensión mínima en la imagen (no estar todo amontonado).
+    if (!withinFrame(side.hip) || !withinFrame(side.knee) || !withinFrame(side.ankle) || !withinFrame(side.shoulder)) {
+      return false;
+    }
+    if (!(side.shoulder.y < side.hip.y && side.hip.y < side.knee.y && side.knee.y < side.ankle.y)) {
+      return false;
+    }
+    const legSpan = Math.hypot(side.ankle.x - side.hip.x, side.ankle.y - side.hip.y);
+    if (legSpan < MIN_LEG_SPAN) return false;
+    return true;
+  }
+
+  function cameraShakeDetected(side) {
+    // si la cadera "salta" de golpe entre un cuadro y el siguiente, lo más probable
+    // es que la cámara se haya movido o sacudido, no que la persona se haya
+    // teletransportado. Descartamos ese cuadro para no contar una repetición falsa.
+    const jumped = !!prevHipPos && Math.hypot(side.hip.x - prevHipPos.x, side.hip.y - prevHipPos.y) > MAX_HIP_JUMP;
+    prevHipPos = { x: side.hip.x, y: side.hip.y };
+    return jumped;
+  }
+
   function smoothAngle(raw) {
     angleHistory.push(raw);
     if (angleHistory.length > ANGLE_SMOOTHING_FRAMES) angleHistory.shift();
@@ -1852,6 +1890,7 @@ function renderHistorial(){
     angleHistory = [];
     downFrames = 0;
     upFrames = 0;
+    prevHipPos = null;
   }
 
   function drawSkeleton(lm) {
@@ -1908,6 +1947,26 @@ function renderHistorial(){
     if (!sideIsVisible(side)) {
       setCoachStatus('No veo bien tu cuerpo completo. Ubícate de perfil, con buena luz, sin ropa muy holgada y con espacio suficiente para ver cadera, rodilla y tobillo.', 'bad');
       coachAngleVal.textContent = '--°';
+      resetDetectionState();
+      coachCtx.restore();
+      return;
+    }
+
+    // Aunque el puntaje de visibilidad sea alto, la posición puede no tener sentido
+    // (por ejemplo, cuando solo se ve la cara y el modelo "inventa" dónde estarían
+    // las piernas). Este chequeo descarta esos casos.
+    if (!legIsPlausible(side)) {
+      setCoachStatus('Aléjate de la cámara hasta que se vea tu cuerpo completo, de pies a cabeza.', 'bad');
+      coachAngleVal.textContent = '--°';
+      resetDetectionState();
+      coachCtx.restore();
+      return;
+    }
+
+    // Si la cadera saltó de golpe entre cuadros, es más probable que la cámara se
+    // haya movido/sacudido que un movimiento real de sentadilla.
+    if (cameraShakeDetected(side)) {
+      setCoachStatus('Detecté un movimiento brusco de la cámara. Mantenla firme y quieta.', 'bad');
       resetDetectionState();
       coachCtx.restore();
       return;
@@ -1976,21 +2035,72 @@ function renderHistorial(){
   });
   coachPose.onResults(onCoachResults);
 
+  function stopCoachStream() {
+    if (coachRAF) { cancelAnimationFrame(coachRAF); coachRAF = null; }
+    if (currentStream) {
+      currentStream.getTracks().forEach(t => t.stop());
+      currentStream = null;
+    }
+  }
+
+  function startPoseLoop() {
+    async function loop() {
+      if (coachVideo.readyState >= 2 && coachVideo.videoWidth > 0) {
+        await coachPose.send({ image: coachVideo });
+      }
+      coachRAF = requestAnimationFrame(loop);
+    }
+    loop();
+  }
+
+  async function applyMinZoomIfAvailable(track) {
+    // Si el dispositivo permite controlar el zoom de esa cámara, lo fijamos al
+    // mínimo disponible para obtener el campo de visión más amplio posible.
+    try {
+      if (!track.getCapabilities) return;
+      const caps = track.getCapabilities();
+      if (caps && caps.zoom && typeof caps.zoom.min === 'number') {
+        await track.applyConstraints({ advanced: [{ zoom: caps.zoom.min }] });
+      }
+    } catch (e) {
+      // no todos los navegadores/celulares permiten controlar el zoom por software; se ignora
+    }
+  }
+
   async function startCoachCamera() {
     setCoachStatus('Solicitando acceso a la cámara...');
     try {
-      if (camera) {
-        camera.stop();
-        camera = null;
-      }
+      stopCoachStream();
       updateMirror();
-      camera = new Camera(coachVideo, {
-        onFrame: async () => { await coachPose.send({ image: coachVideo }); },
-        width: 480,
-        height: 640,
-        facingMode: facingMode
+
+      // Pedimos una resolución "ideal" (no forzada), para que cada celular entregue
+      // su propio campo de visión más amplio en vez de recortar/hacer zoom digital
+      // para encajar en un tamaño fijo.
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: facingMode },
+          width: { ideal: 1280 },
+          height: { ideal: 1280 }
+        },
+        audio: false
       });
-      await camera.start();
+
+      currentStream = stream;
+      coachVideo.srcObject = stream;
+      await coachVideo.play();
+
+      const track = stream.getVideoTracks()[0];
+      if (track) await applyMinZoomIfAvailable(track);
+
+      // Ajustamos el recuadro a la relación de aspecto real que entrega la cámara
+      // de este celular en particular (unos dan 0.5, otros 0.6, etc.), en vez de
+      // forzar un valor fijo para todos los dispositivos.
+      const w = coachVideo.videoWidth, h = coachVideo.videoHeight;
+      if (w && h) {
+        coachStage.style.aspectRatio = `${w} / ${h}`;
+      }
+
+      startPoseLoop();
       started = true;
       setCoachStatus('Cámara activa (' + (facingMode === 'user' ? 'frontal' : 'trasera') + '). Ubícate de perfil para ver tu sentadilla.');
       coachStartBtn.textContent = 'Cámara activa';
