@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FitTrack — Tu gimnasio en un solo lugar</title>
+<script src="https://accounts.google.com/gsi/client" async defer onload="if(window.initGoogleSignIn) initGoogleSignIn();"></script>
 <style>
   :root{
     --bg:#121212;
@@ -180,18 +181,6 @@
   .pw-checklist li::before{content:'○';position:absolute;left:0;}
   .pw-checklist li.ok{color:var(--accent);}
   .pw-checklist li.ok::before{content:'●';}
-  .google-btn{
-    width:100%;display:flex;align-items:center;justify-content:center;gap:10px;
-    background:#fff;color:#3c4043;border:1px solid #dadce0;border-radius:10px;
-    padding:11px 16px;font-weight:600;font-size:.9rem;
-  }
-  .google-btn:hover{background:#f8f9fa;}
-  .google-btn:disabled{opacity:.6;cursor:default;}
-  .auth-divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--muted);font-size:.75rem;}
-  .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border);}
-  .auth-card.verifying .google-btn,
-  .auth-card.verifying .auth-divider,
-  .auth-card.verifying .auth-tabs{display:none;}
 
   /* ===== Bottom nav ===== */
   nav.bottom-nav{
@@ -227,17 +216,9 @@
   <div class="auth-card">
     <div class="brand" style="justify-content:center;margin-bottom:18px;"><span class="dot"></span><h1>FitTrack</h1></div>
 
-    <button type="button" class="google-btn" id="btnGoogleAuth">
-      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
-        <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84c-.21 1.13-.85 2.09-1.81 2.73v2.27h2.92c1.71-1.57 2.69-3.88 2.69-6.64z"/>
-        <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.17l-2.92-2.27c-.81.54-1.85.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.34C2.44 15.98 5.48 18 9 18z"/>
-        <path fill="#FBBC05" d="M3.97 10.72c-.18-.54-.28-1.11-.28-1.72s.1-1.18.28-1.72V4.94H.96A8.99 8.99 0 0 0 0 9c0 1.45.35 2.82.96 4.06l3.01-2.34z"/>
-        <path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.59-2.59C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.94l3.01 2.34C4.68 5.16 6.66 3.58 9 3.58z"/>
-      </svg>
-      Continuar con Google
-    </button>
-
-    <div class="auth-divider">o con tu correo</div>
+    <div id="googleBtnContainer" style="display:flex;justify-content:center;margin-bottom:8px;min-height:44px;"></div>
+    <div id="googleSetupNote" class="auth-note" style="text-align:center;"></div>
+    <div style="text-align:center;color:var(--muted);font-size:.78rem;margin:14px 0;">— o con tu correo —</div>
 
     <div class="auth-tabs">
       <button type="button" class="auth-tab active" data-auth="login">Iniciar sesión</button>
@@ -269,23 +250,30 @@
       <button type="submit" class="btn btn-primary btn-block">Crear cuenta</button>
     </form>
 
-    <!-- RECUPERAR CONTRASEÑA -->
+    <!-- RECUPERAR — PASO 1 -->
     <form id="recoverForm1" class="auth-panel">
-      <p class="auth-note">Ingresa tu correo. Si tiene una cuenta registrada, te enviaremos un enlace real para restablecer tu contraseña.</p>
+      <p class="auth-note">Ingresa tu correo y te generaremos un código de verificación para restablecer tu contraseña.</p>
       <div class="field"><label>Correo</label><input type="email" id="recEmail" required></div>
       <div class="auth-error" id="recover1Error"></div>
-      <button type="submit" class="btn btn-primary btn-block">Enviar enlace</button>
+      <button type="submit" class="btn btn-primary btn-block">Generar código</button>
       <button type="button" class="btn btn-ghost btn-block" id="backToLoginFromRec1" style="margin-top:8px;">Volver a iniciar sesión</button>
     </form>
 
-    <!-- VERIFICACIÓN DE CORREO -->
-    <div class="auth-panel" id="verifyPanel">
-      <p class="auth-note">Te enviamos un correo de verificación a <strong id="verifyEmailLabel"></strong>. Abre el enlace para activar tu cuenta y luego vuelve aquí.</p>
-      <div class="auth-error" id="verifyError" style="color:var(--accent);"></div>
-      <button type="button" class="btn btn-primary btn-block" id="btnCheckVerified">Ya verifiqué mi correo</button>
-      <button type="button" class="btn btn-ghost btn-block" id="btnResendVerify" style="margin-top:8px;">Reenviar correo</button>
-      <button type="button" class="btn btn-ghost btn-block" id="btnBackFromVerify" style="margin-top:8px;">Cerrar sesión</button>
-    </div>
+    <!-- RECUPERAR — PASO 2 -->
+    <form id="recoverForm2" class="auth-panel">
+      <div class="card" id="recoverTokenBox" style="margin-bottom:14px;"></div>
+      <div class="field"><label>Código de verificación</label><input type="text" id="recToken" required></div>
+      <div class="field"><label>Nueva contraseña</label><input type="password" id="recNewPassword" required autocomplete="new-password"></div>
+      <ul class="pw-checklist" id="pwChecklist2">
+        <li data-check="length">Mínimo 8 caracteres</li>
+        <li data-check="upper">Una mayúscula</li>
+        <li data-check="number">Un número</li>
+        <li data-check="symbol">Un símbolo</li>
+      </ul>
+      <div class="field"><label>Confirmar nueva contraseña</label><input type="password" id="recNewPassword2" required autocomplete="new-password"></div>
+      <div class="auth-error" id="recover2Error"></div>
+      <button type="submit" class="btn btn-primary btn-block">Restablecer contraseña</button>
+    </form>
   </div>
 </div>
 
@@ -413,33 +401,41 @@
   <div class="modal" id="modalBody"></div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
 <script>
 /* =========================================================
-   AUTENTICACIÓN CON FIREBASE (correo real + Google)
+   AUTENTICACIÓN Y PERSISTENCIA MULTIUSUARIO
    -----------------------------------------------------------
-   1) Crea un proyecto gratis en https://console.firebase.google.com
-   2) Ve a "Compilación" -> "Authentication" -> pestaña "Sign-in method"
-      y activa los proveedores "Correo electrónico/contraseña" y "Google".
-   3) Ve a Configuración del proyecto -> pestaña "General" -> "Tus apps"
-      -> agrega una app web (ícono </>) y copia aquí el objeto de config.
-   4) En Authentication -> Settings -> "Dominios autorizados", agrega el
-      dominio donde publiques este archivo (localhost ya está incluido).
+   Todo vive en localStorage del navegador actual. No hay
+   servidor: esto NO sincroniza entre dispositivos y el hash
+   de contraseña puede inspeccionarse con las herramientas de
+   desarrollador de cualquiera con acceso físico al equipo.
+   Para sincronización real y seguridad de verdad se necesita
+   un backend (p. ej. Firebase Auth + Firestore).
    ========================================================= */
-const firebaseConfig = {
-  apiKey: "AIzaSyD5KxUdt-HGJZWn3UB90lC0r63CEV1YyTE",
-  authDomain: "body-254d5.firebaseapp.com",
-  projectId: "body-254d5",
-  storageBucket: "body-254d5.firebasestorage.app",
-  messagingSenderId: "92810639144",
-  appId: "1:92810639144:web:fe581760f1ea9b0a43821d",
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const googleProvider = new firebase.auth.GoogleAuthProvider();
+const USERS_KEY = 'fittrack_users_v1';
+const SESSION_KEY = 'fittrack_session_v1';
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+/* ---------- Hash de contraseñas con Web Crypto (nativo del navegador) ---------- */
+function randomSalt(){
+  const arr = crypto.getRandomValues(new Uint8Array(16));
+  return [...arr].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function sha256Hex(text){
+  if(window.crypto && crypto.subtle && crypto.subtle.digest){
+    try{
+      const enc = new TextEncoder().encode(text);
+      const buf = await crypto.subtle.digest('SHA-256', enc);
+      return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+    }catch(e){ /* cae al fallback */ }
+  }
+  // Fallback muy básico si Web Crypto no está disponible (navegadores muy antiguos)
+  let h = 0;
+  for(let i=0;i<text.length;i++){ h = ((h<<5)-h + text.charCodeAt(i))|0; }
+  return 'fb' + Math.abs(h).toString(16);
+}
+async function hashPassword(password, salt){ return sha256Hex(salt + ':' + password); }
 
 function isValidEmail(email){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
 function passwordChecks(pw){
@@ -452,35 +448,24 @@ function passwordChecks(pw){
 }
 function passwordIsStrong(pw){ return Object.values(passwordChecks(pw)).every(Boolean); }
 
-function firebaseErrorMessage(err){
-  const map = {
-    'auth/email-already-in-use': 'Ya existe una cuenta con este correo.',
-    'auth/invalid-email': 'Correo inválido.',
-    'auth/weak-password': 'La contraseña es demasiado débil.',
-    'auth/user-not-found': 'Credenciales inválidas.',
-    'auth/wrong-password': 'Credenciales inválidas.',
-    'auth/invalid-credential': 'Credenciales inválidas.',
-    'auth/too-many-requests': 'Demasiados intentos fallidos. Intenta más tarde.',
-    'auth/popup-closed-by-user': 'Se cerró la ventana de Google antes de terminar.',
-    'auth/cancelled-popup-request': 'Se canceló la ventana de Google.',
-    'auth/network-request-failed': 'Error de conexión. Revisa tu internet.',
-  };
-  return map[err.code] || ('Ocurrió un error: ' + (err.message || 'inténtalo de nuevo.'));
+/* ---------- CRUD de usuarios ---------- */
+function loadUsers(){
+  try{ return JSON.parse(localStorage.getItem(USERS_KEY)) || []; }
+  catch(e){ return []; }
+}
+function saveUsers(users){ localStorage.setItem(USERS_KEY, JSON.stringify(users)); }
+function findUserIndexByEmail(email){
+  const e = email.trim().toLowerCase();
+  return loadUsers().findIndex(u=>u.email===e);
 }
 
-/* ---------- Perfil de app por usuario (datos extra que Firebase no guarda) ---------- */
-function profileKeyFor(uid){ return 'fittrack_profile_v1_' + uid; }
-function loadProfile(uid){
-  try{
-    const raw = localStorage.getItem(profileKeyFor(uid));
-    if(raw) return JSON.parse(raw);
-  }catch(e){}
-  return {name:'', age:null, sex:'', height:null, goal:'', photo:null, units:'kg'};
+/* ---------- Sesión ---------- */
+function getSession(){
+  try{ return JSON.parse(localStorage.getItem(SESSION_KEY)); }
+  catch(e){ return null; }
 }
-function saveProfile(uid, profile){
-  try{ localStorage.setItem(profileKeyFor(uid), JSON.stringify(profile)); }
-  catch(e){ alert('No se pudo guardar el perfil (almacenamiento local lleno).'); }
-}
+function setSession(userId){ localStorage.setItem(SESSION_KEY, JSON.stringify({userId})); }
+function clearSession(){ localStorage.removeItem(SESSION_KEY); }
 
 /* ---------- Datos de la app, aislados por usuario ---------- */
 const defaultExerciseLibrary = [
@@ -529,21 +514,93 @@ function saveState(){
   }
 }
 function saveCurrentUser(){
-  if(!currentUser) return;
-  saveProfile(currentUser.id, Object.assign({}, currentUser.profile, {name: currentUser.name}));
+  const users = loadUsers();
+  const idx = users.findIndex(u=>u.id===currentUser.id);
+  if(idx>-1){ users[idx] = currentUser; saveUsers(users); }
 }
+
+/* =========================================================
+   INICIO DE SESIÓN CON GOOGLE (Google Identity Services)
+   -----------------------------------------------------------
+   1. Reemplaza GOOGLE_CLIENT_ID de abajo por el tuyo, creado en
+      https://console.cloud.google.com/apis/credentials
+      (Crear credenciales → ID de cliente de OAuth → Aplicación web).
+   2. En "Orígenes de JavaScript autorizados" agrega la URL exacta
+      desde la que abrirás este archivo (ej. http://localhost:8000).
+      NO funciona abriendo el archivo con doble clic (file://).
+   ========================================================= */
+const GOOGLE_CLIENT_ID = '   548315880343-1or5jrltakpvk1pvqlh9ffslob2gqlgm.apps.googleusercontent.com';
+
+function decodeGoogleJwt(token){
+  try{
+    const payload = token.split('.')[1];
+    const json = decodeURIComponent(
+      atob(payload.replace(/-/g,'+').replace(/_/g,'/'))
+        .split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')
+    );
+    return JSON.parse(json);
+  }catch(e){ return null; }
+}
+
+function findOrCreateGoogleUser(g){
+  const email = g.email.toLowerCase();
+  const users = loadUsers();
+  let idx = users.findIndex(u=>u.email===email);
+  if(idx===-1){
+    const newUser = {
+      id: uid(), name: g.name || email, email,
+      salt: null, passwordHash: null, authProvider: 'google', googleSub: g.sub,
+      createdAt: new Date().toISOString(),
+      profile: {age:null, sex:'', height:null, goal:'', photo:g.picture||null, units:'kg'},
+      failedAttempts: 0, lockUntil: null, resetToken: null, resetTokenExpiry: null,
+    };
+    users.push(newUser);
+    saveUsers(users);
+    return newUser;
+  }
+  // Ya existía (quizás se había registrado con correo/contraseña): se vincula la cuenta.
+  users[idx].authProvider = users[idx].authProvider || 'google';
+  users[idx].googleSub = g.sub;
+  saveUsers(users);
+  return users[idx];
+}
+
+function handleGoogleCredential(response){
+  const payload = decodeGoogleJwt(response.credential);
+  if(!payload){ alert('No se pudo procesar la respuesta de Google. Intenta de nuevo.'); return; }
+  const user = findOrCreateGoogleUser(payload);
+  loginAs(user);
+}
+
+function initGoogleSignIn(){
+  const note = document.getElementById('googleSetupNote');
+  if(!window.google || !google.accounts || !google.accounts.id){
+    note.textContent = 'El botón de Google no cargó (revisa tu conexión a internet).';
+    return;
+  }
+  if(GOOGLE_CLIENT_ID.includes('REEMPLAZA')){
+    note.innerHTML = 'Configura tu <code>GOOGLE_CLIENT_ID</code> en el código para activar este botón.';
+    return;
+  }
+  note.textContent = '';
+  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleCredential });
+  google.accounts.id.renderButton(document.getElementById('googleBtnContainer'), {
+    theme: 'filled_black', size: 'large', width: 320, text: 'continue_with', shape: 'pill'
+  });
+}
+window.initGoogleSignIn = initGoogleSignIn;
 
 /* =========================================================
    PANTALLA DE AUTENTICACIÓN
    ========================================================= */
-const authPanelIds = {login:'loginForm', register:'registerForm', recover1:'recoverForm1', verify:'verifyPanel'};
+const authPanelIds = {login:'loginForm', register:'registerForm', recover1:'recoverForm1', recover2:'recoverForm2'};
+let recoverEmailInProgress = '';
 
 function showAuthPanel(name){
   Object.values(authPanelIds).forEach(id=>document.getElementById(id).classList.remove('active'));
   document.getElementById(authPanelIds[name]).classList.add('active');
   document.querySelectorAll('.auth-tab').forEach(t=>t.classList.toggle('active', t.dataset.auth===name));
-  document.querySelectorAll('.auth-error').forEach(e=>{ e.textContent=''; e.style.color='var(--danger)'; });
-  document.querySelector('#authScreen .auth-card').classList.toggle('verifying', name==='verify');
+  document.querySelectorAll('.auth-error').forEach(e=>e.textContent='');
 }
 
 document.querySelectorAll('.auth-tab').forEach(tab=>{
@@ -561,18 +618,7 @@ function attachPwChecklist(inputId, listId){
   });
 }
 attachPwChecklist('regPassword','pwChecklist');
-
-/* ---------- Iniciar sesión con Google ---------- */
-document.getElementById('btnGoogleAuth').addEventListener('click', async ()=>{
-  document.querySelectorAll('.auth-error').forEach(e=>e.textContent='');
-  try{
-    await auth.signInWithPopup(googleProvider);
-    /* onAuthStateChanged() se encarga de entrar a la app */
-  }catch(err){
-    const target = document.querySelector('.auth-panel.active .auth-error') || document.getElementById('loginError');
-    target.textContent = firebaseErrorMessage(err);
-  }
-});
+attachPwChecklist('recNewPassword','pwChecklist2');
 
 /* ---------- Registro ---------- */
 document.getElementById('registerForm').addEventListener('submit', async (e)=>{
@@ -586,24 +632,22 @@ document.getElementById('registerForm').addEventListener('submit', async (e)=>{
 
   if(!name){ errorEl.textContent = 'Ingresa tu nombre.'; return; }
   if(!isValidEmail(email)){ errorEl.textContent = 'Correo inválido.'; return; }
+  if(findUserIndexByEmail(email) !== -1){ errorEl.textContent = 'Ya existe una cuenta con este correo.'; return; }
   if(!passwordIsStrong(pw)){ errorEl.textContent = 'La contraseña no cumple todos los requisitos.'; return; }
   if(pw !== pw2){ errorEl.textContent = 'Las contraseñas no coinciden.'; return; }
 
-  const submitBtn = e.target.querySelector('button[type=submit]');
-  submitBtn.disabled = true;
-  try{
-    const cred = await auth.createUserWithEmailAndPassword(email, pw);
-    await cred.user.updateProfile({displayName: name});
-    saveProfile(cred.user.uid, {name, age:null, sex:'', height:null, goal:'', photo:null, units:'kg'});
-    await cred.user.sendEmailVerification();
-    document.getElementById('registerForm').reset();
-    document.getElementById('verifyEmailLabel').textContent = email;
-    showAuthPanel('verify');
-  }catch(err){
-    errorEl.textContent = firebaseErrorMessage(err);
-  }finally{
-    submitBtn.disabled = false;
-  }
+  const salt = randomSalt();
+  const passwordHash = await hashPassword(pw, salt);
+  const newUser = {
+    id: uid(), name, email, salt, passwordHash, createdAt: new Date().toISOString(),
+    profile: {age:null, sex:'', height:null, goal:'', photo:null, units:'kg'},
+    failedAttempts: 0, lockUntil: null, resetToken: null, resetTokenExpiry: null,
+  };
+  const users = loadUsers();
+  users.push(newUser);
+  saveUsers(users);
+  document.getElementById('registerForm').reset();
+  loginAs(newUser);
 });
 
 /* ---------- Login ---------- */
@@ -613,81 +657,101 @@ document.getElementById('loginForm').addEventListener('submit', async (e)=>{
   errorEl.textContent = '';
   const email = document.getElementById('loginEmail').value.trim().toLowerCase();
   const pw = document.getElementById('loginPassword').value;
-  const submitBtn = e.target.querySelector('button[type=submit]');
-  submitBtn.disabled = true;
-  try{
-    await auth.signInWithEmailAndPassword(email, pw);
-    document.getElementById('loginForm').reset();
-    /* onAuthStateChanged() decide si entra a la app o pide verificar el correo */
-  }catch(err){
-    errorEl.textContent = firebaseErrorMessage(err);
-  }finally{
-    submitBtn.disabled = false;
+
+  const users = loadUsers();
+  const idx = users.findIndex(u=>u.email===email);
+  if(idx === -1){ errorEl.textContent = 'Credenciales inválidas.'; return; }
+  const user = users[idx];
+
+  if(user.lockUntil && Date.now() < user.lockUntil){
+    const secs = Math.ceil((user.lockUntil - Date.now())/1000);
+    errorEl.textContent = `Demasiados intentos fallidos. Intenta de nuevo en ${secs}s.`;
+    return;
   }
+
+  const hash = await hashPassword(pw, user.salt);
+  if(hash !== user.passwordHash){
+    user.failedAttempts = (user.failedAttempts||0) + 1;
+    if(user.failedAttempts >= 5){
+      user.lockUntil = Date.now() + 60000;
+      user.failedAttempts = 0;
+      errorEl.textContent = 'Demasiados intentos fallidos. Espera 60 segundos.';
+    }else{
+      errorEl.textContent = `Credenciales inválidas (intento ${user.failedAttempts}/5).`;
+    }
+    users[idx] = user; saveUsers(users);
+    return;
+  }
+
+  user.failedAttempts = 0;
+  user.lockUntil = null;
+  users[idx] = user; saveUsers(users);
+  document.getElementById('loginForm').reset();
+  loginAs(user);
 });
 
-/* ---------- Recuperar contraseña (correo real vía Firebase) ---------- */
-document.getElementById('recoverForm1').addEventListener('submit', async (e)=>{
+/* ---------- Recuperación de contraseña (simulada, sin servidor de email) ---------- */
+document.getElementById('recoverForm1').addEventListener('submit', (e)=>{
   e.preventDefault();
   const errorEl = document.getElementById('recover1Error');
   errorEl.textContent = '';
   const email = document.getElementById('recEmail').value.trim().toLowerCase();
-  if(!isValidEmail(email)){ errorEl.textContent = 'Correo inválido.'; return; }
-  try{
-    await auth.sendPasswordResetEmail(email);
-    document.getElementById('recoverForm1').reset();
-    errorEl.style.color = 'var(--accent)';
-    errorEl.textContent = 'Si ese correo tiene una cuenta, te enviamos un enlace para restablecer tu contraseña.';
-  }catch(err){
-    errorEl.textContent = firebaseErrorMessage(err);
-  }
+  const users = loadUsers();
+  const idx = users.findIndex(u=>u.email===email);
+  if(idx === -1){ errorEl.textContent = 'No existe una cuenta con ese correo.'; return; }
+
+  const token = Math.random().toString(36).slice(2,8).toUpperCase();
+  users[idx].resetToken = token;
+  users[idx].resetTokenExpiry = Date.now() + 15*60*1000;
+  saveUsers(users);
+  recoverEmailInProgress = email;
+
+  document.getElementById('recoverTokenBox').innerHTML = `
+    <strong>Código de verificación:</strong>
+    <div style="color:var(--accent);font-size:1.4rem;font-weight:800;letter-spacing:.1em;margin:6px 0;">${token}</div>
+    <div class="stat-sub">Válido por 15 minutos. En una app con backend real este código llegaría a tu correo; aquí se muestra directamente porque este archivo no tiene servidor de email conectado.</div>
+  `;
+  document.getElementById('recoverForm1').reset();
+  showAuthPanel('recover2');
 });
 
-/* ---------- Verificación de correo ---------- */
-document.getElementById('btnCheckVerified').addEventListener('click', async ()=>{
-  const errorEl = document.getElementById('verifyError');
+document.getElementById('recoverForm2').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const errorEl = document.getElementById('recover2Error');
   errorEl.textContent = '';
-  const user = auth.currentUser;
-  if(!user){ showAuthPanel('login'); return; }
-  await user.reload();
-  if(user.emailVerified){
-    enterApp(user);
-  }else{
-    errorEl.style.color = 'var(--danger)';
-    errorEl.textContent = 'Todavía no detectamos la verificación. Revisa tu correo (y la carpeta de spam).';
+  const token = document.getElementById('recToken').value.trim().toUpperCase();
+  const pw = document.getElementById('recNewPassword').value;
+  const pw2 = document.getElementById('recNewPassword2').value;
+
+  const users = loadUsers();
+  const idx = users.findIndex(u=>u.email===recoverEmailInProgress);
+  if(idx === -1){ errorEl.textContent = 'Ocurrió un error. Vuelve a intentarlo desde el inicio.'; return; }
+  const user = users[idx];
+  if(!user.resetToken || user.resetToken !== token || Date.now() > user.resetTokenExpiry){
+    errorEl.textContent = 'Código inválido o expirado.'; return;
   }
+  if(!passwordIsStrong(pw)){ errorEl.textContent = 'La contraseña no cumple todos los requisitos.'; return; }
+  if(pw !== pw2){ errorEl.textContent = 'Las contraseñas no coinciden.'; return; }
+
+  user.salt = randomSalt();
+  user.passwordHash = await hashPassword(pw, user.salt);
+  user.resetToken = null;
+  user.resetTokenExpiry = null;
+  user.failedAttempts = 0;
+  user.lockUntil = null;
+  users[idx] = user; saveUsers(users);
+
+  document.getElementById('recoverForm2').reset();
+  alert('Contraseña actualizada correctamente. Ya puedes iniciar sesión.');
+  recoverEmailInProgress = '';
+  showAuthPanel('login');
 });
-document.getElementById('btnResendVerify').addEventListener('click', async ()=>{
-  const errorEl = document.getElementById('verifyError');
-  errorEl.textContent = '';
-  try{
-    await auth.currentUser.sendEmailVerification();
-    errorEl.style.color = 'var(--accent)';
-    errorEl.textContent = 'Correo de verificación reenviado.';
-  }catch(err){
-    errorEl.style.color = 'var(--danger)';
-    errorEl.textContent = firebaseErrorMessage(err);
-  }
-});
-document.getElementById('btnBackFromVerify').addEventListener('click', ()=> auth.signOut());
 
 /* ---------- Entrar / salir de la app ---------- */
-function enterApp(fbUser){
-  const stored = loadProfile(fbUser.uid);
-  currentUser = {
-    id: fbUser.uid,
-    email: fbUser.email,
-    name: stored.name || fbUser.displayName || (fbUser.email ? fbUser.email.split('@')[0] : 'Usuario'),
-    profile: {
-      age: (stored.age===undefined?null:stored.age),
-      sex: stored.sex || '',
-      height: (stored.height===undefined?null:stored.height),
-      goal: stored.goal || '',
-      units: stored.units || 'kg',
-      photo: stored.photo || fbUser.photoURL || null,
-    },
-  };
-  state = loadUserData(fbUser.uid);
+function loginAs(user){
+  currentUser = user;
+  setSession(user.id);
+  state = loadUserData(user.id);
   document.getElementById('authScreen').style.display = 'none';
   document.getElementById('appRoot').style.display = 'block';
   buildNav();
@@ -696,25 +760,12 @@ function enterApp(fbUser){
 
 document.getElementById('btnLogout').addEventListener('click', ()=>{
   if(!confirm('¿Cerrar sesión?')) return;
-  auth.signOut();
-});
-
-auth.onAuthStateChanged(async (fbUser)=>{
-  if(fbUser){
-    await fbUser.reload();
-    if(!fbUser.emailVerified){
-      document.getElementById('verifyEmailLabel').textContent = fbUser.email;
-      showAuthPanel('verify');
-      return;
-    }
-    enterApp(fbUser);
-  }else{
-    currentUser = null;
-    state = null;
-    document.getElementById('appRoot').style.display = 'none';
-    document.getElementById('authScreen').style.display = 'flex';
-    showAuthPanel('login');
-  }
+  clearSession();
+  currentUser = null;
+  state = null;
+  document.getElementById('appRoot').style.display = 'none';
+  document.getElementById('authScreen').style.display = 'flex';
+  showAuthPanel('login');
 });
 
 /* =========================================================
@@ -1661,6 +1712,17 @@ function renderAll(){
 }
 
 document.getElementById('todayLabel').textContent = new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
+
+/* Sesión persistente: si ya había una sesión activa, entra directo sin pedir login. */
+(function initSession(){
+  const session = getSession();
+  if(session && session.userId){
+    const user = loadUsers().find(u=>u.id===session.userId);
+    if(user){ loginAs(user); return; }
+  }
+  showAuthPanel('login');
+})();
+initGoogleSignIn();
 
 window.addEventListener('resize', ()=>{ if(currentUser){ renderInicio(); renderProgress(); } });
 </script>
