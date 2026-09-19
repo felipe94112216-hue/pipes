@@ -3,2188 +3,561 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PIPE² — Tu gimnasio en un solo lugar</title>
-<script src="https://accounts.google.com/gsi/client" async defer onload="if(window.initGoogleSignIn) initGoogleSignIn();"></script>
+<title>Sandwich K-liche — Menú Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   :root{
-    --bg:#121212;
-    --surface:#1c1c1e;
-    --elevated:#262628;
-    --border:#2e2e30;
-    --accent:#c6ff3a;
-    --accent-dim:#8fbf20;
-    --muted:#9a9a9e;
-    --danger:#ff5c5c;
-    --blue:#4da3ff;
-    --orange:#ffb454;
-    --radius:14px;
-    font-size:16px;
+    --tinta: #241B15;
+    --crema: #FFF7EA;
+
+    --c-perros: #E8452C;
+    --c-perros-suave: #FCE1DA;
+    --c-hamburguesas: #EFA400;
+    --c-hamburguesas-suave: #FCEBC9;
+    --c-sandwiches: #3F8F5C;
+    --c-sandwiches-suave: #DCEEE1;
+    --c-salchipapas: #1E7FA6;
+    --c-salchipapas-suave: #D9EBF2;
   }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
   body{
-    background:var(--bg);
-    color:#f4f4f5;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-    padding-bottom:78px;
-  }
-  h1,h2,h3,h4{margin:0;}
-  button{font-family:inherit;cursor:pointer;}
-  input,select,textarea{font-family:inherit;}
-
-  /* ===== Layout general ===== */
-  .app{max-width:1100px;margin:0 auto;padding:0 16px;}
-  header.topbar{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:18px 16px 10px;max-width:1100px;margin:0 auto;
-  }
-  header.topbar .brand{display:flex;align-items:center;gap:10px;}
-  header.topbar .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);}
-  header.topbar h1{font-size:1.25rem;font-weight:800;letter-spacing:-0.01em;}
-  header.topbar .date{color:var(--muted);font-size:.85rem;}
-
-  nav.desktop-tabs{display:none;}
-
-  section.view{display:none;padding:8px 0 24px;}
-  section.view.active{display:block;}
-
-  .grid{display:grid;gap:12px;}
-  .cards-3{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));}
-  .cards-2{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));}
-
-  .card{
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:var(--radius);
-    padding:16px;
-  }
-  .card h3{font-size:.95rem;color:var(--muted);font-weight:600;margin-bottom:6px;}
-  .stat-value{font-size:1.6rem;font-weight:800;}
-  .stat-sub{font-size:.78rem;color:var(--muted);margin-top:2px;}
-
-  .section-title{display:flex;align-items:center;justify-content:space-between;margin:20px 0 10px;}
-  .section-title h2{font-size:1.1rem;font-weight:800;}
-
-  .btn{
-    border:none;border-radius:10px;padding:11px 16px;font-weight:700;font-size:.9rem;
-    display:inline-flex;align-items:center;gap:6px;justify-content:center;
-  }
-  .btn-primary{background:var(--accent);color:#101201;}
-  .btn-primary:active{transform:scale(.97);}
-  .btn-ghost{background:var(--elevated);color:#fff;border:1px solid var(--border);}
-  .btn-danger{background:rgba(255,92,92,.12);color:var(--danger);}
-  .btn-block{width:100%;}
-  .btn-sm{padding:7px 10px;font-size:.78rem;border-radius:8px;}
-
-  .empty{
-    text-align:center;color:var(--muted);padding:28px 10px;border:1px dashed var(--border);
-    border-radius:var(--radius);font-size:.9rem;
+    background: var(--crema);
+    color: var(--tinta);
+    font-family: 'Nunito', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
   }
 
-  /* ===== Rutinas ===== */
-  .routine-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:12px;}
-  .routine-card .head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
-  .routine-card .head h3{font-size:1.02rem;font-weight:800;color:#fff;}
-  .routine-card .meta{color:var(--muted);font-size:.78rem;margin-top:2px;}
-  .exercise-row{
-    display:flex;justify-content:space-between;align-items:center;
-    background:var(--elevated);border-radius:10px;padding:9px 12px;margin-top:8px;font-size:.85rem;
-  }
-  .tag{font-size:.68rem;font-weight:700;background:rgba(198,255,58,.14);color:var(--accent);padding:2px 8px;border-radius:100px;text-transform:uppercase;letter-spacing:.03em;}
-  .row-actions{display:flex;gap:8px;flex-shrink:0;}
-  .icon-btn{background:none;border:none;color:var(--muted);padding:4px;}
-  .icon-btn:hover{color:#fff;}
-
-  /* ===== Formularios / Modal ===== */
-  .modal-backdrop{
-    display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);
-    align-items:flex-end;justify-content:center;z-index:50;
-  }
-  .modal-backdrop.open{display:flex;}
-  .modal{
-    background:var(--surface);border-top:1px solid var(--border);
-    border-radius:20px 20px 0 0;padding:20px 18px 28px;width:100%;max-width:520px;
-    max-height:88vh;overflow-y:auto;
-  }
-  @media(min-width:640px){
-    .modal-backdrop{align-items:center;}
-    .modal{border-radius:20px;}
-  }
-  .modal h3{font-size:1.1rem;font-weight:800;margin-bottom:14px;}
-  .field{margin-bottom:12px;}
-  .field label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:5px;font-weight:600;}
-  .field input,.field select,.field textarea{
-    width:100%;background:var(--elevated);border:1px solid var(--border);color:#fff;
-    border-radius:9px;padding:10px 11px;font-size:.9rem;outline:none;
-  }
-  .field textarea{resize:vertical;min-height:60px;}
-  .field-row{display:flex;gap:10px;}
-  .field-row .field{flex:1;}
-  .modal-actions{display:flex;gap:10px;margin-top:16px;}
-  .sub-block{border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px;background:var(--elevated);}
-  .sub-block .sub-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
-  .set-row{display:grid;grid-template-columns:24px 1fr 1fr 28px;gap:8px;align-items:center;margin-bottom:6px;}
-  .set-row span{font-size:.75rem;color:var(--muted);text-align:center;}
-  .close-x{background:none;border:none;color:var(--muted);font-size:1.2rem;line-height:1;}
-
-  /* ===== Progreso ===== */
-  .measure-item{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);font-size:.88rem;}
-  .measure-item:last-child{border-bottom:none;}
-  canvas{width:100%;height:180px;display:block;}
-  .photo-thumb{width:56px;height:56px;border-radius:8px;object-fit:cover;border:1px solid var(--border);}
-
-  /* ===== Nutrición ===== */
-  .macro-bar{height:8px;border-radius:100px;background:var(--elevated);overflow:hidden;display:flex;margin:8px 0;}
-  .macro-seg-p{background:var(--blue);height:100%;}
-  .macro-seg-c{background:var(--accent);height:100%;}
-  .macro-seg-g{background:var(--orange);height:100%;}
-  .macro-legend{display:flex;gap:14px;font-size:.72rem;color:var(--muted);flex-wrap:wrap;}
-  .macro-legend span::before{content:'';display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;vertical-align:middle;}
-  .leg-p::before{background:var(--blue);}
-  .leg-c::before{background:var(--accent);}
-  .leg-g::before{background:var(--orange);}
-  .meal-line{display:flex;justify-content:space-between;font-size:.85rem;padding:6px 0;border-bottom:1px solid var(--border);}
-  .meal-line:last-child{border-bottom:none;}
-
-  /* ===== Calendario ===== */
-  .cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;}
-  .cal-grid .dow{font-size:.68rem;color:var(--muted);font-weight:700;padding-bottom:4px;}
-  .cal-day{
-    aspect-ratio:1;background:var(--elevated);border-radius:8px;font-size:.8rem;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-    border:1px solid transparent;position:relative;
-  }
-  .cal-day.empty-cell{background:transparent;}
-  .cal-day.today{border-color:var(--accent);}
-  .cal-day .mark{width:5px;height:5px;border-radius:50%;background:var(--accent);position:absolute;bottom:5px;}
-  .session-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:10px;}
-  .session-item .top{display:flex;justify-content:space-between;font-size:.85rem;color:var(--muted);}
-  .session-item h4{font-size:.95rem;font-weight:700;margin:3px 0 6px;}
-  .feeling-badge{font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:100px;}
-  .feel-genial{background:rgba(198,255,58,.15);color:var(--accent);}
-  .feel-normal{background:rgba(77,163,255,.15);color:var(--blue);}
-  .feel-dificil{background:rgba(255,92,92,.15);color:var(--danger);}
-
-  /* ===== Autenticación ===== */
-  .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px;}
-  .auth-card{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px 20px;}
-  .auth-tabs{display:flex;gap:6px;margin-bottom:18px;background:var(--elevated);border-radius:10px;padding:4px;}
-  .auth-tabs button{flex:1;background:none;border:none;color:var(--muted);font-weight:700;font-size:.82rem;padding:9px;border-radius:8px;}
-  .auth-tabs button.active{background:var(--accent);color:#101201;}
-  .auth-panel{display:none;}
-  .auth-panel.active{display:block;}
-  .auth-error{color:var(--danger);font-size:.8rem;margin:-4px 0 10px;min-height:14px;}
-  .auth-note{color:var(--muted);font-size:.8rem;margin-bottom:12px;line-height:1.4;}
-  .pw-checklist{list-style:none;padding:0;margin:0 0 14px;display:flex;flex-direction:column;gap:4px;}
-  .pw-checklist li{font-size:.75rem;color:var(--muted);padding-left:18px;position:relative;}
-  .pw-checklist li::before{content:'○';position:absolute;left:0;}
-  .pw-checklist li.ok{color:var(--accent);}
-  .pw-checklist li.ok::before{content:'●';}
-
-  /* ===== Bottom nav ===== */
-  nav.bottom-nav{
-    position:fixed;bottom:0;left:0;right:0;background:rgba(28,28,30,.97);
-    backdrop-filter:blur(6px);border-top:1px solid var(--border);
-    display:flex;justify-content:space-around;padding:8px 4px 18px;z-index:40;
-  }
-  nav.bottom-nav button{
-    background:none;border:none;color:var(--muted);display:flex;flex-direction:column;
-    align-items:center;gap:3px;font-size:.65rem;font-weight:600;flex:1;padding:4px 2px;
-  }
-  nav.bottom-nav button.active{color:var(--accent);}
-  nav.bottom-nav svg{width:22px;height:22px;}
-
-  @media(min-width:860px){
-    body{padding-bottom:24px;}
-    nav.bottom-nav{display:none;}
-    nav.desktop-tabs{
-      display:flex;gap:6px;max-width:1100px;margin:0 auto;padding:0 16px 14px;border-bottom:1px solid var(--border);
-    }
-    nav.desktop-tabs button{
-      background:none;border:none;color:var(--muted);font-weight:700;font-size:.85rem;
-      padding:10px 14px;border-radius:9px;
-    }
-    nav.desktop-tabs button.active{background:var(--elevated);color:var(--accent);}
+  h1, h2, .marca-nombre{
+    font-family: 'Baloo 2', 'Nunito', sans-serif;
   }
 
-  /* ===== Entrenador Virtual (detector de sentadillas con cámara) ===== */
-  .coach-wrap{max-width:640px;margin:0 auto;}
-  .coach-title{font-size:1.05rem;font-weight:800;margin:0 0 4px;color:#fff;}
-  .coach-sub{color:var(--muted);font-size:.85rem;margin:0 0 16px;line-height:1.4;}
-  .coach-stage{
-    position:relative;background:#000;border-radius:12px;overflow:hidden;
-    aspect-ratio:9/16; /* valor inicial de respaldo; se ajusta por JS a la cámara real del dispositivo */
-    border:1px solid var(--border);
+  .envoltorio{
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
   }
-  .coach-stage video,.coach-stage canvas{
-    position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;
+
+  /* ---------- HERO ---------- */
+  header.hero{
+    padding: 48px 20px 30px;
+    text-align: center;
   }
-  .coach-stage video.mirrored,.coach-stage canvas.mirrored{transform:scaleX(-1);}
-  .coach-status{
-    position:absolute;bottom:12px;left:12px;right:12px;padding:12px 14px;border-radius:10px;
-    background:rgba(10,14,18,.75);backdrop-filter:blur(6px);font-size:.88rem;line-height:1.3;
-    border-left:3px solid var(--blue);
+
+  .hero .marca{
+    display: inline-block;
+    font-weight: 800;
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+    background: var(--tinta);
+    color: var(--crema);
+    padding: 5px 14px;
+    border-radius: 999px;
+    margin-bottom: 18px;
+    transform: rotate(-2deg);
   }
-  .coach-status.good{border-left-color:#4fd18b;}
-  .coach-status.bad{border-left-color:var(--danger);}
-  .coach-controls{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
-  .coach-controls button{
-    flex:1;min-width:110px;padding:12px;border-radius:10px;border:1px solid var(--border);
-    background:var(--elevated);color:#fff;font-size:.88rem;font-weight:700;
+
+  .hero h1{
+    font-size: clamp(34px, 9.5vw, 54px);
+    font-weight: 800;
+    line-height: 1;
+    color: var(--tinta);
   }
-  .coach-controls button.primary{background:var(--blue);border-color:var(--blue);color:#06131c;}
-  .coach-metrics{display:flex;gap:10px;margin-top:16px;}
-  .coach-metric{flex:1;background:var(--elevated);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;}
-  .coach-metric .val{font-size:1.5rem;font-weight:800;}
-  .coach-metric .lbl{font-size:.7rem;color:var(--muted);margin-top:2px;}
-  .coach-voice-toggle{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:.85rem;color:var(--muted);}
-  .coach-voice-toggle input{width:18px;height:18px;}
-  .coach-note{margin-top:18px;font-size:.76rem;color:var(--muted);line-height:1.5;}
+  .hero h1 span{
+    color: var(--c-perros);
+  }
+
+  .hero p.tagline{
+    margin-top: 14px;
+    font-weight: 700;
+    font-size: 15.5px;
+    color: rgba(36,27,21,0.6);
+    max-width: 360px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ---------- NAV DE CATEGORÍAS ---------- */
+  nav.categorias{
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--crema);
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 14px 20px 16px;
+    scrollbar-width: none;
+  }
+  nav.categorias::-webkit-scrollbar{ display:none; }
+
+  nav.categorias a{
+    flex: 0 0 auto;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 13.5px;
+    color: var(--tinta);
+    padding: 9px 16px;
+    border-radius: 999px;
+    border: 2.5px solid var(--tinta);
+    white-space: nowrap;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  nav.categorias a.activa{
+    background: var(--tinta);
+    color: var(--crema);
+  }
+
+  /* ---------- SECCIONES ---------- */
+  section.categoria{
+    padding-top: 46px;
+    scroll-margin-top: 76px;
+  }
+
+  .titulo-cat{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .titulo-cat .bolita{
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+  }
+
+  .titulo-cat h2{
+    font-size: 26px;
+    font-weight: 700;
+  }
+
+  .item{
+    border-radius: 22px;
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+
+  .item .foto{
+    width: 100%;
+    aspect-ratio: 16 / 11;
+    display: block;
+  }
+  .item .foto svg{ width: 100%; height: 100%; display:block; }
+
+  .item .info{
+    padding: 14px 16px 16px;
+  }
+
+  .item .fila-nombre{
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .item h3{
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 18.5px;
+    font-weight: 700;
+  }
+
+  .item p.desc{
+    margin-top: 3px;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(36,27,21,0.58);
+  }
+
+  .item .precio{
+    margin-top: 8px;
+    display: inline-block;
+    font-weight: 800;
+    font-size: 15px;
+    padding: 3px 10px;
+    border-radius: 8px;
+  }
+
+  .etiqueta{
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 800;
+    color: #fff;
+    border-radius: 5px;
+    padding: 2px 7px;
+  }
+
+  /* ---------- QR / COMPARTIR ---------- */
+  section.compartir{
+    margin-top: 60px;
+    padding: 38px 26px;
+    background: var(--tinta);
+    color: var(--crema);
+    border-radius: 26px;
+    text-align: center;
+  }
+
+  section.compartir h2{
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  section.compartir p{
+    font-size: 13.5px;
+    font-weight: 600;
+    color: rgba(255,247,234,0.7);
+    max-width: 300px;
+    margin: 0 auto 22px;
+  }
+
+  #qrcode{
+    display: inline-block;
+    padding: 14px;
+    background: var(--crema);
+    border-radius: 16px;
+    line-height: 0;
+  }
+
+  .acciones{
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  button.accion{
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    background: var(--crema);
+    color: var(--tinta);
+    border: none;
+    padding: 11px 20px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+
+  footer{
+    text-align: center;
+    margin-top: 34px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: rgba(36,27,21,0.4);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; }
+  }
 </style>
 </head>
 <body>
 
-<!-- ===================== AUTENTICACIÓN ===================== -->
-<div id="authScreen" class="auth-wrap">
-  <div class="auth-card">
-    <div class="brand" style="justify-content:center;margin-bottom:18px;"><span class="dot"></span><h1>PIPE²</h1></div>
+<div class="envoltorio">
 
-    <div id="googleBtnContainer" style="display:flex;justify-content:center;margin-bottom:8px;min-height:44px;"></div>
-    <div id="googleSetupNote" class="auth-note" style="text-align:center;"></div>
-    <div style="text-align:center;color:var(--muted);font-size:.78rem;margin:14px 0;">— o con tu correo —</div>
+  <header class="hero">
+    <div class="marca">MENÚ DIGITAL</div>
+    <h1>Sandwich <span>K-liche</span></h1>
+    <p class="tagline">Perros, hamburguesas, sandwiches y salchipapas hechos a la parrilla, con toda la actitud de la calle.</p>
+  </header>
 
-    <div class="auth-tabs">
-      <button type="button" class="auth-tab active" data-auth="login">Iniciar sesión</button>
-      <button type="button" class="auth-tab" data-auth="register">Crear cuenta</button>
-    </div>
+  <nav class="categorias" id="nav-cat">
+    <a href="#perros" class="activa">🌭 Perros</a>
+    <a href="#hamburguesas">🍔 Hamburguesas</a>
+    <a href="#sandwiches">🥪 Sandwiches</a>
+    <a href="#salchipapas">🍟 Salchipapas</a>
+  </nav>
 
-    <!-- LOGIN -->
-    <form id="loginForm" class="auth-panel active">
-      <div class="field"><label>Correo</label><input type="email" id="loginEmail" required autocomplete="username"></div>
-      <div class="field"><label>Contraseña</label><input type="password" id="loginPassword" required autocomplete="current-password"></div>
-      <div class="auth-error" id="loginError"></div>
-      <button type="submit" class="btn btn-primary btn-block">Entrar</button>
-      <button type="button" class="btn btn-ghost btn-block" id="goToRecover" style="margin-top:8px;">¿Olvidaste tu contraseña?</button>
-    </form>
+  <main id="contenedor-menu"></main>
 
-    <!-- REGISTRO -->
-    <form id="registerForm" class="auth-panel">
-      <div class="field"><label>Nombre</label><input type="text" id="regName" required></div>
-      <div class="field"><label>Correo</label><input type="email" id="regEmail" required autocomplete="username"></div>
-      <div class="field"><label>Contraseña</label><input type="password" id="regPassword" required autocomplete="new-password"></div>
-      <ul class="pw-checklist" id="pwChecklist">
-        <li data-check="length">Mínimo 8 caracteres</li>
-        <li data-check="upper">Una mayúscula</li>
-        <li data-check="number">Un número</li>
-        <li data-check="symbol">Un símbolo</li>
-      </ul>
-      <div class="field"><label>Confirmar contraseña</label><input type="password" id="regPassword2" required autocomplete="new-password"></div>
-      <div class="auth-error" id="registerError"></div>
-      <button type="submit" class="btn btn-primary btn-block">Crear cuenta</button>
-    </form>
-
-    <!-- RECUPERAR — PASO 1 -->
-    <form id="recoverForm1" class="auth-panel">
-      <p class="auth-note">Ingresa tu correo y te generaremos un código de verificación para restablecer tu contraseña.</p>
-      <div class="field"><label>Correo</label><input type="email" id="recEmail" required></div>
-      <div class="auth-error" id="recover1Error"></div>
-      <button type="submit" class="btn btn-primary btn-block">Generar código</button>
-      <button type="button" class="btn btn-ghost btn-block" id="backToLoginFromRec1" style="margin-top:8px;">Volver a iniciar sesión</button>
-    </form>
-
-    <!-- RECUPERAR — PASO 2 -->
-    <form id="recoverForm2" class="auth-panel">
-      <div class="card" id="recoverTokenBox" style="margin-bottom:14px;"></div>
-      <div class="field"><label>Código de verificación</label><input type="text" id="recToken" required></div>
-      <div class="field"><label>Nueva contraseña</label><input type="password" id="recNewPassword" required autocomplete="new-password"></div>
-      <ul class="pw-checklist" id="pwChecklist2">
-        <li data-check="length">Mínimo 8 caracteres</li>
-        <li data-check="upper">Una mayúscula</li>
-        <li data-check="number">Un número</li>
-        <li data-check="symbol">Un símbolo</li>
-      </ul>
-      <div class="field"><label>Confirmar nueva contraseña</label><input type="password" id="recNewPassword2" required autocomplete="new-password"></div>
-      <div class="auth-error" id="recover2Error"></div>
-      <button type="submit" class="btn btn-primary btn-block">Restablecer contraseña</button>
-    </form>
-  </div>
-</div>
-
-<!-- ===================== APP (visible tras iniciar sesión) ===================== -->
-<div id="appRoot" style="display:none;">
-
-<header class="topbar">
-  <div class="brand"><span class="dot"></span><h1>PIPE²</h1></div>
-  <div style="display:flex;align-items:center;gap:8px;">
-    <span class="date" id="todayLabel"></span>
-    <button class="icon-btn" id="btnOpenProfile" title="Mi perfil" style="border:1px solid var(--border);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 4-6 8-6s8 2 8 6"></path></svg>
-    </button>
-    <button class="btn btn-ghost btn-sm" id="btnLogout">Salir</button>
-  </div>
-</header>
-
-<nav class="desktop-tabs" id="desktopTabs"></nav>
-
-<div class="app">
-
-  <!-- ===================== INICIO ===================== -->
-  <section class="view active" id="view-inicio">
-    <div class="card" id="profileCard" style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
-      <div>
-        <h3 style="margin-bottom:4px;">Mi perfil</h3>
-        <div id="profileSummary" class="stat-sub">Aún no completas tus datos.</div>
-      </div>
-      <button class="btn btn-ghost btn-sm" id="btnEditProfileInline">Editar</button>
-    </div>
-
-    <div class="grid cards-3">
-      <div class="card">
-        <h3>Peso actual</h3>
-        <div class="stat-value" id="stat-weight">—</div>
-        <div class="stat-sub" id="stat-weight-sub">Sin registros</div>
-      </div>
-      <div class="card">
-        <h3>Sesiones esta semana</h3>
-        <div class="stat-value" id="stat-sessions-week">0</div>
-        <div class="stat-sub">Últimos 7 días</div>
-      </div>
-      <div class="card">
-        <h3>Rutinas guardadas</h3>
-        <div class="stat-value" id="stat-routines">0</div>
-        <div class="stat-sub">Listas para entrenar</div>
-      </div>
-    </div>
-
-    <div class="section-title"><h2>Progreso de peso</h2></div>
-    <div class="card"><canvas id="chartWeightMini"></canvas></div>
-
-    <div class="section-title"><h2>Últimas sesiones</h2></div>
-    <div id="recentSessions"></div>
-  </section>
-
-  <!-- ===================== ENTRENADOR VIRTUAL ===================== -->
-  <section class="view" id="view-entrenador">
-    <div class="coach-wrap">
-      <h2 class="coach-title">Entrenador Virtual — Detector de sentadillas</h2>
-      <p class="coach-sub">Prototipo con MediaPipe Pose. Colócate de perfil frente a la cámara, con espacio suficiente para ver cadera y rodilla completas.</p>
-
-      <div class="coach-stage" id="coachStage">
-        <video id="coachVideo" playsinline muted></video>
-        <canvas id="coachCanvas"></canvas>
-        <div class="coach-status" id="coachStatus">Presiona "Iniciar cámara" para comenzar</div>
-      </div>
-
-      <div class="coach-controls">
-        <button type="button" class="primary" id="coachStartBtn">Iniciar cámara</button>
-        <button type="button" id="coachSwitchBtn">Cambiar cámara</button>
-        <button type="button" id="coachResetBtn">Reiniciar conteo</button>
-      </div>
-
-      <label class="coach-voice-toggle">
-        <input type="checkbox" id="coachVoiceToggle" checked>
-        Retroalimentación por voz
-      </label>
-
-      <div class="coach-metrics">
-        <div class="coach-metric">
-          <div class="val" id="coachAngleVal">--°</div>
-          <div class="lbl">Ángulo de rodilla</div>
-        </div>
-        <div class="coach-metric">
-          <div class="val" id="coachRepVal">0</div>
-          <div class="lbl">Repeticiones</div>
-        </div>
-      </div>
-
-      <p class="coach-note">
-        Nota: esto corre 100% en tu navegador (no se envía video a ningún servidor). Si la cámara no responde,
-        revisa que le hayas dado permiso de cámara a este sitio y que estés en una conexión https.
-      </p>
-      <p class="coach-note">
-        Para que te detecte bien: colócate de perfil (de lado) a la cámara, con buena luz de frente (evita quedar a contraluz),
-        deja espacio suficiente para que se vea todo tu cuerpo de pies a cabeza, usa ropa ajustada y evita fondos muy cargados
-        o con otras personas moviéndose detrás.
-      </p>
+  <section class="compartir">
+    <h2>Escanéalo en tu mesa</h2>
+    <p>Apunta la cámara del celular al código para abrir este menú al instante.</p>
+    <div id="qrcode"></div>
+    <div class="acciones">
+      <button class="accion" id="btn-copiar">Copiar enlace</button>
+      <button class="accion" id="btn-compartir">Compartir</button>
     </div>
   </section>
 
-  <!-- ===================== RUTINAS ===================== -->
-  <section class="view" id="view-rutinas">
-    <div class="section-title">
-      <h2>Mis rutinas</h2>
-      <button class="btn btn-ghost btn-sm" id="btnManageExercises">Ejercicios</button>
-    </div>
-    <button class="btn btn-primary btn-block" id="btnNewRoutine">+ Nueva rutina</button>
-    <div id="routinesList" style="margin-top:14px;"></div>
-  </section>
-
-  <!-- ===================== PROGRESO ===================== -->
-  <section class="view" id="view-progreso">
-    <div class="section-title">
-      <h2>Progreso corporal</h2>
-      <button class="btn btn-primary btn-sm" id="btnAddProgress">+ Registrar</button>
-    </div>
-
-    <div class="grid cards-2">
-      <div class="card">
-        <h3>Peso corporal (kg)</h3>
-        <canvas id="chartWeight"></canvas>
-      </div>
-      <div class="card">
-        <h3>Volumen estimado por sesión</h3>
-        <canvas id="chartVolume"></canvas>
-      </div>
-    </div>
-
-    <div class="section-title"><h2>Historial de mediciones</h2></div>
-    <div id="progressList"></div>
-  </section>
-
-  <!-- ===================== NUTRICIÓN ===================== -->
-  <section class="view" id="view-nutricion">
-    <div class="section-title">
-      <h2>Planes de alimentación</h2>
-    </div>
-    <button class="btn btn-primary btn-block" id="btnNewPlan">+ Nuevo plan</button>
-    <div id="nutritionList" style="margin-top:14px;"></div>
-  </section>
-
-  <!-- ===================== HISTORIAL ===================== -->
-  <section class="view" id="view-historial">
-    <div class="section-title">
-      <h2>Calendario</h2>
-      <button class="btn btn-primary btn-sm" id="btnLogSession">+ Registrar sesión</button>
-    </div>
-    <div class="card">
-      <div class="cal-head">
-        <button class="icon-btn" id="calPrev">◀</button>
-        <strong id="calLabel">—</strong>
-        <button class="icon-btn" id="calNext">▶</button>
-      </div>
-      <div class="cal-grid" id="calGrid"></div>
-    </div>
-
-    <div class="section-title"><h2>Sesiones completadas</h2></div>
-    <div id="sessionsList"></div>
-  </section>
+  <footer>Sandwich K-liche · Menú sujeto a cambios sin previo aviso</footer>
 
 </div>
 
-<nav class="bottom-nav" id="bottomNav"></nav>
-
-</div><!-- /#appRoot -->
-
-<!-- ===================== MODAL GENÉRICO ===================== -->
-<div class="modal-backdrop" id="modalBackdrop">
-  <div class="modal" id="modalBody"></div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
 <script>
-/* =========================================================
-   AUTENTICACIÓN Y PERSISTENCIA MULTIUSUARIO
-   -----------------------------------------------------------
-   Todo vive en localStorage del navegador actual. No hay
-   servidor: esto NO sincroniza entre dispositivos y el hash
-   de contraseña puede inspeccionarse con las herramientas de
-   desarrollador de cualquiera con acceso físico al equipo.
-   Para sincronización real y seguridad de verdad se necesita
-   un backend (p. ej. Firebase Auth + Firestore).
-   ========================================================= */
-const USERS_KEY = 'fittrack_users_v1';
-const SESSION_KEY = 'fittrack_session_v1';
-
-function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
-
-/* ---------- Hash de contraseñas con Web Crypto (nativo del navegador) ---------- */
-function randomSalt(){
-  const arr = crypto.getRandomValues(new Uint8Array(16));
-  return [...arr].map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-async function sha256Hex(text){
-  if(window.crypto && crypto.subtle && crypto.subtle.digest){
-    try{
-      const enc = new TextEncoder().encode(text);
-      const buf = await crypto.subtle.digest('SHA-256', enc);
-      return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
-    }catch(e){ /* cae al fallback */ }
-  }
-  // Fallback muy básico si Web Crypto no está disponible (navegadores muy antiguos)
-  let h = 0;
-  for(let i=0;i<text.length;i++){ h = ((h<<5)-h + text.charCodeAt(i))|0; }
-  return 'fb' + Math.abs(h).toString(16);
-}
-async function hashPassword(password, salt){ return sha256Hex(salt + ':' + password); }
-
-function isValidEmail(email){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
-function passwordChecks(pw){
-  return {
-    length: pw.length>=8,
-    upper: /[A-Z]/.test(pw),
-    number: /[0-9]/.test(pw),
-    symbol: /[^A-Za-z0-9]/.test(pw),
+  // ---------- SISTEMA DE PLANTILLA: agrega o edita platos solo aquí ----------
+  // "foto" es una ilustración con look de fotografía gastronómica (fondo desenfocado,
+  // sombra suave, degradados) porque todavía no hay fotos reales del restaurante.
+  // Cuando tengas fotos de verdad, se reemplaza cada "foto" por <img src="tu-foto.jpg">.
+  const CATEGORIAS = {
+    perros: {
+      titulo: "Perros calientes",
+      color: "var(--c-perros)",
+      suave: "var(--c-perros-suave)",
+      foto: `<svg viewBox="0 0 400 275" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="bgPerro" cx="50%" cy="38%" r="75%">
+            <stop offset="0%" stop-color="#FFF3DE"/>
+            <stop offset="55%" stop-color="#F6DDB8"/>
+            <stop offset="100%" stop-color="#E9C08A"/>
+          </radialGradient>
+          <linearGradient id="panPerro" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#F6D9A0"/>
+            <stop offset="100%" stop-color="#D89A4C"/>
+          </linearGradient>
+          <linearGradient id="saltPerro" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#B5341A"/>
+            <stop offset="55%" stop-color="#8E2510"/>
+            <stop offset="100%" stop-color="#6E1B0C"/>
+          </linearGradient>
+          <filter id="sombraPerro" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#5A3312" flood-opacity="0.28"/>
+          </filter>
+        </defs>
+        <rect width="400" height="275" fill="url(#bgPerro)"/>
+        <ellipse cx="200" cy="150" rx="90" ry="70" fill="#00000010"/>
+        <circle cx="90" cy="55" r="30" fill="#FFFFFF" opacity="0.25"/>
+        <circle cx="330" cy="220" r="46" fill="#FFFFFF" opacity="0.18"/>
+        <g filter="url(#sombraPerro)">
+          <rect x="70" y="145" width="260" height="66" rx="33" fill="url(#panPerro)"/>
+          <path d="M85 150c15-14 210-14 230 0" stroke="#FFE9BE" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.7"/>
+          <rect x="88" y="128" width="224" height="52" rx="26" fill="url(#saltPerro)"/>
+          <path d="M110 138c60-8 120-8 180 0M108 152c62 8 122 8 184 0" stroke="#FFD9A6" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.55"/>
+          <path d="M100 132c50 22 150 22 200 0" stroke="#F2B33D" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path d="M105 172c45-16 145-16 190 0" stroke="#E8452C" stroke-width="6" fill="none" stroke-linecap="round"/>
+        </g>
+      </svg>`,
+      items: [
+        {n:"Sencillo", d:"Salchicha clásica, papa hilo, salsas de la casa", p:"$9.000"},
+        {n:"Especial K-liche", d:"Doble salchicha, tocineta, queso fundido, piña", p:"$14.500", tag:"MÁS PEDIDO"},
+        {n:"Ranchero", d:"Salchicha, chorizo desmenuzado, guacamole", p:"$13.000"},
+      ]
+    },
+    hamburguesas: {
+      titulo: "Hamburguesas",
+      color: "var(--c-hamburguesas)",
+      suave: "var(--c-hamburguesas-suave)",
+      foto: `<svg viewBox="0 0 400 275" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="bgBurger" cx="50%" cy="35%" r="75%">
+            <stop offset="0%" stop-color="#FFF0D6"/>
+            <stop offset="55%" stop-color="#F3D08C"/>
+            <stop offset="100%" stop-color="#DE9B3F"/>
+          </radialGradient>
+          <linearGradient id="panTop" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#F3C876"/>
+            <stop offset="100%" stop-color="#C97A22"/>
+          </linearGradient>
+          <linearGradient id="carne" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#7A4326"/>
+            <stop offset="100%" stop-color="#4D2814"/>
+          </linearGradient>
+          <filter id="sombraBurger" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#5A3312" flood-opacity="0.28"/>
+          </filter>
+        </defs>
+        <rect width="400" height="275" fill="url(#bgBurger)"/>
+        <ellipse cx="200" cy="150" rx="95" ry="72" fill="#00000010"/>
+        <circle cx="335" cy="60" r="34" fill="#FFFFFF" opacity="0.22"/>
+        <circle cx="70" cy="215" r="42" fill="#FFFFFF" opacity="0.16"/>
+        <g filter="url(#sombraBurger)">
+          <path d="M95 150c0-32 47-58 105-58s105 26 105 58H95z" fill="url(#panTop)"/>
+          <circle cx="150" cy="102" r="3.4" fill="#fff" opacity="0.8"/>
+          <circle cx="200" cy="94" r="3.4" fill="#fff" opacity="0.8"/>
+          <circle cx="250" cy="102" r="3.4" fill="#fff" opacity="0.8"/>
+          <circle cx="175" cy="112" r="3" fill="#fff" opacity="0.7"/>
+          <circle cx="225" cy="112" r="3" fill="#fff" opacity="0.7"/>
+          <rect x="93" y="150" width="214" height="14" rx="6" fill="#3F8F5C"/>
+          <path d="M96 152q10 8 20 0t20 0 20 0t20 0t20 0t20 0t20 0t20 0" stroke="#2E6E44" stroke-width="2" fill="none" opacity="0.5"/>
+          <rect x="93" y="163" width="214" height="20" rx="4" fill="#F2C230"/>
+          <rect x="90" y="182" width="220" height="26" rx="9" fill="url(#carne)"/>
+          <rect x="93" y="207" width="214" height="16" fill="#F6E0A8"/>
+          <path d="M90 222c0 10 47 18 110 18s110-8 110-18H90z" fill="#DE9B3F"/>
+        </g>
+      </svg>`,
+      items: [
+        {n:"Clásica", d:"Carne 150g, lechuga, tomate, queso amarillo", p:"$15.000"},
+        {n:"Doble Carbón", d:"Doble carne, tocineta, cheddar, cebolla caramelizada", p:"$21.000", tag:"MÁS PEDIDO"},
+        {n:"BBQ Ranchera", d:"Carne, aros de cebolla, salsa BBQ de la casa", p:"$18.500"},
+      ]
+    },
+    sandwiches: {
+      titulo: "Sandwiches",
+      color: "var(--c-sandwiches)",
+      suave: "var(--c-sandwiches-suave)",
+      foto: `<svg viewBox="0 0 400 275" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="bgSand" cx="50%" cy="35%" r="75%">
+            <stop offset="0%" stop-color="#F2FBF3"/>
+            <stop offset="55%" stop-color="#D7EFDA"/>
+            <stop offset="100%" stop-color="#B7DEC0"/>
+          </radialGradient>
+          <linearGradient id="panSand" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#F3C876"/>
+            <stop offset="100%" stop-color="#D89A4C"/>
+          </linearGradient>
+          <filter id="sombraSand" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#2C4A34" flood-opacity="0.22"/>
+          </filter>
+        </defs>
+        <rect width="400" height="275" fill="url(#bgSand)"/>
+        <ellipse cx="200" cy="155" rx="105" ry="66" fill="#00000010"/>
+        <circle cx="60" cy="60" r="30" fill="#FFFFFF" opacity="0.3"/>
+        <circle cx="345" cy="205" r="40" fill="#FFFFFF" opacity="0.2"/>
+        <g filter="url(#sombraSand)">
+          <path d="M75 150l125-55 125 55H75z" fill="url(#panSand)"/>
+          <path d="M85 150l115-50 115 50" stroke="#F6E0A8" stroke-width="3" fill="none" opacity="0.6"/>
+          <rect x="78" y="150" width="244" height="12" fill="#3F8F5C"/>
+          <rect x="78" y="162" width="244" height="14" fill="#E8452C"/>
+          <rect x="78" y="176" width="244" height="16" fill="#F2C230"/>
+          <rect x="78" y="192" width="244" height="14" fill="#F6E0A8"/>
+          <path d="M75 206l125 52 125-52H75z" fill="#D89A4C"/>
+          <path d="M85 210l115 46 115-46" stroke="#B97F38" stroke-width="2" fill="none" opacity="0.4"/>
+        </g>
+      </svg>`,
+      items: [
+        {n:"Pollo a la parrilla", d:"Pechuga marinada, lechuga, tomate, mostaza miel", p:"$16.000"},
+        {n:"Mixto Jamón y Queso", d:"Prensado, jamón, queso derretido", p:"$11.500"},
+        {n:"Club K-liche", d:"Pollo, tocineta, huevo, tres panes", p:"$19.000"},
+      ]
+    },
+    salchipapas: {
+      titulo: "Salchipapas",
+      color: "var(--c-salchipapas)",
+      suave: "var(--c-salchipapas-suave)",
+      foto: `<svg viewBox="0 0 400 275" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="bgPapa" cx="50%" cy="35%" r="75%">
+            <stop offset="0%" stop-color="#EAF7FB"/>
+            <stop offset="55%" stop-color="#C9E7EF"/>
+            <stop offset="100%" stop-color="#9FCEDB"/>
+          </radialGradient>
+          <linearGradient id="papaG" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#FCE7A8"/>
+            <stop offset="100%" stop-color="#E8B043"/>
+          </linearGradient>
+          <filter id="sombraPapa" x="-30%" y="-30%" width="160%" height="160%">
+            <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#123A4A" flood-opacity="0.22"/>
+          </filter>
+        </defs>
+        <rect width="400" height="275" fill="url(#bgPapa)"/>
+        <ellipse cx="200" cy="200" rx="110" ry="40" fill="#00000012"/>
+        <circle cx="330" cy="60" r="32" fill="#FFFFFF" opacity="0.3"/>
+        <circle cx="55" cy="200" r="30" fill="#FFFFFF" opacity="0.22"/>
+        <g filter="url(#sombraPapa)">
+          <path d="M105 90h190l-18 118a10 10 0 0 1-10 9H133a10 10 0 0 1-10-9L105 90z" fill="#FFFDF7" stroke="#E8452C" stroke-width="3"/>
+          <path d="M105 90h190l-4 24H109z" fill="#E8452C"/>
+          <g stroke-linecap="round">
+            <rect x="120" y="50" width="14" height="55" rx="6" fill="url(#papaG)" transform="rotate(-6 127 77)"/>
+            <rect x="145" y="35" width="14" height="65" rx="6" fill="url(#papaG)" transform="rotate(3 152 67)"/>
+            <rect x="170" y="30" width="15" height="70" rx="6" fill="url(#papaG)" transform="rotate(-2 177 65)"/>
+            <rect x="196" y="28" width="15" height="72" rx="6" fill="url(#papaG)"/>
+            <rect x="222" y="32" width="15" height="68" rx="6" fill="url(#papaG)" transform="rotate(4 229 66)"/>
+            <rect x="248" y="40" width="14" height="60" rx="6" fill="url(#papaG)" transform="rotate(8 255 70)"/>
+            <rect x="270" y="55" width="14" height="52" rx="6" fill="url(#papaG)" transform="rotate(12 277 81)"/>
+          </g>
+          <g fill="#7A2E1A">
+            <circle cx="200" cy="160" r="7"/>
+            <circle cx="225" cy="175" r="6"/>
+            <circle cx="180" cy="185" r="5.5"/>
+            <circle cx="210" cy="195" r="6"/>
+          </g>
+        </g>
+      </svg>`,
+      items: [
+        {n:"Tradicional", d:"Papa criolla frita, salchicha, salsas", p:"$12.000"},
+        {n:"Mixta con Todo", d:"Papa, salchicha, chorizo, tocineta, queso fundido", p:"$18.000", tag:"MÁS PEDIDO"},
+        {n:"Papas K-liche", d:"Papa, carne desmechada, guacamole, maíz tierno", p:"$17.000"},
+      ]
+    }
   };
-}
-function passwordIsStrong(pw){ return Object.values(passwordChecks(pw)).every(Boolean); }
 
-/* ---------- CRUD de usuarios ---------- */
-function loadUsers(){
-  try{ return JSON.parse(localStorage.getItem(USERS_KEY)) || []; }
-  catch(e){ return []; }
-}
-function saveUsers(users){ localStorage.setItem(USERS_KEY, JSON.stringify(users)); }
-function findUserIndexByEmail(email){
-  const e = email.trim().toLowerCase();
-  return loadUsers().findIndex(u=>u.email===e);
-}
+  const contenedor = document.getElementById("contenedor-menu");
 
-/* ---------- Sesión ---------- */
-function getSession(){
-  try{ return JSON.parse(localStorage.getItem(SESSION_KEY)); }
-  catch(e){ return null; }
-}
-function setSession(userId){ localStorage.setItem(SESSION_KEY, JSON.stringify({userId})); }
-function clearSession(){ localStorage.removeItem(SESSION_KEY); }
+  Object.entries(CATEGORIAS).forEach(([id, cat]) => {
+    const seccion = document.createElement("section");
+    seccion.className = "categoria";
+    seccion.id = id;
 
-/* ---------- Datos de la app, aislados por usuario ---------- */
-const defaultExerciseLibrary = [
-  {name:'Press de banca', group:'pecho'},
-  {name:'Press inclinado con mancuernas', group:'pecho'},
-  {name:'Aperturas en polea', group:'pecho'},
-  {name:'Dominadas', group:'espalda'},
-  {name:'Remo con barra', group:'espalda'},
-  {name:'Jalón al pecho', group:'espalda'},
-  {name:'Sentadilla', group:'piernas'},
-  {name:'Prensa de piernas', group:'piernas'},
-  {name:'Peso muerto rumano', group:'piernas'},
-  {name:'Curl de bíceps', group:'brazos'},
-  {name:'Extensión de tríceps', group:'brazos'},
-  {name:'Press militar', group:'hombros'},
-  {name:'Elevaciones laterales', group:'hombros'},
-  {name:'Plancha', group:'core'},
-  {name:'Elevación de piernas', group:'core'},
-];
-
-function dataKeyFor(userId){ return 'fittrack_data_v1_' + userId; }
-
-function loadUserData(userId){
-  try{
-    const raw = localStorage.getItem(dataKeyFor(userId));
-    if(raw) return JSON.parse(raw);
-  }catch(e){ console.warn('No se pudo leer localStorage', e); }
-  return {
-    routines: [],
-    exercises: JSON.parse(JSON.stringify(defaultExerciseLibrary)),
-    bodyStats: [],
-    nutritionPlans: [],
-    sessions: [],
-  };
-}
-
-let currentUser = null; // objeto de usuario autenticado (incluye .profile)
-let state = null;       // datos de app del usuario actual (rutinas, progreso, etc.)
-
-function saveState(){
-  if(!currentUser) return;
-  try{
-    localStorage.setItem(dataKeyFor(currentUser.id), JSON.stringify(state));
-  }catch(e){
-    alert('No se pudo guardar (posiblemente el almacenamiento local está lleno, sobre todo si subiste fotos pesadas).');
-  }
-}
-function saveCurrentUser(){
-  const users = loadUsers();
-  const idx = users.findIndex(u=>u.id===currentUser.id);
-  if(idx>-1){ users[idx] = currentUser; saveUsers(users); }
-}
-
-/* =========================================================
-   INICIO DE SESIÓN CON GOOGLE (Google Identity Services)
-   -----------------------------------------------------------
-   1. Reemplaza GOOGLE_CLIENT_ID de abajo por el tuyo, creado en
-      https://console.cloud.google.com/apis/credentials
-      (Crear credenciales → ID de cliente de OAuth → Aplicación web).
-   2. En "Orígenes de JavaScript autorizados" agrega la URL exacta
-      desde la que abrirás este archivo (ej. http://localhost:8000).
-      NO funciona abriendo el archivo con doble clic (file://).
-   ========================================================= */
-const GOOGLE_CLIENT_ID = '548315880343-1or5jrltakpvk1pvqlh9ffslob2gqlgm.apps.googleusercontent.com';
-
-function decodeGoogleJwt(token){
-  try{
-    const payload = token.split('.')[1];
-    const json = decodeURIComponent(
-      atob(payload.replace(/-/g,'+').replace(/_/g,'/'))
-        .split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')
-    );
-    return JSON.parse(json);
-  }catch(e){ return null; }
-}
-
-function findOrCreateGoogleUser(g){
-  const email = g.email.toLowerCase();
-  const users = loadUsers();
-  let idx = users.findIndex(u=>u.email===email);
-  if(idx===-1){
-    const newUser = {
-      id: uid(), name: g.name || email, email,
-      salt: null, passwordHash: null, authProvider: 'google', googleSub: g.sub,
-      createdAt: new Date().toISOString(),
-      profile: {age:null, sex:'', height:null, goal:'', photo:g.picture||null, units:'kg'},
-      failedAttempts: 0, lockUntil: null, resetToken: null, resetTokenExpiry: null,
-    };
-    users.push(newUser);
-    saveUsers(users);
-    return newUser;
-  }
-  // Ya existía (quizás se había registrado con correo/contraseña): se vincula la cuenta.
-  users[idx].authProvider = users[idx].authProvider || 'google';
-  users[idx].googleSub = g.sub;
-  saveUsers(users);
-  return users[idx];
-}
-
-function handleGoogleCredential(response){
-  const payload = decodeGoogleJwt(response.credential);
-  if(!payload){ alert('No se pudo procesar la respuesta de Google. Intenta de nuevo.'); return; }
-  const user = findOrCreateGoogleUser(payload);
-  loginAs(user);
-}
-
-function initGoogleSignIn(){
-  const note = document.getElementById('googleSetupNote');
-  if(!window.google || !google.accounts || !google.accounts.id){
-    note.textContent = 'El botón de Google no cargó (revisa tu conexión a internet).';
-    return;
-  }
-  if(GOOGLE_CLIENT_ID.includes('REEMPLAZA')){
-    note.innerHTML = 'Configura tu <code>GOOGLE_CLIENT_ID</code> en el código para activar este botón.';
-    return;
-  }
-  note.textContent = '';
-  google.accounts.id.initialize({ client_id: GOOGLE_CLIENT_ID, callback: handleGoogleCredential });
-  google.accounts.id.renderButton(document.getElementById('googleBtnContainer'), {
-    theme: 'filled_black', size: 'large', width: 320, text: 'continue_with', shape: 'pill'
-  });
-}
-window.initGoogleSignIn = initGoogleSignIn;
-
-/* =========================================================
-   PANTALLA DE AUTENTICACIÓN
-   ========================================================= */
-const authPanelIds = {login:'loginForm', register:'registerForm', recover1:'recoverForm1', recover2:'recoverForm2'};
-let recoverEmailInProgress = '';
-
-function showAuthPanel(name){
-  Object.values(authPanelIds).forEach(id=>document.getElementById(id).classList.remove('active'));
-  document.getElementById(authPanelIds[name]).classList.add('active');
-  document.querySelectorAll('.auth-tab').forEach(t=>t.classList.toggle('active', t.dataset.auth===name));
-  document.querySelectorAll('.auth-error').forEach(e=>e.textContent='');
-}
-
-document.querySelectorAll('.auth-tab').forEach(tab=>{
-  tab.addEventListener('click', ()=> showAuthPanel(tab.dataset.auth));
-});
-document.getElementById('goToRecover').addEventListener('click', ()=> showAuthPanel('recover1'));
-document.getElementById('backToLoginFromRec1').addEventListener('click', ()=> showAuthPanel('login'));
-
-function attachPwChecklist(inputId, listId){
-  const input = document.getElementById(inputId);
-  const list = document.getElementById(listId);
-  input.addEventListener('input', ()=>{
-    const checks = passwordChecks(input.value);
-    list.querySelectorAll('li').forEach(li=> li.classList.toggle('ok', !!checks[li.dataset.check]));
-  });
-}
-attachPwChecklist('regPassword','pwChecklist');
-attachPwChecklist('recNewPassword','pwChecklist2');
-
-/* ---------- Registro ---------- */
-document.getElementById('registerForm').addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  const errorEl = document.getElementById('registerError');
-  errorEl.textContent = '';
-  const name = document.getElementById('regName').value.trim();
-  const email = document.getElementById('regEmail').value.trim().toLowerCase();
-  const pw = document.getElementById('regPassword').value;
-  const pw2 = document.getElementById('regPassword2').value;
-
-  if(!name){ errorEl.textContent = 'Ingresa tu nombre.'; return; }
-  if(!isValidEmail(email)){ errorEl.textContent = 'Correo inválido.'; return; }
-  if(findUserIndexByEmail(email) !== -1){ errorEl.textContent = 'Ya existe una cuenta con este correo.'; return; }
-  if(!passwordIsStrong(pw)){ errorEl.textContent = 'La contraseña no cumple todos los requisitos.'; return; }
-  if(pw !== pw2){ errorEl.textContent = 'Las contraseñas no coinciden.'; return; }
-
-  const salt = randomSalt();
-  const passwordHash = await hashPassword(pw, salt);
-  const newUser = {
-    id: uid(), name, email, salt, passwordHash, createdAt: new Date().toISOString(),
-    profile: {age:null, sex:'', height:null, goal:'', photo:null, units:'kg'},
-    failedAttempts: 0, lockUntil: null, resetToken: null, resetTokenExpiry: null,
-  };
-  const users = loadUsers();
-  users.push(newUser);
-  saveUsers(users);
-  document.getElementById('registerForm').reset();
-  loginAs(newUser);
-});
-
-/* ---------- Login ---------- */
-document.getElementById('loginForm').addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  const errorEl = document.getElementById('loginError');
-  errorEl.textContent = '';
-  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-  const pw = document.getElementById('loginPassword').value;
-
-  const users = loadUsers();
-  const idx = users.findIndex(u=>u.email===email);
-  if(idx === -1){ errorEl.textContent = 'Credenciales inválidas.'; return; }
-  const user = users[idx];
-
-  if(user.lockUntil && Date.now() < user.lockUntil){
-    const secs = Math.ceil((user.lockUntil - Date.now())/1000);
-    errorEl.textContent = `Demasiados intentos fallidos. Intenta de nuevo en ${secs}s.`;
-    return;
-  }
-
-  const hash = await hashPassword(pw, user.salt);
-  if(hash !== user.passwordHash){
-    user.failedAttempts = (user.failedAttempts||0) + 1;
-    if(user.failedAttempts >= 5){
-      user.lockUntil = Date.now() + 60000;
-      user.failedAttempts = 0;
-      errorEl.textContent = 'Demasiados intentos fallidos. Espera 60 segundos.';
-    }else{
-      errorEl.textContent = `Credenciales inválidas (intento ${user.failedAttempts}/5).`;
-    }
-    users[idx] = user; saveUsers(users);
-    return;
-  }
-
-  user.failedAttempts = 0;
-  user.lockUntil = null;
-  users[idx] = user; saveUsers(users);
-  document.getElementById('loginForm').reset();
-  loginAs(user);
-});
-
-/* ---------- Recuperación de contraseña (simulada, sin servidor de email) ---------- */
-document.getElementById('recoverForm1').addEventListener('submit', (e)=>{
-  e.preventDefault();
-  const errorEl = document.getElementById('recover1Error');
-  errorEl.textContent = '';
-  const email = document.getElementById('recEmail').value.trim().toLowerCase();
-  const users = loadUsers();
-  const idx = users.findIndex(u=>u.email===email);
-  if(idx === -1){ errorEl.textContent = 'No existe una cuenta con ese correo.'; return; }
-
-  const token = Math.random().toString(36).slice(2,8).toUpperCase();
-  users[idx].resetToken = token;
-  users[idx].resetTokenExpiry = Date.now() + 15*60*1000;
-  saveUsers(users);
-  recoverEmailInProgress = email;
-
-  document.getElementById('recoverTokenBox').innerHTML = `
-    <strong>Código de verificación:</strong>
-    <div style="color:var(--accent);font-size:1.4rem;font-weight:800;letter-spacing:.1em;margin:6px 0;">${token}</div>
-    <div class="stat-sub">Válido por 15 minutos. En una app con backend real este código llegaría a tu correo; aquí se muestra directamente porque este archivo no tiene servidor de email conectado.</div>
-  `;
-  document.getElementById('recoverForm1').reset();
-  showAuthPanel('recover2');
-});
-
-document.getElementById('recoverForm2').addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  const errorEl = document.getElementById('recover2Error');
-  errorEl.textContent = '';
-  const token = document.getElementById('recToken').value.trim().toUpperCase();
-  const pw = document.getElementById('recNewPassword').value;
-  const pw2 = document.getElementById('recNewPassword2').value;
-
-  const users = loadUsers();
-  const idx = users.findIndex(u=>u.email===recoverEmailInProgress);
-  if(idx === -1){ errorEl.textContent = 'Ocurrió un error. Vuelve a intentarlo desde el inicio.'; return; }
-  const user = users[idx];
-  if(!user.resetToken || user.resetToken !== token || Date.now() > user.resetTokenExpiry){
-    errorEl.textContent = 'Código inválido o expirado.'; return;
-  }
-  if(!passwordIsStrong(pw)){ errorEl.textContent = 'La contraseña no cumple todos los requisitos.'; return; }
-  if(pw !== pw2){ errorEl.textContent = 'Las contraseñas no coinciden.'; return; }
-
-  user.salt = randomSalt();
-  user.passwordHash = await hashPassword(pw, user.salt);
-  user.resetToken = null;
-  user.resetTokenExpiry = null;
-  user.failedAttempts = 0;
-  user.lockUntil = null;
-  users[idx] = user; saveUsers(users);
-
-  document.getElementById('recoverForm2').reset();
-  alert('Contraseña actualizada correctamente. Ya puedes iniciar sesión.');
-  recoverEmailInProgress = '';
-  showAuthPanel('login');
-});
-
-/* ---------- Entrar / salir de la app ---------- */
-function loginAs(user){
-  currentUser = user;
-  setSession(user.id);
-  state = loadUserData(user.id);
-  document.getElementById('authScreen').style.display = 'none';
-  document.getElementById('appRoot').style.display = 'block';
-  buildNav();
-  showView('inicio');
-}
-
-document.getElementById('btnLogout').addEventListener('click', ()=>{
-  if(!confirm('¿Cerrar sesión?')) return;
-  clearSession();
-  currentUser = null;
-  state = null;
-  document.getElementById('appRoot').style.display = 'none';
-  document.getElementById('authScreen').style.display = 'flex';
-  showAuthPanel('login');
-});
-
-/* =========================================================
-   NAVEGACIÓN
-   ========================================================= */
-const TABS = [
-  {id:'inicio', label:'Inicio', icon:'home'},
-  {id:'entrenador', label:'Entrenador', icon:'camera'},
-  {id:'rutinas', label:'Rutinas', icon:'dumbbell'},
-  {id:'progreso', label:'Progreso', icon:'chart'},
-  {id:'nutricion', label:'Nutrición', icon:'apple'},
-  {id:'historial', label:'Historial', icon:'calendar'},
-];
-
-const ICONS = {
-  home: '<path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>',
-  camera: '<rect x="2" y="7" width="14" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/>',
-  dumbbell: '<path d="M6.5 6.5 17.5 17.5"/><path d="M3 9l3-3 2 2-3 3-2-2z"/><path d="M15 21l3-3 2 2-3 3-2-2z"/><path d="M18 6l-3 3"/><path d="M6 18l3-3"/>',
-  chart: '<path d="M4 19V9"/><path d="M11 19V5"/><path d="M18 19v-7"/>',
-  apple: '<path d="M12 8c-3 0-5 2-5 5.5S9 20 12 20s5-2.5 5-6.5S15 8 12 8z"/><path d="M12 8c0-2 1-3 3-3.5"/>',
-  calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M8 3v4M16 3v4"/>',
-};
-
-function svgIcon(name){
-  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]}</svg>`;
-}
-
-function buildNav(){
-  const bottom = document.getElementById('bottomNav');
-  const desktop = document.getElementById('desktopTabs');
-  bottom.innerHTML = TABS.map(t=>`<button data-view="${t.id}">${svgIcon(t.icon)}<span>${t.label}</span></button>`).join('');
-  desktop.innerHTML = TABS.map(t=>`<button data-view="${t.id}">${t.label}</button>`).join('');
-  [...bottom.children, ...desktop.children].forEach(btn=>{
-    btn.addEventListener('click', ()=> showView(btn.dataset.view));
-  });
-}
-
-function showView(id){
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('view-'+id).classList.add('active');
-  document.querySelectorAll('#bottomNav button, #desktopTabs button').forEach(b=>{
-    b.classList.toggle('active', b.dataset.view===id);
-  });
-  renderAll();
-}
-
-/* =========================================================
-   MODAL HELPERS
-   ========================================================= */
-const backdrop = document.getElementById('modalBackdrop');
-const modalBody = document.getElementById('modalBody');
-
-function openModal(html){
-  modalBody.innerHTML = html;
-  backdrop.classList.add('open');
-}
-function closeModal(){
-  backdrop.classList.remove('open');
-  modalBody.innerHTML = '';
-}
-backdrop.addEventListener('click', e=>{ if(e.target===backdrop) closeModal(); });
-
-/* =========================================================
-   FORMATEO
-   ========================================================= */
-function fmtDate(d){
-  const opts = {day:'numeric', month:'short'};
-  return new Date(d).toLocaleDateString('es-ES', opts);
-}
-function todayISO(){ return new Date().toISOString().slice(0,10); }
-
-/* =========================================================
-   RUTINAS
-   ========================================================= */
-document.getElementById('btnNewRoutine').addEventListener('click', ()=> openRoutineForm());
-document.getElementById('btnManageExercises').addEventListener('click', openExerciseManager);
-
-function groupOptions(selected){
-  const groups = ['pecho','espalda','piernas','brazos','hombros','core'];
-  return groups.map(g=>`<option value="${g}" ${g===selected?'selected':''}>${g[0].toUpperCase()+g.slice(1)}</option>`).join('');
-}
-
-function exerciseOptionsForGroup(group, selectedName){
-  return state.exercises.filter(e=>e.group===group)
-    .map(e=>`<option value="${e.name}" ${e.name===selectedName?'selected':''}>${e.name}</option>`).join('');
-}
-
-function openRoutineForm(routineId){
-  const editing = routineId ? state.routines.find(r=>r.id===routineId) : null;
-  const exercises = editing ? JSON.parse(JSON.stringify(editing.exercises)) : [];
-
-  function exerciseBlockHtml(ex, idx){
-    const group = ex.group || 'pecho';
-    return `
-    <div class="sub-block" data-ex-idx="${idx}">
-      <div class="sub-head">
-        <strong>Ejercicio ${idx+1}</strong>
-        <button type="button" class="close-x" data-remove-ex="${idx}">✕</button>
-      </div>
-      <div class="field-row">
-        <div class="field">
-          <label>Grupo muscular</label>
-          <select data-field="group" data-idx="${idx}">${groupOptions(group)}</select>
-        </div>
-        <div class="field">
-          <label>Ejercicio</label>
-          <select data-field="name" data-idx="${idx}">${exerciseOptionsForGroup(group, ex.name)}</select>
-        </div>
-      </div>
-      <div class="field-row">
-        <div class="field">
-          <label>Series</label>
-          <input type="number" min="1" value="${ex.sets ?? 3}" data-field="sets" data-idx="${idx}">
-        </div>
-        <div class="field">
-          <label>Repeticiones</label>
-          <input type="number" min="1" value="${ex.reps ?? 10}" data-field="reps" data-idx="${idx}">
-        </div>
-        <div class="field">
-          <label>Peso (kg)</label>
-          <input type="number" min="0" step="0.5" value="${ex.weight ?? 0}" data-field="weight" data-idx="${idx}">
-        </div>
-      </div>
-    </div>`;
-  }
-
-  function renderExerciseBlocks(){
-    return exercises.map(exerciseBlockHtml).join('') || '<p class="empty" style="padding:14px;">Añade al menos un ejercicio.</p>';
-  }
-
-  openModal(`
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <h3>${editing ? 'Editar rutina' : 'Nueva rutina'}</h3>
-      <button class="close-x" id="mClose">✕</button>
-    </div>
-    <div class="field">
-      <label>Nombre de la rutina</label>
-      <input type="text" id="rName" placeholder="Ej. Día de Empuje" value="${editing ? editing.name : ''}">
-    </div>
-    <div id="exerciseBlocks">${renderExerciseBlocks()}</div>
-    <button type="button" class="btn btn-ghost btn-block" id="addExerciseBtn">+ Añadir ejercicio</button>
-    <div class="modal-actions">
-      <button class="btn btn-ghost btn-block" id="mCancel">Cancelar</button>
-      <button class="btn btn-primary btn-block" id="mSave">Guardar rutina</button>
-    </div>
-  `);
-
-  const blocksWrap = document.getElementById('exerciseBlocks');
-
-  function refreshBlocks(){
-    blocksWrap.innerHTML = renderExerciseBlocks();
-    attachBlockEvents();
-  }
-
-  function attachBlockEvents(){
-    blocksWrap.querySelectorAll('[data-remove-ex]').forEach(btn=>{
-      btn.addEventListener('click', ()=>{
-        exercises.splice(Number(btn.dataset.removeEx),1);
-        refreshBlocks();
-      });
-    });
-    blocksWrap.querySelectorAll('select[data-field="group"]').forEach(sel=>{
-      sel.addEventListener('change', ()=>{
-        const idx = Number(sel.dataset.idx);
-        exercises[idx].group = sel.value;
-        exercises[idx].name = state.exercises.find(e=>e.group===sel.value)?.name || '';
-        refreshBlocks();
-      });
-    });
-    blocksWrap.querySelectorAll('select[data-field="name"]').forEach(sel=>{
-      sel.addEventListener('change', ()=>{
-        exercises[Number(sel.dataset.idx)].name = sel.value;
-      });
-    });
-    blocksWrap.querySelectorAll('input[data-field]').forEach(inp=>{
-      inp.addEventListener('input', ()=>{
-        exercises[Number(inp.dataset.idx)][inp.dataset.field] = Number(inp.value);
-      });
-    });
-  }
-  attachBlockEvents();
-
-  document.getElementById('addExerciseBtn').addEventListener('click', ()=>{
-    const firstGroup = 'pecho';
-    exercises.push({group:firstGroup, name: state.exercises.find(e=>e.group===firstGroup)?.name || '', sets:3, reps:10, weight:0});
-    refreshBlocks();
-  });
-
-  document.getElementById('mClose').addEventListener('click', closeModal);
-  document.getElementById('mCancel').addEventListener('click', closeModal);
-  document.getElementById('mSave').addEventListener('click', ()=>{
-    const name = document.getElementById('rName').value.trim();
-    if(!name){ alert('Ponle un nombre a la rutina.'); return; }
-    if(exercises.length===0){ alert('Añade al menos un ejercicio.'); return; }
-    if(editing){
-      editing.name = name;
-      editing.exercises = exercises;
-    }else{
-      state.routines.push({id:uid(), name, exercises});
-    }
-    saveState();
-    closeModal();
-    renderRoutines();
-    renderInicio();
-  });
-}
-
-function deleteRoutine(id){
-  if(!confirm('¿Eliminar esta rutina?')) return;
-  state.routines = state.routines.filter(r=>r.id!==id);
-  saveState();
-  renderRoutines();
-  renderInicio();
-}
-
-function renderRoutines(){
-  const wrap = document.getElementById('routinesList');
-  if(state.routines.length===0){
-    wrap.innerHTML = '<div class="empty">Aún no tienes rutinas. Crea la primera con el botón de arriba.</div>';
-    return;
-  }
-  wrap.innerHTML = state.routines.map(r=>`
-    <div class="routine-card">
-      <div class="head">
-        <div>
-          <h3>${r.name}</h3>
-          <div class="meta">${r.exercises.length} ejercicio${r.exercises.length===1?'':'s'}</div>
-        </div>
-        <div class="row-actions">
-          <button class="icon-btn" title="Editar" data-edit-routine="${r.id}">✎</button>
-          <button class="icon-btn" title="Eliminar" data-del-routine="${r.id}">🗑</button>
-        </div>
-      </div>
-      ${r.exercises.map(ex=>`
-        <div class="exercise-row">
-          <span>${ex.name || '(sin definir)'} <span class="tag">${ex.group}</span></span>
-          <span>${ex.sets}×${ex.reps} · ${ex.weight}kg</span>
-        </div>
-      `).join('')}
-      <button class="btn btn-primary btn-block" style="margin-top:10px;" data-start-routine="${r.id}">Registrar esta sesión</button>
-    </div>
-  `).join('');
-
-  wrap.querySelectorAll('[data-edit-routine]').forEach(b=>b.addEventListener('click', ()=>openRoutineForm(b.dataset.editRoutine)));
-  wrap.querySelectorAll('[data-del-routine]').forEach(b=>b.addEventListener('click', ()=>deleteRoutine(b.dataset.delRoutine)));
-  wrap.querySelectorAll('[data-start-routine]').forEach(b=>b.addEventListener('click', ()=>openSessionForm(b.dataset.startRoutine)));
-}
-
-/* =========================================================
-   BIBLIOTECA DE EJERCICIOS
-   ========================================================= */
-function openExerciseManager(){
-  function listHtml(){
-    const groups = ['pecho','espalda','piernas','brazos','hombros','core'];
-    return groups.map(g=>`
-      <div class="sub-block">
-        <div class="sub-head"><strong>${g[0].toUpperCase()+g.slice(1)}</strong></div>
-        ${state.exercises.filter(e=>e.group===g).map(e=>`
-          <div class="exercise-row">
-            <span>${e.name}</span>
-            <button class="icon-btn" data-del-ex="${e.name}|${g}">🗑</button>
+    const itemsHTML = cat.items.map(it => `
+      <div class="item" style="background:${cat.suave}">
+        <div class="foto">${cat.foto}</div>
+        <div class="info">
+          <div class="fila-nombre">
+            <h3>${it.n}</h3>
+            ${it.tag ? `<span class="etiqueta" style="background:${cat.color}">${it.tag}</span>` : ""}
           </div>
-        `).join('') || '<p class="stat-sub">Sin ejercicios en este grupo.</p>'}
-      </div>
-    `).join('');
-  }
-
-  openModal(`
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <h3>Biblioteca de ejercicios</h3>
-      <button class="close-x" id="mClose">✕</button>
-    </div>
-    <div class="field-row">
-      <div class="field">
-        <label>Nuevo ejercicio</label>
-        <input type="text" id="newExName" placeholder="Ej. Zancadas">
-      </div>
-      <div class="field" style="max-width:130px;">
-        <label>Grupo</label>
-        <select id="newExGroup">${groupOptions('pecho')}</select>
-      </div>
-    </div>
-    <button class="btn btn-primary btn-block" id="addExLibBtn">+ Añadir a la biblioteca</button>
-    <div id="exLibList" style="margin-top:14px;">${listHtml()}</div>
-  `);
-
-  document.getElementById('mClose').addEventListener('click', closeModal);
-  document.getElementById('addExLibBtn').addEventListener('click', ()=>{
-    const name = document.getElementById('newExName').value.trim();
-    const group = document.getElementById('newExGroup').value;
-    if(!name){ alert('Escribe un nombre.'); return; }
-    state.exercises.push({name, group});
-    saveState();
-    document.getElementById('exLibList').innerHTML = listHtml();
-    document.getElementById('newExName').value='';
-    attachExDelete();
-  });
-  attachExDelete();
-
-  function attachExDelete(){
-    document.querySelectorAll('[data-del-ex]').forEach(b=>{
-      b.addEventListener('click', ()=>{
-        const [name, group] = b.dataset.delEx.split('|');
-        state.exercises = state.exercises.filter(e=>!(e.name===name && e.group===group));
-        saveState();
-        document.getElementById('exLibList').innerHTML = listHtml();
-        attachExDelete();
-      });
-    });
-  }
-}
-
-/* =========================================================
-   PERFIL DE USUARIO
-   ========================================================= */
-document.getElementById('btnOpenProfile').addEventListener('click', openProfileForm);
-document.getElementById('btnEditProfileInline').addEventListener('click', openProfileForm);
-
-function openProfileForm(){
-  const p = currentUser.profile;
-  openModal(`
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <h3>Mi perfil</h3>
-      <button class="close-x" id="mClose">✕</button>
-    </div>
-    <div class="field"><label>Nombre</label><input type="text" id="prName" placeholder="Tu nombre" value="${currentUser.name||''}"></div>
-    <div class="field"><label>Correo</label><input type="text" value="${currentUser.email}" disabled style="opacity:.6;"></div>
-    <div class="field-row">
-      <div class="field"><label>Edad</label><input type="number" min="0" id="prAge" placeholder="Ej. 28" value="${p.age||''}"></div>
-      <div class="field">
-        <label>Sexo</label>
-        <select id="prSex">
-          <option value="">—</option>
-          <option value="masculino" ${p.sex==='masculino'?'selected':''}>Masculino</option>
-          <option value="femenino" ${p.sex==='femenino'?'selected':''}>Femenino</option>
-          <option value="otro" ${p.sex==='otro'?'selected':''}>Otro</option>
-        </select>
-      </div>
-    </div>
-    <div class="field-row">
-      <div class="field"><label>Altura (cm)</label><input type="number" min="0" id="prHeight" placeholder="Ej. 175" value="${p.height||''}"></div>
-      <div class="field">
-        <label>Objetivo</label>
-        <select id="prGoal">
-          <option value="">—</option>
-          <option value="ganar musculo" ${p.goal==='ganar musculo'?'selected':''}>Ganar músculo</option>
-          <option value="perder grasa" ${p.goal==='perder grasa'?'selected':''}>Perder grasa</option>
-          <option value="mantener" ${p.goal==='mantener'?'selected':''}>Mantener</option>
-        </select>
-      </div>
-    </div>
-    <div class="field">
-      <label>Unidad de peso preferida</label>
-      <select id="prUnits">
-        <option value="kg" ${p.units==='kg'?'selected':''}>Kilogramos (kg)</option>
-        <option value="lb" ${p.units==='lb'?'selected':''}>Libras (lb)</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Foto de perfil (opcional)</label>
-      ${p.photo?`<img src="${p.photo}" class="photo-thumb" style="margin-bottom:8px;">`:''}
-      <input type="file" id="prPhoto" accept="image/*">
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost btn-block" id="mCancel">Cancelar</button>
-      <button class="btn btn-primary btn-block" id="mSave">Guardar perfil</button>
-    </div>
-  `);
-  document.getElementById('mClose').addEventListener('click', closeModal);
-  document.getElementById('mCancel').addEventListener('click', closeModal);
-  document.getElementById('mSave').addEventListener('click', async ()=>{
-    let photo = p.photo || null;
-    const file = document.getElementById('prPhoto').files[0];
-    if(file){ photo = await fileToDataURL(file); }
-    currentUser.name = document.getElementById('prName').value.trim() || currentUser.name;
-    currentUser.profile = {
-      age: Number(document.getElementById('prAge').value) || null,
-      sex: document.getElementById('prSex').value,
-      height: Number(document.getElementById('prHeight').value) || null,
-      goal: document.getElementById('prGoal').value,
-      units: document.getElementById('prUnits').value,
-      photo,
-    };
-    saveCurrentUser();
-    closeModal();
-    renderInicio();
-  });
-}
-
-function convertWeight(kg){
-  if(!kg && kg!==0) return '—';
-  const units = currentUser?.profile?.units || 'kg';
-  if(units==='lb') return `${(kg*2.20462).toFixed(1)} lb`;
-  return `${kg} kg`;
-}
-
-function renderProfileSummary(){
-  const p = currentUser.profile;
-  const summary = document.getElementById('profileSummary');
-  const parts = [currentUser.name];
-  if(p.age) parts.push(`${p.age} años`);
-  if(p.height) parts.push(`${p.height} cm`);
-  if(p.goal) parts.push(p.goal);
-  const lastWeight = state.bodyStats[state.bodyStats.length-1];
-  if(lastWeight && p.height){
-    const heightM = p.height/100;
-    const bmi = (lastWeight.weight/(heightM*heightM)).toFixed(1);
-    parts.push(`IMC ${bmi}`);
-  }
-  summary.textContent = parts.filter(Boolean).join(' · ');
-}
-
-/* =========================================================
-   PROGRESO CORPORAL
-   ========================================================= */
-document.getElementById('btnAddProgress').addEventListener('click', openProgressForm);
-
-function openProgressForm(){
-  openModal(`
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <h3>Registrar medición</h3>
-      <button class="close-x" id="mClose">✕</button>
-    </div>
-    <div class="field-row">
-      <div class="field"><label>Fecha</label><input type="date" id="pDate" value="${todayISO()}"></div>
-      <div class="field"><label>Peso (kg)</label><input type="number" step="0.1" id="pWeight" placeholder="Ej. 78.5"></div>
-    </div>
-    <div class="field-row">
-      <div class="field"><label>Pecho (cm)</label><input type="number" step="0.1" id="pChest"></div>
-      <div class="field"><label>Cintura (cm)</label><input type="number" step="0.1" id="pWaist"></div>
-    </div>
-    <div class="field-row">
-      <div class="field"><label>Cadera (cm)</label><input type="number" step="0.1" id="pHips"></div>
-      <div class="field"><label>Brazo (cm)</label><input type="number" step="0.1" id="pArm"></div>
-    </div>
-    <div class="field">
-      <label>Foto de progreso (opcional)</label>
-      <input type="file" id="pPhoto" accept="image/*">
-    </div>
-    <div class="field"><label>Notas</label><textarea id="pNotes" placeholder="¿Cómo te sientes con tu progreso?"></textarea></div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost btn-block" id="mCancel">Cancelar</button>
-      <button class="btn btn-primary btn-block" id="mSave">Guardar</button>
-    </div>
-  `);
-  document.getElementById('mClose').addEventListener('click', closeModal);
-  document.getElementById('mCancel').addEventListener('click', closeModal);
-  document.getElementById('mSave').addEventListener('click', async ()=>{
-    const weight = Number(document.getElementById('pWeight').value);
-    if(!weight){ alert('Ingresa al menos el peso corporal.'); return; }
-    const entry = {
-      id:uid(),
-      date: document.getElementById('pDate').value || todayISO(),
-      weight,
-      measurements:{
-        chest: Number(document.getElementById('pChest').value)||null,
-        waist: Number(document.getElementById('pWaist').value)||null,
-        hips: Number(document.getElementById('pHips').value)||null,
-        arm: Number(document.getElementById('pArm').value)||null,
-      },
-      notes: document.getElementById('pNotes').value.trim(),
-      photo: null,
-    };
-    const file = document.getElementById('pPhoto').files[0];
-    if(file){
-      entry.photo = await fileToDataURL(file);
-    }
-    state.bodyStats.push(entry);
-    state.bodyStats.sort((a,b)=> new Date(a.date)-new Date(b.date));
-    saveState();
-    closeModal();
-    renderProgress();
-    renderInicio();
-  });
-}
-
-function fileToDataURL(file){
-  return new Promise((resolve,reject)=>{
-    const reader = new FileReader();
-    reader.onload = ()=>resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-function deleteProgress(id){
-  if(!confirm('¿Eliminar este registro?')) return;
-  state.bodyStats = state.bodyStats.filter(p=>p.id!==id);
-  saveState();
-  renderProgress();
-  renderInicio();
-}
-
-function renderProgress(){
-  const wrap = document.getElementById('progressList');
-  if(state.bodyStats.length===0){
-    wrap.innerHTML = '<div class="empty">Sin mediciones todavía. Registra tu primer peso corporal.</div>';
-  }else{
-    wrap.innerHTML = [...state.bodyStats].reverse().map(p=>`
-      <div class="card" style="margin-bottom:10px;display:flex;gap:12px;align-items:flex-start;">
-        ${p.photo ? `<img src="${p.photo}" class="photo-thumb">` : ''}
-        <div style="flex:1;">
-          <div style="display:flex;justify-content:space-between;">
-            <strong>${fmtDate(p.date)} — ${p.weight} kg</strong>
-            <button class="icon-btn" data-del-progress="${p.id}">🗑</button>
-          </div>
-          <div class="stat-sub">
-            ${p.measurements.chest?`Pecho: ${p.measurements.chest}cm `:''}
-            ${p.measurements.waist?`· Cintura: ${p.measurements.waist}cm `:''}
-            ${p.measurements.hips?`· Cadera: ${p.measurements.hips}cm `:''}
-            ${p.measurements.arm?`· Brazo: ${p.measurements.arm}cm`:''}
-          </div>
-          ${p.notes?`<div class="stat-sub" style="margin-top:4px;">"${p.notes}"</div>`:''}
+          <p class="desc">${it.d}</p>
+          <span class="precio" style="background:${cat.color}; color:#fff;">${it.p}</span>
         </div>
       </div>
-    `).join('');
-    wrap.querySelectorAll('[data-del-progress]').forEach(b=>b.addEventListener('click', ()=>deleteProgress(b.dataset.delProgress)));
-  }
-  drawWeightChart('chartWeight');
-  drawWeightChart('chartWeightMini', true);
-  drawVolumeChart();
-}
+    `).join("");
 
-/* =========================================================
-   GRÁFICOS (Canvas, sin librerías)
-   ========================================================= */
-function drawWeightChart(canvasId, mini){
-  const canvas = document.getElementById(canvasId);
-  if(!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
-  const w = canvas.clientWidth || 300, h = canvas.clientHeight || 180;
-  canvas.width = w*dpr; canvas.height = h*dpr;
-  ctx.scale(dpr,dpr);
-  ctx.clearRect(0,0,w,h);
-
-  const data = state.bodyStats;
-  if(data.length < 2){
-    ctx.fillStyle = '#9a9a9e';
-    ctx.font = '13px sans-serif';
-    ctx.fillText('Registra al menos 2 mediciones para ver la curva.', 10, h/2);
-    return;
-  }
-  const weights = data.map(d=>d.weight);
-  const min = Math.min(...weights)-1, max = Math.max(...weights)+1;
-  const padL = 34, padB = mini?14:20, padT = 10, padR = 10;
-  const plotW = w-padL-padR, plotH = h-padT-padB;
-
-  // ejes guía
-  ctx.strokeStyle = '#2e2e30';
-  ctx.lineWidth = 1;
-  for(let i=0;i<=3;i++){
-    const y = padT + (plotH/3)*i;
-    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); ctx.stroke();
-    if(!mini){
-      const val = max - ((max-min)/3)*i;
-      ctx.fillStyle = '#9a9a9e'; ctx.font='10px sans-serif';
-      ctx.fillText(val.toFixed(1), 2, y+3);
-    }
-  }
-
-  // línea
-  ctx.beginPath();
-  data.forEach((d,i)=>{
-    const x = padL + (plotW/(data.length-1))*i;
-    const y = padT + plotH - ((d.weight-min)/(max-min))*plotH;
-    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-  });
-  ctx.strokeStyle = '#c6ff3a';
-  ctx.lineWidth = 2.5;
-  ctx.lineJoin='round';
-  ctx.stroke();
-
-  // puntos
-  data.forEach((d,i)=>{
-    const x = padL + (plotW/(data.length-1))*i;
-    const y = padT + plotH - ((d.weight-min)/(max-min))*plotH;
-    ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2);
-    ctx.fillStyle = '#c6ff3a'; ctx.fill();
-  });
-}
-
-function estimateSessionVolume(session){
-  let vol = 0;
-  session.exercisesDone.forEach(ex=>{
-    ex.sets.forEach(s=>{ vol += (Number(s.weight)||0) * (Number(s.reps)||0); });
-  });
-  return vol;
-}
-
-function drawVolumeChart(){
-  const canvas = document.getElementById('chartVolume');
-  if(!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
-  const w = canvas.clientWidth || 300, h = canvas.clientHeight || 180;
-  canvas.width = w*dpr; canvas.height = h*dpr;
-  ctx.scale(dpr,dpr);
-  ctx.clearRect(0,0,w,h);
-
-  const sessions = [...state.sessions].sort((a,b)=> new Date(a.date)-new Date(b.date)).slice(-10);
-  if(sessions.length===0){
-    ctx.fillStyle = '#9a9a9e'; ctx.font='13px sans-serif';
-    ctx.fillText('Registra sesiones para ver tu volumen de entrenamiento.', 10, h/2);
-    return;
-  }
-  const vols = sessions.map(estimateSessionVolume);
-  const max = Math.max(...vols, 1);
-  const padL=10, padB=20, padT=10, padR=10;
-  const plotW = w-padL-padR, plotH = h-padT-padB;
-  const barW = plotW/sessions.length*0.6;
-  const gap = plotW/sessions.length;
-
-  sessions.forEach((s,i)=>{
-    const bh = (vols[i]/max)*plotH;
-    const x = padL + gap*i + (gap-barW)/2;
-    const y = padT + plotH - bh;
-    ctx.fillStyle = '#4da3ff';
-    ctx.fillRect(x,y,barW,bh);
-    ctx.fillStyle = '#9a9a9e'; ctx.font='9px sans-serif'; ctx.textAlign='center';
-    ctx.fillText(fmtDate(s.date), x+barW/2, h-6);
-  });
-  ctx.textAlign='left';
-}
-
-/* =========================================================
-   NUTRICIÓN
-   ========================================================= */
-document.getElementById('btnNewPlan').addEventListener('click', ()=>openNutritionForm());
-
-function openNutritionForm(planId){
-  const editing = planId ? state.nutritionPlans.find(p=>p.id===planId) : null;
-  const meals = editing ? JSON.parse(JSON.stringify(editing.meals)) : [];
-
-  function mealBlock(m, idx){
-    return `
-    <div class="sub-block" data-meal-idx="${idx}">
-      <div class="sub-head">
-        <input type="text" placeholder="Nombre de la comida (ej. Desayuno)" value="${m.name||''}" data-mfield="name" data-idx="${idx}" style="background:transparent;border:none;color:#fff;font-weight:700;font-size:.9rem;width:70%;">
-        <button type="button" class="close-x" data-remove-meal="${idx}">✕</button>
+    seccion.innerHTML = `
+      <div class="titulo-cat">
+        <div class="bolita" style="background:${cat.color}"></div>
+        <h2>${cat.titulo}</h2>
       </div>
-      <div class="field-row">
-        <div class="field"><label>Proteína (g)</label><input type="number" min="0" value="${m.protein||0}" data-mfield="protein" data-idx="${idx}"></div>
-        <div class="field"><label>Carbos (g)</label><input type="number" min="0" value="${m.carbs||0}" data-mfield="carbs" data-idx="${idx}"></div>
-        <div class="field"><label>Grasas (g)</label><input type="number" min="0" value="${m.fat||0}" data-mfield="fat" data-idx="${idx}"></div>
-      </div>
-    </div>`;
-  }
-  function renderMeals(){ return meals.map(mealBlock).join('') || '<p class="empty" style="padding:14px;">Añade al menos una comida.</p>'; }
-
-  openModal(`
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <h3>${editing?'Editar plan':'Nuevo plan de alimentación'}</h3>
-      <button class="close-x" id="mClose">✕</button>
-    </div>
-    <div class="field"><label>Nombre del plan</label><input type="text" id="planName" placeholder="Ej. Fase de volumen" value="${editing?editing.name:''}"></div>
-    <div id="mealsWrap">${renderMeals()}</div>
-    <button type="button" class="btn btn-ghost btn-block" id="addMealBtn">+ Añadir comida</button>
-    <div class="modal-actions">
-      <button class="btn btn-ghost btn-block" id="mCancel">Cancelar</button>
-      <button class="btn btn-primary btn-block" id="mSave">Guardar plan</button>
-    </div>
-  `);
-
-  const wrap = document.getElementById('mealsWrap');
-  function refresh(){ wrap.innerHTML = renderMeals(); attach(); }
-  function attach(){
-    wrap.querySelectorAll('[data-remove-meal]').forEach(b=>b.addEventListener('click',()=>{ meals.splice(Number(b.dataset.removeMeal),1); refresh(); }));
-    wrap.querySelectorAll('[data-mfield]').forEach(inp=>{
-      inp.addEventListener('input', ()=>{
-        const idx = Number(inp.dataset.idx), field = inp.dataset.mfield;
-        meals[idx][field] = field==='name' ? inp.value : Number(inp.value);
-      });
-    });
-  }
-  attach();
-  document.getElementById('addMealBtn').addEventListener('click', ()=>{ meals.push({name:'',protein:0,carbs:0,fat:0}); refresh(); });
-  document.getElementById('mClose').addEventListener('click', closeModal);
-  document.getElementById('mCancel').addEventListener('click', closeModal);
-  document.getElementById('mSave').addEventListener('click', ()=>{
-    const name = document.getElementById('planName').value.trim();
-    if(!name){ alert('Ponle un nombre al plan.'); return; }
-    if(meals.length===0){ alert('Añade al menos una comida.'); return; }
-    if(editing){ editing.name=name; editing.meals=meals; }
-    else{ state.nutritionPlans.push({id:uid(), name, meals}); }
-    saveState();
-    closeModal();
-    renderNutrition();
-  });
-}
-
-function deletePlan(id){
-  if(!confirm('¿Eliminar este plan?')) return;
-  state.nutritionPlans = state.nutritionPlans.filter(p=>p.id!==id);
-  saveState();
-  renderNutrition();
-}
-
-function renderNutrition(){
-  const wrap = document.getElementById('nutritionList');
-  if(state.nutritionPlans.length===0){
-    wrap.innerHTML = '<div class="empty">No tienes planes de alimentación. Crea uno para calcular tus macros.</div>';
-    return;
-  }
-  wrap.innerHTML = state.nutritionPlans.map(plan=>{
-    const totals = plan.meals.reduce((acc,m)=>{
-      acc.protein+=Number(m.protein)||0; acc.carbs+=Number(m.carbs)||0; acc.fat+=Number(m.fat)||0;
-      return acc;
-    }, {protein:0,carbs:0,fat:0});
-    const kcal = totals.protein*4 + totals.carbs*4 + totals.fat*9;
-    const totalG = totals.protein+totals.carbs+totals.fat || 1;
-    return `
-    <div class="card" style="margin-bottom:12px;">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-        <div>
-          <h3 style="color:#fff;font-size:1rem;">${plan.name}</h3>
-          <div class="stat-sub">${kcal.toFixed(0)} kcal/día estimadas</div>
-        </div>
-        <div class="row-actions">
-          <button class="icon-btn" data-edit-plan="${plan.id}">✎</button>
-          <button class="icon-btn" data-del-plan="${plan.id}">🗑</button>
-        </div>
-      </div>
-      <div class="macro-bar">
-        <div class="macro-seg-p" style="width:${totals.protein/totalG*100}%"></div>
-        <div class="macro-seg-c" style="width:${totals.carbs/totalG*100}%"></div>
-        <div class="macro-seg-g" style="width:${totals.fat/totalG*100}%"></div>
-      </div>
-      <div class="macro-legend">
-        <span class="leg-p">Proteína ${totals.protein}g</span>
-        <span class="leg-c">Carbos ${totals.carbs}g</span>
-        <span class="leg-g">Grasas ${totals.fat}g</span>
-      </div>
-      <div style="margin-top:10px;">
-        ${plan.meals.map(m=>`
-          <div class="meal-line"><span>${m.name||'Comida'}</span><span>${m.protein}P / ${m.carbs}C / ${m.fat}G</span></div>
-        `).join('')}
-      </div>
-    </div>`;
-  }).join('');
-  wrap.querySelectorAll('[data-edit-plan]').forEach(b=>b.addEventListener('click',()=>openNutritionForm(b.dataset.editPlan)));
-  wrap.querySelectorAll('[data-del-plan]').forEach(b=>b.addEventListener('click',()=>deletePlan(b.dataset.delPlan)));
-}
-
-/* =========================================================
-   SESIONES / CALENDARIO / HISTORIAL
-   ========================================================= */
-document.getElementById('btnLogSession').addEventListener('click', ()=>openSessionForm());
-
-function openSessionForm(routineId){
-  const routineOptions = state.routines.map(r=>`<option value="${r.id}" ${r.id===routineId?'selected':''}>${r.name}</option>`).join('');
-
-  function buildFromRoutine(rid){
-    const r = state.routines.find(x=>x.id===rid);
-    if(!r) return [];
-    return r.exercises.map(ex=>({
-      name: ex.name,
-      sets: Array.from({length: ex.sets||1}, ()=>({weight: ex.weight||0, reps: ex.reps||0}))
-    }));
-  }
-
-  let exercisesDone = routineId ? buildFromRoutine(routineId) : [];
-
-  openModal(`
-    <div style="display:flex;justify-content:space-between;align-items:center;">
-      <h3>Registrar sesión</h3>
-      <button class="close-x" id="mClose">✕</button>
-    </div>
-    <div class="field-row">
-      <div class="field"><label>Rutina</label><select id="sRoutine"><option value="">— Sesión libre —</option>${routineOptions}</select></div>
-      <div class="field"><label>Fecha</label><input type="date" id="sDate" value="${todayISO()}"></div>
-    </div>
-    <div id="sExercises"></div>
-    <div class="field">
-      <label>¿Cómo te sentiste?</label>
-      <select id="sFeeling">
-        <option value="genial">Genial 💪</option>
-        <option value="normal" selected>Normal</option>
-        <option value="dificil">Difícil</option>
-      </select>
-    </div>
-    <div class="field"><label>Notas de la sesión</label><textarea id="sNotes" placeholder="Ej. Sentí buena fuerza en press de banca..."></textarea></div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost btn-block" id="mCancel">Cancelar</button>
-      <button class="btn btn-primary btn-block" id="mSave">Guardar sesión</button>
-    </div>
-  `);
-
-  function renderExDone(){
-    const wrap = document.getElementById('sExercises');
-    if(exercisesDone.length===0){
-      wrap.innerHTML = '<p class="empty">Selecciona una rutina para cargar sus ejercicios, o guarda una sesión libre.</p>';
-      return;
-    }
-    wrap.innerHTML = exercisesDone.map((ex,i)=>`
-      <div class="sub-block">
-        <div class="sub-head"><strong>${ex.name}</strong></div>
-        <div class="set-row" style="grid-template-columns:24px 1fr 1fr;">
-          <span>#</span><span>Kg</span><span>Reps</span>
-        </div>
-        ${ex.sets.map((s,si)=>`
-          <div class="set-row" style="grid-template-columns:24px 1fr 1fr;">
-            <span>${si+1}</span>
-            <input type="number" value="${s.weight}" data-ex="${i}" data-set="${si}" data-f="weight">
-            <input type="number" value="${s.reps}" data-ex="${i}" data-set="${si}" data-f="reps">
-          </div>
-        `).join('')}
-      </div>
-    `).join('');
-    wrap.querySelectorAll('input[data-ex]').forEach(inp=>{
-      inp.addEventListener('input', ()=>{
-        exercisesDone[inp.dataset.ex].sets[inp.dataset.set][inp.dataset.f] = Number(inp.value);
-      });
-    });
-  }
-  renderExDone();
-
-  document.getElementById('sRoutine').addEventListener('change', (e)=>{
-    exercisesDone = e.target.value ? buildFromRoutine(e.target.value) : [];
-    renderExDone();
+      ${itemsHTML}
+    `;
+    contenedor.appendChild(seccion);
   });
 
-  document.getElementById('mClose').addEventListener('click', closeModal);
-  document.getElementById('mCancel').addEventListener('click', closeModal);
-  document.getElementById('mSave').addEventListener('click', ()=>{
-    const rid = document.getElementById('sRoutine').value;
-    const routine = state.routines.find(r=>r.id===rid);
-    state.sessions.push({
-      id: uid(),
-      date: document.getElementById('sDate').value || todayISO(),
-      routineName: routine ? routine.name : 'Sesión libre',
-      exercisesDone,
-      feeling: document.getElementById('sFeeling').value,
-      notes: document.getElementById('sNotes').value.trim(),
-    });
-    saveState();
-    closeModal();
-    renderHistorial();
-    renderInicio();
-    renderProgress();
-  });
-}
-
-function deleteSession(id){
-  if(!confirm('¿Eliminar esta sesión?')) return;
-  state.sessions = state.sessions.filter(s=>s.id!==id);
-  saveState();
-  renderHistorial();
-  renderInicio();
-  renderProgress();
-}
-
-const feelLabel = {genial:'Genial 💪', normal:'Normal', dificil:'Difícil'};
-const feelClass = {genial:'feel-genial', normal:'feel-normal', dificil:'feel-dificil'};
-
-function renderSessionsList(targetId, sessions){
-  const wrap = document.getElementById(targetId);
-  if(sessions.length===0){
-    wrap.innerHTML = '<div class="empty">Aún no registras sesiones completadas.</div>';
-    return;
-  }
-  wrap.innerHTML = [...sessions].reverse().map(s=>`
-    <div class="session-item">
-      <div class="top">
-        <span>${fmtDate(s.date)}</span>
-        <span class="feeling-badge ${feelClass[s.feeling]||''}">${feelLabel[s.feeling]||s.feeling}</span>
-      </div>
-      <h4>${s.routineName}</h4>
-      <div class="stat-sub">Volumen estimado: ${estimateSessionVolume(s).toLocaleString()} kg·rep</div>
-      ${s.notes?`<div class="stat-sub" style="margin-top:4px;">"${s.notes}"</div>`:''}
-      <div style="text-align:right;margin-top:6px;">
-        <button class="icon-btn" data-del-session="${s.id}">🗑</button>
-      </div>
-    </div>
-  `).join('');
-  wrap.querySelectorAll('[data-del-session]').forEach(b=>b.addEventListener('click',()=>deleteSession(b.dataset.delSession)));
-}
-
-let calDate = new Date();
-
-function renderCalendar(){
-  const label = document.getElementById('calLabel');
-  const grid = document.getElementById('calGrid');
-  const monthNames = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-  label.textContent = `${monthNames[calDate.getMonth()]} ${calDate.getFullYear()}`;
-
-  const year = calDate.getFullYear(), month = calDate.getMonth();
-  const firstDay = new Date(year, month, 1);
-  const startOffset = (firstDay.getDay()+6)%7; // lunes=0
-  const daysInMonth = new Date(year, month+1, 0).getDate();
-  const todayStr = todayISO();
-
-  const sessionDates = new Set(state.sessions.map(s=>s.date));
-
-  let html = ['L','M','X','J','V','S','D'].map(d=>`<div class="dow">${d}</div>`).join('');
-  for(let i=0;i<startOffset;i++) html += '<div class="cal-day empty-cell"></div>';
-  for(let d=1; d<=daysInMonth; d++){
-    const iso = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const isToday = iso===todayStr;
-    html += `<div class="cal-day ${isToday?'today':''}">${d}${sessionDates.has(iso)?'<span class="mark"></span>':''}</div>`;
-  }
-  grid.innerHTML = html;
-}
-
-document.getElementById('calPrev').addEventListener('click', ()=>{ calDate.setMonth(calDate.getMonth()-1); renderCalendar(); });
-document.getElementById('calNext').addEventListener('click', ()=>{ calDate.setMonth(calDate.getMonth()+1); renderCalendar(); });
-
-function renderHistorial(){
-  renderCalendar();
-  renderSessionsList('sessionsList', state.sessions);
-}
-
-/* =========================================================
-   ENTRENADOR VIRTUAL — Detector de sentadillas (MediaPipe Pose)
-   ========================================================= */
-(function(){
-  const coachVideo = document.getElementById('coachVideo');
-  const coachCanvas = document.getElementById('coachCanvas');
-  const coachStage = document.getElementById('coachStage');
-  const coachCtx = coachCanvas.getContext('2d');
-  const coachStatusEl = document.getElementById('coachStatus');
-  const coachAngleVal = document.getElementById('coachAngleVal');
-  const coachRepVal = document.getElementById('coachRepVal');
-  const coachStartBtn = document.getElementById('coachStartBtn');
-  const coachSwitchBtn = document.getElementById('coachSwitchBtn');
-  const coachResetBtn = document.getElementById('coachResetBtn');
-  const coachVoiceToggle = document.getElementById('coachVoiceToggle');
-
-  let repCount = 0;
-  let stage = null; // 'up' | 'down'
-  let currentStream = null;
-  let coachRAF = null;
-  let started = false;
-  let facingMode = 'user'; // 'user' = frontal, 'environment' = trasera
-  let lastPostureSpeakAt = 0;
-  const POSTURE_SPEAK_INTERVAL_MS = 3000;
-
-  // ---- Ajustes para evitar falsos conteos y mejorar la detección ----
-  let angleHistory = [];
-  const ANGLE_SMOOTHING_FRAMES = 5;   // promedia los últimos N cuadros para eliminar ruido
-  let downFrames = 0;
-  let upFrames = 0;
-  const REQUIRED_STABLE_FRAMES = 4;   // cuántos cuadros seguidos se necesitan para confirmar bajada/subida
-  let lastRepAt = 0;
-  const MIN_REP_INTERVAL_MS = 700;    // tiempo mínimo entre repeticiones contadas
-  const MIN_VISIBILITY = 0.75;        // qué tan visible debe estar cada punto clave para confiar en el ángulo
-  const MIN_LEG_SPAN = 0.15;          // qué tan "estirada" debe verse la pierna en la imagen (evita piernas inventadas/juntas)
-  const FRAME_EDGE_MARGIN = 0.03;     // márgen de borde: puntos muy pegados al borde se consideran fuera de cuadro
-  let prevHipPos = null;
-  const MAX_HIP_JUMP = 0.09;          // salto máximo de la cadera entre cuadros; más que esto = sacudida de cámara, no movimiento real
-
-  function speak(text, { force = false } = {}) {
-    if (!coachVoiceToggle.checked) return;
-    if (!('speechSynthesis' in window)) return;
-    const now = Date.now();
-    if (!force) {
-      if ((now - lastPostureSpeakAt) < POSTURE_SPEAK_INTERVAL_MS) return;
-      if (window.speechSynthesis.speaking) return;
-      lastPostureSpeakAt = now;
-    }
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = 'es-ES';
-    utter.rate = 0.95;
-    window.speechSynthesis.speak(utter);
-  }
-
-  function updateMirror() {
-    const isFront = facingMode === 'user';
-    coachVideo.classList.toggle('mirrored', isFront);
-    coachCanvas.classList.toggle('mirrored', isFront);
-  }
-
-  function angleBetween(a, b, c) {
-    // ángulo en el punto b, formado por a-b-c
-    const ab = { x: a.x - b.x, y: a.y - b.y };
-    const cb = { x: c.x - b.x, y: c.y - b.y };
-    const dot = ab.x * cb.x + ab.y * cb.y;
-    const magAb = Math.hypot(ab.x, ab.y);
-    const magCb = Math.hypot(cb.x, cb.y);
-    const cos = dot / (magAb * magCb);
-    return Math.acos(Math.min(1, Math.max(-1, cos))) * (180 / Math.PI);
-  }
-
-  function pickSide(lm) {
-    // elige el lado (izquierdo/derecho) más visible
-    const leftVis = (lm[23].visibility || 0) + (lm[25].visibility || 0) + (lm[27].visibility || 0);
-    const rightVis = (lm[24].visibility || 0) + (lm[26].visibility || 0) + (lm[28].visibility || 0);
-    return leftVis >= rightVis
-      ? { hip: lm[23], knee: lm[25], ankle: lm[27], shoulder: lm[11] }
-      : { hip: lm[24], knee: lm[26], ankle: lm[28], shoulder: lm[12] };
-  }
-
-  function sideIsVisible(side) {
-    // solo confiamos en el ángulo si el modelo realmente ve estos 4 puntos con claridad
-    return (side.hip.visibility || 0) >= MIN_VISIBILITY &&
-           (side.knee.visibility || 0) >= MIN_VISIBILITY &&
-           (side.ankle.visibility || 0) >= MIN_VISIBILITY &&
-           (side.shoulder.visibility || 0) >= MIN_VISIBILITY;
-  }
-
-  function withinFrame(p) {
-    return p.x > FRAME_EDGE_MARGIN && p.x < (1 - FRAME_EDGE_MARGIN) &&
-           p.y > FRAME_EDGE_MARGIN && p.y < (1 - FRAME_EDGE_MARGIN);
-  }
-
-  function legIsPlausible(side) {
-    // MediaPipe a veces "inventa" dónde estarían cadera/rodilla/tobillo aunque no
-    // aparezcan en cuadro (por ejemplo si solo se ve la cara), y les da igual un
-    // puntaje de visibilidad alto. Por eso, además de la visibilidad, chequeamos
-    // que los puntos estén dentro del cuadro, en el orden vertical anatómico
-    // correcto (hombro arriba, cadera, rodilla y tobillo hacia abajo), y que la
-    // pierna tenga una extensión mínima en la imagen (no estar todo amontonado).
-    if (!withinFrame(side.hip) || !withinFrame(side.knee) || !withinFrame(side.ankle) || !withinFrame(side.shoulder)) {
-      return false;
-    }
-    if (!(side.shoulder.y < side.hip.y && side.hip.y < side.knee.y && side.knee.y < side.ankle.y)) {
-      return false;
-    }
-    const legSpan = Math.hypot(side.ankle.x - side.hip.x, side.ankle.y - side.hip.y);
-    if (legSpan < MIN_LEG_SPAN) return false;
-    return true;
-  }
-
-  function cameraShakeDetected(side) {
-    // si la cadera "salta" de golpe entre un cuadro y el siguiente, lo más probable
-    // es que la cámara se haya movido o sacudido, no que la persona se haya
-    // teletransportado. Descartamos ese cuadro para no contar una repetición falsa.
-    const jumped = !!prevHipPos && Math.hypot(side.hip.x - prevHipPos.x, side.hip.y - prevHipPos.y) > MAX_HIP_JUMP;
-    prevHipPos = { x: side.hip.x, y: side.hip.y };
-    return jumped;
-  }
-
-  function smoothAngle(raw) {
-    angleHistory.push(raw);
-    if (angleHistory.length > ANGLE_SMOOTHING_FRAMES) angleHistory.shift();
-    return angleHistory.reduce((a, b) => a + b, 0) / angleHistory.length;
-  }
-
-  function resetDetectionState() {
-    angleHistory = [];
-    downFrames = 0;
-    upFrames = 0;
-    prevHipPos = null;
-  }
-
-  function drawSkeleton(lm) {
-    const connections = [
-      [11,13],[13,15],[12,14],[14,16],
-      [11,12],[11,23],[12,24],[23,24],
-      [23,25],[25,27],[24,26],[26,28],
-      [27,29],[27,31],[28,30],[28,32]
-    ];
-    coachCtx.strokeStyle = '#4da3ff';
-    coachCtx.lineWidth = 3;
-    connections.forEach(([i, j]) => {
-      const p1 = lm[i], p2 = lm[j];
-      if (!p1 || !p2) return;
-      coachCtx.beginPath();
-      coachCtx.moveTo(p1.x * coachCanvas.width, p1.y * coachCanvas.height);
-      coachCtx.lineTo(p2.x * coachCanvas.width, p2.y * coachCanvas.height);
-      coachCtx.stroke();
-    });
-    lm.forEach(p => {
-      if (!p) return;
-      coachCtx.fillStyle = '#f4f4f5';
-      coachCtx.beginPath();
-      coachCtx.arc(p.x * coachCanvas.width, p.y * coachCanvas.height, 4, 0, 2 * Math.PI);
-      coachCtx.fill();
-    });
-  }
-
-  function setCoachStatus(text, kind) {
-    coachStatusEl.textContent = text;
-    coachStatusEl.className = 'coach-status' + (kind ? ' ' + kind : '');
-  }
-
-  function onCoachResults(results) {
-    coachCanvas.width = coachVideo.videoWidth;
-    coachCanvas.height = coachVideo.videoHeight;
-    coachCtx.save();
-    coachCtx.clearRect(0, 0, coachCanvas.width, coachCanvas.height);
-
-    if (!results.poseLandmarks) {
-      setCoachStatus('No se detecta el cuerpo completo. Aléjate un poco de la cámara.');
-      resetDetectionState();
-      coachCtx.restore();
-      return;
-    }
-
-    const lm = results.poseLandmarks;
-    drawSkeleton(lm);
-
-    const side = pickSide(lm);
-
-    // Si no se ve con claridad cadera+rodilla+tobillo+hombro, no confiamos en el ángulo
-    // (esto es lo que antes causaba conteos falsos y ángulos erráticos).
-    if (!sideIsVisible(side)) {
-      setCoachStatus('No veo bien tu cuerpo completo. Ubícate de perfil, con buena luz, sin ropa muy holgada y con espacio suficiente para ver cadera, rodilla y tobillo.', 'bad');
-      coachAngleVal.textContent = '--°';
-      resetDetectionState();
-      coachCtx.restore();
-      return;
-    }
-
-    // Aunque el puntaje de visibilidad sea alto, la posición puede no tener sentido
-    // (por ejemplo, cuando solo se ve la cara y el modelo "inventa" dónde estarían
-    // las piernas). Este chequeo descarta esos casos.
-    if (!legIsPlausible(side)) {
-      setCoachStatus('Aléjate de la cámara hasta que se vea tu cuerpo completo, de pies a cabeza.', 'bad');
-      coachAngleVal.textContent = '--°';
-      resetDetectionState();
-      coachCtx.restore();
-      return;
-    }
-
-    // Si la cadera saltó de golpe entre cuadros, es más probable que la cámara se
-    // haya movido/sacudido que un movimiento real de sentadilla.
-    if (cameraShakeDetected(side)) {
-      setCoachStatus('Detecté un movimiento brusco de la cámara. Mantenla firme y quieta.', 'bad');
-      resetDetectionState();
-      coachCtx.restore();
-      return;
-    }
-
-    const rawKneeAngle = angleBetween(side.hip, side.knee, side.ankle);
-    const backAngle = angleBetween(side.shoulder, side.hip, side.knee);
-    const kneeAngle = smoothAngle(rawKneeAngle); // promedio de varios cuadros para eliminar ruido
-
-    coachAngleVal.textContent = Math.round(kneeAngle) + '°';
-
-    // máquina de estados de la sentadilla: exige varios cuadros seguidos antes de
-    // confirmar bajada/subida, y un tiempo mínimo entre repeticiones, para que un
-    // temblor puntual del modelo no cuente como una repetición.
-    if (kneeAngle < 100) {
-      downFrames++;
-      upFrames = 0;
-      if (downFrames >= REQUIRED_STABLE_FRAMES) stage = 'down';
-    } else if (kneeAngle > 160) {
-      upFrames++;
-      downFrames = 0;
-      if (upFrames >= REQUIRED_STABLE_FRAMES) {
-        if (stage === 'down') {
-          const now = Date.now();
-          if (now - lastRepAt > MIN_REP_INTERVAL_MS) {
-            repCount++;
-            coachRepVal.textContent = repCount;
-            speak(String(repCount), { force: true });
-            lastRepAt = now;
-          }
-        }
-        stage = 'up';
+  // ---------- Nav activa al hacer scroll ----------
+  const enlaces = document.querySelectorAll("nav.categorias a");
+  const secciones = document.querySelectorAll("section.categoria");
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        enlaces.forEach(a => a.classList.remove("activa"));
+        const activo = document.querySelector(`nav.categorias a[href="#${entry.target.id}"]`);
+        if (activo) activo.classList.add("activa");
       }
-    } else {
-      // zona de transición: exige volver a acumular cuadros estables antes de confirmar
-      downFrames = 0;
-      upFrames = 0;
-    }
+    });
+  }, { rootMargin: "-30% 0px -60% 0px" });
+  secciones.forEach(s => observer.observe(s));
 
-    // retroalimentación
-    if (kneeAngle < 100 && backAngle < 45) {
-      setCoachStatus('Espalda muy inclinada hacia adelante — mantén el pecho más erguido.', 'bad');
-      speak('Espalda más recta');
-    } else if (kneeAngle < 100 && kneeAngle > 70) {
-      setCoachStatus('Buena profundidad de sentadilla. Sigue así.', 'good');
-    } else if (kneeAngle <= 70) {
-      setCoachStatus('Bajaste mucho — cuidado con la presión en las rodillas.', 'bad');
-      speak('Cuidado, no bajes tanto');
-    } else if (kneeAngle >= 160) {
-      setCoachStatus('Posición de pie. Empieza a bajar controlando el movimiento.');
-    } else {
-      setCoachStatus('Bajando... mantén las rodillas alineadas con los pies.');
-    }
-
-    coachCtx.restore();
+  // ---------- QR dinámico ----------
+  try {
+    new QRCode(document.getElementById("qrcode"), {
+      text: window.location.href,
+      width: 148,
+      height: 148,
+      colorDark: "#241B15",
+      colorLight: "#FFF7EA",
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  } catch(e) {
+    document.getElementById("qrcode").innerText = "Publica la página para activar el QR";
   }
 
-  const coachPose = new Pose({
-    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
-  });
-  coachPose.setOptions({
-    modelComplexity: 1,
-    smoothLandmarks: true,
-    minDetectionConfidence: 0.7,
-    minTrackingConfidence: 0.7
-  });
-  coachPose.onResults(onCoachResults);
-
-  function stopCoachStream() {
-    if (coachRAF) { cancelAnimationFrame(coachRAF); coachRAF = null; }
-    if (currentStream) {
-      currentStream.getTracks().forEach(t => t.stop());
-      currentStream = null;
-    }
-  }
-
-  function startPoseLoop() {
-    async function loop() {
-      if (coachVideo.readyState >= 2 && coachVideo.videoWidth > 0) {
-        await coachPose.send({ image: coachVideo });
-      }
-      coachRAF = requestAnimationFrame(loop);
-    }
-    loop();
-  }
-
-  async function applyMinZoomIfAvailable(track) {
-    // Si el dispositivo permite controlar el zoom de esa cámara, lo fijamos al
-    // mínimo disponible para obtener el campo de visión más amplio posible.
+  // ---------- Copiar / compartir ----------
+  document.getElementById("btn-copiar").addEventListener("click", async () => {
     try {
-      if (!track.getCapabilities) return;
-      const caps = track.getCapabilities();
-      if (caps && caps.zoom && typeof caps.zoom.min === 'number') {
-        await track.applyConstraints({ advanced: [{ zoom: caps.zoom.min }] });
-      }
-    } catch (e) {
-      // no todos los navegadores/celulares permiten controlar el zoom por software; se ignora
+      await navigator.clipboard.writeText(window.location.href);
+      const btn = document.getElementById("btn-copiar");
+      const original = btn.textContent;
+      btn.textContent = "¡Copiado!";
+      setTimeout(() => btn.textContent = original, 1800);
+    } catch(e) {
+      alert(window.location.href);
     }
-  }
-
-  async function startCoachCamera() {
-    setCoachStatus('Solicitando acceso a la cámara...');
-    try {
-      stopCoachStream();
-      updateMirror();
-
-      // Pedimos una resolución "ideal" (no forzada), para que cada celular entregue
-      // su propio campo de visión más amplio en vez de recortar/hacer zoom digital
-      // para encajar en un tamaño fijo.
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: { ideal: facingMode },
-          width: { ideal: 1280 },
-          height: { ideal: 1280 }
-        },
-        audio: false
-      });
-
-      currentStream = stream;
-      coachVideo.srcObject = stream;
-      await coachVideo.play();
-
-      const track = stream.getVideoTracks()[0];
-      if (track) await applyMinZoomIfAvailable(track);
-
-      // Ajustamos el recuadro a la relación de aspecto real que entrega la cámara
-      // de este celular en particular (unos dan 0.5, otros 0.6, etc.), en vez de
-      // forzar un valor fijo para todos los dispositivos.
-      const w = coachVideo.videoWidth, h = coachVideo.videoHeight;
-      if (w && h) {
-        coachStage.style.aspectRatio = `${w} / ${h}`;
-      }
-
-      startPoseLoop();
-      started = true;
-      setCoachStatus('Cámara activa (' + (facingMode === 'user' ? 'frontal' : 'trasera') + '). Ubícate de perfil para ver tu sentadilla.');
-      coachStartBtn.textContent = 'Cámara activa';
-      speak('Cámara lista. Comienza cuando quieras.', { force: true });
-    } catch (err) {
-      setCoachStatus('No se pudo acceder a la cámara: ' + err.message, 'bad');
-      started = false;
-    }
-  }
-
-  coachStartBtn.addEventListener('click', () => {
-    if (started) return;
-    startCoachCamera();
   });
 
-  coachSwitchBtn.addEventListener('click', () => {
-    facingMode = facingMode === 'user' ? 'environment' : 'user';
-    if (started) {
-      startCoachCamera();
+  document.getElementById("btn-compartir").addEventListener("click", async () => {
+    if (navigator.share) {
+      try { await navigator.share({ title: "Sandwich K-liche — Menú", url: window.location.href }); } catch(e) {}
     } else {
-      updateMirror();
-      setCoachStatus('Cámara seleccionada: ' + (facingMode === 'user' ? 'frontal' : 'trasera') + '. Presiona "Iniciar cámara".');
+      document.getElementById("btn-copiar").click();
     }
   });
-
-  coachResetBtn.addEventListener('click', () => {
-    repCount = 0;
-    coachRepVal.textContent = '0';
-    stage = null;
-    lastRepAt = 0;
-    resetDetectionState();
-    speak('Contador reiniciado', { force: true });
-  });
-})();
-
-/* =========================================================
-   INICIO / DASHBOARD
-   ========================================================= */
-function renderInicio(){
-  renderProfileSummary();
-  const lastWeight = state.bodyStats[state.bodyStats.length-1];
-  document.getElementById('stat-weight').textContent = lastWeight ? convertWeight(lastWeight.weight) : '—';
-  if(lastWeight && state.bodyStats.length>1){
-    const prev = state.bodyStats[state.bodyStats.length-2];
-    const diff = (lastWeight.weight - prev.weight).toFixed(1);
-    document.getElementById('stat-weight-sub').textContent = `${diff>0?'+':''}${diff} kg desde el último registro`;
-  }else{
-    document.getElementById('stat-weight-sub').textContent = lastWeight? fmtDate(lastWeight.date) : 'Sin registros';
-  }
-
-  const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate()-7);
-  const sessionsWeek = state.sessions.filter(s=> new Date(s.date) >= weekAgo).length;
-  document.getElementById('stat-sessions-week').textContent = sessionsWeek;
-  document.getElementById('stat-routines').textContent = state.routines.length;
-
-  renderSessionsList('recentSessions', state.sessions.slice(-3));
-  drawWeightChart('chartWeightMini', true);
-}
-
-/* =========================================================
-   INICIALIZACIÓN
-   ========================================================= */
-function renderAll(){
-  renderInicio();
-  renderRoutines();
-  renderProgress();
-  renderNutrition();
-  renderHistorial();
-}
-
-document.getElementById('todayLabel').textContent = new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
-
-/* Sesión persistente: si ya había una sesión activa, entra directo sin pedir login. */
-(function initSession(){
-  const session = getSession();
-  if(session && session.userId){
-    const user = loadUsers().find(u=>u.id===session.userId);
-    if(user){ loginAs(user); return; }
-  }
-  showAuthPanel('login');
-})();
-initGoogleSignIn();
-
-window.addEventListener('resize', ()=>{ if(currentUser){ renderInicio(); renderProgress(); } });
 </script>
+
 </body>
 </html>
