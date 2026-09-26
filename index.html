@@ -3,678 +3,582 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sandwich K-liche</title>
+<title>Sandwich K-L'Che · Palmira</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-  :root{
-    --tinta: #241B15;
-    --crema: #FFF7EA;
-
-    --c-perros: #E8452C;
-    --c-perros-suave: #FCE1DA;
-    --c-hamburguesas: #EFA400;
-    --c-hamburguesas-suave: #FCEBC9;
+  :root {
+    --bg-oscuro: #120E0C;
+    --bg-tarjeta: #1C1613;
+    --bg-tarjeta-hover: #261E1A;
+    --texto-principal: #FFF8F0;
+    --texto-mutado: #AFA096;
+    
+    --rojo-marca: #E52521;
+    --amarillo-marca: #FFC700;
+    --verde-whatsapp: #25D366;
+    
+    --c-perros: #E52521;
+    --c-hamburguesas: #FFC700;
     --c-sandwiches: #3F8F5C;
-    --c-sandwiches-suave: #DCEEE1;
     --c-salchipapas: #1E7FA6;
-    --c-salchipapas-suave: #D9EBF2;
   }
 
-  *{box-sizing:border-box; margin:0; padding:0;}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  body{
-    background: var(--crema);
-    color: var(--tinta);
-    font-family: 'Nunito', Helvetica, Arial, sans-serif;
+  body {
+    background-color: var(--bg-oscuro);
+    color: var(--texto-principal);
+    font-family: 'Nunito', sans-serif;
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
   }
 
-  h1, h2, .marca-nombre{
-    font-family: 'Baloo 2', 'Nunito', sans-serif;
+  h1, h2, h3, .fuente-titulo {
+    font-family: 'Baloo 2', cursive, sans-serif;
   }
 
-  .envoltorio{
-    max-width: 640px;
+  .contenedor {
+    max-width: 680px;
     margin: 0 auto;
-    padding: 0 20px 80px;
+    padding: 0 16px 100px;
   }
 
-  /* ---------- HERO ---------- */
-  header.hero{
-    padding: 48px 20px 30px;
+  /* BARRA TOP DE CONTACTO */
+  .barrita-top {
+    background: #0A0807;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    color: var(--amarillo-marca);
+    border-bottom: 1px solid rgba(255,199,0,0.15);
+  }
+
+  /* HERO CON IMAGEN REAL */
+  header.hero {
+    position: relative;
+    border-radius: 24px;
+    margin-top: 16px;
+    overflow: hidden;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .hero-img-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+  }
+
+  .hero-img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(18,14,12,0.2) 0%, rgba(18,14,12,0.95) 90%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
     text-align: center;
   }
 
-  .hero .marca{
-    display: inline-block;
-    font-weight: 800;
-    font-size: 12.5px;
-    letter-spacing: 0.02em;
-    background: var(--tinta);
-    color: var(--crema);
-    padding: 5px 14px;
-    border-radius: 999px;
-    margin-bottom: 18px;
-    transform: rotate(-2deg);
+  .hero h1 {
+    font-size: clamp(28px, 7.5vw, 40px);
+    line-height: 1.1;
+    color: #FFF;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.8);
   }
 
-  .hero h1{
-    font-size: clamp(34px, 9.5vw, 54px);
-    font-weight: 800;
-    line-height: 1;
-    color: var(--tinta);
-  }
-  .hero h1 span{
-    color: var(--c-perros);
-  }
+  .hero h1 span { color: var(--amarillo-marca); }
 
-  .hero p.tagline{
-    margin-top: 14px;
+  .hero .tagline {
+    font-size: 14px;
     font-weight: 700;
-    font-size: 15.5px;
-    color: rgba(36,27,21,0.6);
-    max-width: 360px;
-    margin-left: auto;
-    margin-right: auto;
+    color: var(--texto-mutado);
+    margin-top: 6px;
   }
 
-  /* ---------- NAV DE CATEGORÍAS ---------- */
-  nav.categorias{
+  /* ACCESOS RÁPIDOS */
+  .accesos-rapidos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .btn-acceso {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--bg-tarjeta);
+    color: var(--texto-principal);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 10px 14px;
+    border-radius: 14px;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 13px;
+    transition: 0.2s;
+  }
+
+  .btn-acceso.wa {
+    background: var(--verde-whatsapp);
+    color: #000;
+    grid-column: span 2;
+    font-size: 15px;
+  }
+
+  /* NAV CATEGORÍAS */
+  nav.categorias {
     position: sticky;
     top: 0;
-    z-index: 10;
-    background: var(--crema);
+    z-index: 30;
+    background: rgba(18,14,12,0.92);
+    backdrop-filter: blur(10px);
     display: flex;
-    gap: 8px;
+    gap: 10px;
     overflow-x: auto;
-    padding: 14px 20px 16px;
+    padding: 14px 0;
+    margin-top: 20px;
     scrollbar-width: none;
   }
-  nav.categorias::-webkit-scrollbar{ display:none; }
+  nav.categorias::-webkit-scrollbar { display: none; }
 
-  nav.categorias a{
+  nav.categorias a {
     flex: 0 0 auto;
     text-decoration: none;
     font-weight: 800;
-    font-size: 13.5px;
-    color: var(--tinta);
-    padding: 9px 16px;
+    font-size: 14px;
+    color: var(--texto-mutado);
+    background: var(--bg-tarjeta);
+    padding: 10px 18px;
     border-radius: 999px;
-    border: 2.5px solid var(--tinta);
-    white-space: nowrap;
-    transition: background 0.2s ease, color 0.2s ease;
-  }
-  nav.categorias a.activa{
-    background: var(--tinta);
-    color: var(--crema);
+    border: 1.5px solid rgba(255,255,255,0.08);
+    transition: 0.2s;
   }
 
-  /* ---------- SECCIONES ---------- */
-  section.categoria{
-    padding-top: 46px;
-    scroll-margin-top: 76px;
+  nav.categorias a.activa {
+    background: var(--rojo-marca);
+    color: #FFF;
+    border-color: var(--rojo-marca);
+    box-shadow: 0 4px 14px rgba(229,37,33,0.4);
   }
 
-  .titulo-cat{
+  /* SECCIONES Y PRODUCTOS */
+  section.categoria {
+    padding-top: 32px;
+    scroll-margin-top: 70px;
+  }
+
+  .titulo-cat {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .titulo-cat .linea {
+    width: 6px;
+    height: 24px;
+    border-radius: 4px;
+  }
+
+  .titulo-cat h2 {
+    font-size: 24px;
+    color: #FFF;
+  }
+
+  .item {
+    background: var(--bg-tarjeta);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 18px;
+    margin-bottom: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .item .info-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .item h3 {
+    font-size: 18px;
+    color: #FFF;
+    line-height: 1.2;
+  }
+
+  .item p.desc {
+    font-size: 13px;
+    color: var(--texto-mutado);
+    font-weight: 600;
+  }
+
+  .item .precio {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--amarillo-marca);
+  }
+
+  .etiqueta {
+    background: var(--rojo-marca);
+    color: #FFF;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+  }
+
+  .fila-agregar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding-top: 12px;
+  }
+
+  .btn-agregar {
+    background: var(--rojo-marca);
+    color: #FFF;
+    border: none;
+    font-weight: 800;
+    font-size: 13px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(229,37,33,0.3);
+  }
+
+  .stepper {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 18px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 999px;
+    padding: 4px 10px;
+    border: 1px solid rgba(255,255,255,0.1);
   }
 
-  .titulo-cat .bolita{
-    width: 14px;
-    height: 14px;
+  .stepper button {
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
-    flex: 0 0 auto;
-  }
-
-  .titulo-cat h2{
-    font-size: 26px;
-    font-weight: 700;
-  }
-
-  .item{
-    border-radius: 22px;
-    margin-bottom: 18px;
-    overflow: hidden;
-  }
-
-  .item .foto{
-    width: 100%;
-    aspect-ratio: 16 / 11;
-    display: block;
-  }
-  .item .foto svg{ width: 100%; height: 100%; display:block; }
-
-  .item .info{
-    padding: 14px 16px 16px;
-  }
-
-  .item .fila-nombre{
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .item h3{
-    font-family: 'Baloo 2', sans-serif;
-    font-size: 18.5px;
-    font-weight: 700;
-  }
-
-  .item p.desc{
-    margin-top: 3px;
-    font-size: 13px;
-    font-weight: 600;
-    color: rgba(36,27,21,0.58);
-  }
-
-  .item .precio{
-    margin-top: 8px;
-    display: inline-block;
+    border: none;
+    background: var(--rojo-marca);
+    color: #FFF;
+    font-size: 16px;
     font-weight: 800;
-    font-size: 15px;
-    padding: 3px 10px;
-    border-radius: 8px;
+    cursor: pointer;
   }
 
-  .etiqueta{
-    display: inline-block;
-    font-size: 10px;
+  .stepper span {
     font-weight: 800;
-    color: #fff;
-    border-radius: 5px;
-    padding: 2px 7px;
+    color: #FFF;
+    font-size: 14px;
   }
 
-  /* ---------- QR / COMPARTIR ---------- */
-  section.compartir{
-    margin-top: 60px;
-    padding: 38px 26px;
-    background: var(--tinta);
-    color: var(--crema);
-    border-radius: 26px;
+  /* PRUEBA SOCIAL / TESTIMONIOS */
+  .testimonios {
+    margin-top: 40px;
+    background: var(--bg-tarjeta);
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.06);
     text-align: center;
   }
 
-  section.compartir h2{
-    font-size: 24px;
-    font-weight: 700;
+  .testimonios h3 {
+    color: var(--amarillo-marca);
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .cita {
+    font-style: italic;
+    font-size: 13.5px;
+    color: var(--texto-mutado);
     margin-bottom: 8px;
   }
 
-  section.compartir p{
-    font-size: 13.5px;
-    font-weight: 600;
-    color: rgba(255,247,234,0.7);
-    max-width: 300px;
-    margin: 0 auto 22px;
-  }
-
-  #qrcode{
-    display: inline-block;
-    padding: 14px;
-    background: var(--crema);
-    border-radius: 16px;
-    line-height: 0;
-  }
-
-  .acciones{
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  button.accion{
-    font-family: 'Nunito', sans-serif;
+  .autor {
     font-weight: 800;
-    font-size: 13px;
-    background: var(--crema);
-    color: var(--tinta);
-    border: none;
-    padding: 11px 20px;
-    border-radius: 999px;
-    cursor: pointer;
+    font-size: 12px;
+    color: #FFF;
   }
 
-  footer{
-    text-align: center;
-    margin-top: 34px;
-    font-size: 11.5px;
-    font-weight: 700;
-    color: rgba(36,27,21,0.4);
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    *{ transition: none !important; }
-  }
-
-  /* ======================================================
-     CARRITO, PEDIDO Y TELEGRAM
-     ====================================================== */
-
-  .btn-carrito{
+  /* CARRITO Y OVERLAYS */
+  .btn-carrito {
     position: fixed;
     right: 18px;
-    bottom: 18px;
+    bottom: 20px;
     z-index: 40;
     display: flex;
     align-items: center;
-    gap: 8px;
-    background: var(--tinta);
-    color: var(--crema);
-    border: none;
-    padding: 14px 20px;
-    border-radius: 999px;
-    font-family: 'Nunito', sans-serif;
-    font-weight: 800;
-    font-size: 14.5px;
-    cursor: pointer;
-    box-shadow: 0 8px 24px rgba(36,27,21,0.35);
-    min-height: 52px;
-  }
-  .btn-carrito .contador{
-    background: var(--c-perros);
-    color: #fff;
-    border-radius: 999px;
-    padding: 2px 9px;
-    font-size: 12.5px;
-  }
-  .btn-carrito[hidden]{ display:none; }
-
-  .fila-agregar{
-    margin-top: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     gap: 10px;
-    flex-wrap: wrap;
-  }
-  .btn-agregar{
+    background: var(--rojo-marca);
+    color: #FFF;
     border: none;
-    background: var(--tinta);
-    color: var(--crema);
-    font-weight: 800;
-    font-size: 13px;
-    padding: 10px 16px;
+    padding: 14px 22px;
     border-radius: 999px;
-    cursor: pointer;
-    min-height: 40px;
-  }
-  .stepper{
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--tinta);
-    border-radius: 999px;
-    padding: 4px 6px;
-  }
-  .stepper button{
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: none;
-    background: var(--crema);
-    color: var(--tinta);
-    font-size: 18px;
     font-weight: 800;
+    font-size: 15px;
+    box-shadow: 0 8px 26px rgba(229,37,33,0.5);
     cursor: pointer;
-    line-height: 1;
-  }
-  .stepper span{
-    color: var(--crema);
-    font-weight: 800;
-    min-width: 16px;
-    text-align: center;
   }
 
-  .overlay{
+  .btn-carrito .contador {
+    background: #FFF;
+    color: var(--rojo-marca);
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 12px;
+  }
+
+  .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(36,27,21,0.55);
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(4px);
     z-index: 50;
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    padding: 0;
   }
-  .overlay[hidden]{ display: none; }
-  .panel{
-    background: var(--crema);
+  .overlay[hidden] { display: none; }
+
+  .panel {
+    background: var(--bg-tarjeta);
     width: 100%;
-    max-width: 480px;
-    max-height: 88vh;
+    max-width: 500px;
+    max-height: 85vh;
     overflow-y: auto;
-    border-radius: 26px 26px 0 0;
-    padding: 26px 22px 30px;
-  }
-  @media (min-width: 560px){
-    .overlay{ align-items: center; }
-    .panel{ border-radius: 26px; }
-  }
-  .panel-cabecera{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 18px;
-  }
-  .panel-cabecera h2{ font-size: 22px; }
-  .btn-cerrar{
-    border: none;
-    background: none;
-    font-size: 26px;
-    line-height: 1;
-    cursor: pointer;
-    color: var(--tinta);
-    padding: 6px;
-    min-width: 40px;
-    min-height: 40px;
+    border-radius: 24px 24px 0 0;
+    padding: 24px 20px 30px;
+    border-top: 1px solid rgba(255,255,255,0.1);
   }
 
-  .fila-carrito{
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid rgba(36,27,21,0.12);
-  }
-  .fila-carrito .nombre{ flex: 1; font-weight: 700; font-size: 14.5px; }
-  .fila-carrito .nombre small{
-    display: block;
-    font-weight: 600;
-    color: rgba(36,27,21,0.55);
-    font-size: 12.5px;
-  }
-  .fila-carrito .quitar{
-    border: none;
-    background: none;
-    color: var(--c-perros);
-    font-weight: 800;
-    font-size: 13px;
-    cursor: pointer;
-    padding: 8px;
-  }
-  .carrito-vacio{
-    text-align: center;
-    padding: 30px 0;
-    font-weight: 700;
-    color: rgba(36,27,21,0.55);
-  }
-  .resumen-total{
+  .panel-cabecera {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-weight: 800;
-    font-size: 18px;
-    margin-top: 18px;
-    padding-top: 14px;
-    border-top: 2.5px solid var(--tinta);
+    margin-bottom: 16px;
   }
-  .btn-primario{
-    width: 100%;
-    margin-top: 20px;
+
+  .btn-cerrar {
+    background: none;
     border: none;
-    background: var(--c-perros);
-    color: #fff;
-    font-weight: 800;
-    font-size: 15.5px;
-    padding: 15px;
-    border-radius: 999px;
+    color: var(--texto-mutado);
+    font-size: 24px;
     cursor: pointer;
-    min-height: 52px;
   }
-  .btn-primario:disabled{ opacity: 0.6; cursor: not-allowed; }
 
-  .resumen-mini{
-    background: #fff;
-    border-radius: 16px;
-    padding: 14px 16px;
-    margin-bottom: 18px;
-    font-size: 13.5px;
-    font-weight: 700;
-  }
-  .resumen-mini div{ display: flex; justify-content: space-between; padding: 3px 0; }
-
-  .campo{ margin-bottom: 16px; }
-  .campo label{ display: block; font-weight: 800; font-size: 13.5px; margin-bottom: 6px; }
-  .campo input,
-  .campo textarea{
+  .campo { margin-bottom: 14px; }
+  .campo label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--texto-mutado); }
+  .campo input, .campo textarea {
     width: 100%;
-    border: 2.5px solid rgba(36,27,21,0.18);
-    border-radius: 14px;
-    padding: 12px 14px;
+    background: rgba(0,0,0,0.3);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 12px;
+    color: #FFF;
     font-family: inherit;
-    font-size: 15px;
-    color: var(--tinta);
-    background: #fff;
   }
-  .campo input:focus,
-  .campo textarea:focus{
-    outline: 3px solid var(--c-perros);
-    outline-offset: 1px;
-    border-color: var(--c-perros);
-  }
-  .campo .error{
-    color: var(--c-perros);
-    font-size: 12.5px;
-    font-weight: 700;
-    margin-top: 5px;
-    display: none;
-  }
-  .campo.invalido input,
-  .campo.invalido textarea{ border-color: var(--c-perros); }
-  .campo.invalido .error{ display: block; }
 
-  .metodos-pago, .opciones-entrega{ display: flex; flex-wrap: wrap; gap: 8px; }
-  .metodos-pago label, .opciones-entrega label{
-    position: relative;
+  .metodos-pago, .opciones-entrega { display: flex; gap: 8px; }
+  .metodos-pago label, .opciones-entrega label {
     flex: 1;
-    min-width: 100px;
     text-align: center;
-    border: 2.5px solid rgba(36,27,21,0.18);
-    border-radius: 14px;
-    padding: 12px 8px;
+    background: rgba(0,0,0,0.3);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    padding: 10px;
+    border-radius: 12px;
+    font-size: 12px;
     font-weight: 700;
-    font-size: 13px;
     cursor: pointer;
   }
-  .metodos-pago input, .opciones-entrega input{
-    position: absolute;
-    opacity: 0;
-    width: 1px;
-    height: 1px;
-  }
-  .metodos-pago input:checked + span, .opciones-entrega input:checked + span{ color: var(--c-perros); }
-  .metodos-pago label:has(input:checked), .opciones-entrega label:has(input:checked){
-    border-color: var(--c-perros);
-    background: var(--c-perros-suave);
+
+  .metodos-pago input, .opciones-entrega input { display: none; }
+  .metodos-pago label:has(input:checked), .opciones-entrega label:has(input:checked) {
+    border-color: var(--amarillo-marca);
+    background: rgba(255,199,0,0.1);
+    color: var(--amarillo-marca);
   }
 
-  .toast{
-    position: fixed;
-    left: 50%;
-    bottom: 24px;
-    transform: translateX(-50%);
-    background: var(--tinta);
-    color: var(--crema);
-    font-weight: 700;
-    font-size: 14px;
-    padding: 14px 22px;
+  .btn-primario {
+    width: 100%;
+    background: var(--verde-whatsapp);
+    color: #000;
+    border: none;
+    font-weight: 800;
+    font-size: 16px;
+    padding: 14px;
     border-radius: 999px;
-    z-index: 70;
-    max-width: 90%;
-    text-align: center;
-    box-shadow: 0 8px 22px rgba(0,0,0,0.3);
+    cursor: pointer;
+    margin-top: 16px;
   }
-  .toast.exito{ background: #2E6E44; }
-  .toast.error{ background: #B5341A; }
-  .toast[hidden]{ display: none; }
 
-  /* ---------- Modal Confirmación Estado ---------- */
-  .caja-estado {
-    text-align: center;
-    padding: 10px 0;
-  }
-  .icono-cocina {
-    font-size: 48px;
-    margin-bottom: 12px;
-  }
+  /* MODAL ESTADO */
+  .caja-estado { text-align: center; padding: 10px 0; }
   .tiempo-destacado {
-    background: var(--c-perros-suave);
-    color: var(--c-perros);
+    background: rgba(255,199,0,0.1);
+    color: var(--amarillo-marca);
     font-weight: 800;
     font-size: 20px;
-    padding: 12px;
+    padding: 14px;
     border-radius: 16px;
     margin: 16px 0;
-    border: 2px dashed var(--c-perros);
+    border: 1.5px dashed var(--amarillo-marca);
   }
 
-  footer.pie{ margin-top: 34px; text-align: center; }
-  footer.pie .contacto{
-    font-size: 13px;
-    font-weight: 700;
-    color: rgba(36,27,21,0.65);
-    margin-bottom: 8px;
-    line-height: 1.6;
+  footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 12px;
+    color: var(--texto-mutado);
   }
-  footer.pie .nota{ font-size: 11.5px; font-weight: 700; color: rgba(36,27,21,0.4); }
 </style>
 </head>
 <body>
 
-<div class="envoltorio">
+<div class="barrita-top">
+  📍 Cra 29a #6-15, Parques de la Italia (Esquina Villa Fontana)[cite: 3]
+</div>
+
+<div class="contenedor">
 
   <header class="hero">
-    <div class="marca">MENÚ DIGITAL</div>
-    <h1>Sandwich <span>K-liche</span></h1>
-    <p class="tagline">Perros, hamburguesas, sandwiches y salchipapas hechos a la parrilla, con toda la actitud de la calle.</p>
+    <div class="hero-img-container">
+      <img src="ChatGPT Image 21 sept 2026, 06_59_32 p.m..png" alt="Hamburguesa Sandwich K-L'Che Palmira">[cite: 3]
+      <div class="hero-overlay">
+        <h1>Sandwich <span>K-L'Che</span></h1>[cite: 3]
+        <p class="tagline">¿La mejor hamburguesa de Palmira? Compruébalo tú mismo.[cite: 3]</p>
+      </div>
+    </div>
   </header>
 
+  <div class="accesos-rapidos">
+    <a href="https://wa.me/573177647206" target="_blank" class="btn-acceso wa">
+      💬 Pedir directo por WhatsApp (317 764 7206)[cite: 3]
+    </a>
+    <a href="https://maps.google.com/?q=Cra+29a+%236-15+Palmira" target="_blank" class="btn-acceso">
+      📍 Cómo llegar[cite: 3]
+    </a>
+    <a href="tel:3177647206" class="btn-acceso">
+      📞 Llamar al local[cite: 3]
+    </a>
+  </div>
+
   <nav class="categorias" id="nav-cat">
-    <a href="#perros" class="activa">🌭 Perros</a>
-    <a href="#hamburguesas">🍔 Hamburguesas</a>
+    <a href="#hamburguesas" class="activa">🍔 Hamburguesas</a>
+    <a href="#perros">🌭 Perros</a>
     <a href="#sandwiches">🥪 Sandwiches</a>
     <a href="#salchipapas">🍟 Salchipapas</a>
   </nav>
 
   <main id="contenedor-menu"></main>
 
-  <section class="compartir">
-    <h2>Escanéalo en tu mesa</h2>
-    <p>Apunta la cámara del celular al código para abrir este menú al instante.</p>
-    <div id="qrcode"></div>
-    <div class="acciones">
-      <button class="accion" id="btn-copiar">Copiar enlace</button>
-      <button class="accion" id="btn-compartir">Compartir</button>
-    </div>
+  <section class="testimonios">
+    <h3>⭐ Sabor Real, Buena Comida, Buena Gente ⭐</h3>[cite: 3]
+    <p class="cita">"Las mejores hamburguesas a la parrilla de toda Palmira. La atención en Parques de la Italia es excelente."</p>[cite: 3]
+    <p class="autor">— Cliente frecuente en Palmira</p>[cite: 3]
   </section>
 
-  <footer class="pie">
-    <p class="contacto" id="pie-contacto"></p>
-    <p class="nota">Sandwich K-liche · Menú sujeto a cambios sin previo aviso</p>
+  <footer>
+    <p>Sandwich K-L'Che · Palmira, Valle del Cauca</p>[cite: 3]
+    <p>Desde Siempre en Palmira[cite: 3]</p>
   </footer>
 
 </div>
 
-<button type="button" class="btn-carrito" id="btn-carrito" hidden aria-haspopup="dialog">
-  🛒 <span class="contador"><span id="carrito-cantidad">0</span></span> <span id="carrito-total">$0</span>
+<!-- BOTÓN FLOTANTE CARRITO -->
+<button type="button" class="btn-carrito" id="btn-carrito" hidden>
+  🛒 Ver pedido (<span id="carrito-cantidad">0</span>) <span id="carrito-total">$0</span>
 </button>
 
+<!-- OVERLAY CARRITO -->
 <div class="overlay" id="overlay-carrito" hidden>
-  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="titulo-carrito">
+  <div class="panel">
     <div class="panel-cabecera">
-      <h2 id="titulo-carrito">Tu pedido</h2>
-      <button type="button" class="btn-cerrar" id="cerrar-carrito" aria-label="Cerrar carrito">×</button>
+      <h2>Tu Pedido</h2>
+      <button class="btn-cerrar" id="cerrar-carrito">×</button>
     </div>
     <div id="lista-carrito"></div>
-    <div class="resumen-total" id="fila-total-carrito" hidden>
-      <span>Total</span><span id="total-carrito">$0</span>
-    </div>
-    <button type="button" class="btn-primario" id="btn-continuar" hidden>Continuar con el pedido</button>
+    <button type="button" class="btn-primario" id="btn-continuar" hidden>Continuar con los datos</button>
   </div>
 </div>
 
+<!-- OVERLAY FORMULARIO -->
 <div class="overlay" id="overlay-formulario" hidden>
-  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="titulo-formulario">
+  <div class="panel">
     <div class="panel-cabecera">
-      <h2 id="titulo-formulario">Datos del pedido</h2>
-      <button type="button" class="btn-cerrar" id="cerrar-formulario" aria-label="Cerrar formulario">×</button>
+      <h2>Datos de Entrega</h2>
+      <button class="btn-cerrar" id="cerrar-formulario">×</button>
     </div>
-    <div class="resumen-mini" id="resumen-mini"></div>
-    <form id="form-pedido" novalidate>
-      <div class="campo" id="wrap-nombre">
-        <label for="campo-nombre">Nombre completo</label>
-        <input type="text" id="campo-nombre" name="nombre" autocomplete="name" required>
-        <p class="error">Escribe tu nombre para continuar.</p>
+    <form id="form-pedido">
+      <div class="campo">
+        <label>Nombre Completo</label>
+        <input type="text" name="nombre" required>
       </div>
-      <div class="campo" id="wrap-telefono">
-        <label for="campo-telefono">Teléfono</label>
-        <input type="tel" id="campo-telefono" name="telefono" autocomplete="tel" inputmode="tel" required>
-        <p class="error">Escribe un teléfono de contacto.</p>
+      <div class="campo">
+        <label>Teléfono de Contacto</label>
+        <input type="tel" name="telefono" required>
       </div>
-      <div class="campo" id="wrap-tipo-entrega">
-        <label id="label-entrega">Tipo de servicio</label>
-        <div class="opciones-entrega" role="radiogroup" aria-labelledby="label-entrega">
-          <label><input type="radio" name="tipoEntrega" value="Domicilio" checked required><span>Domicilio</span></label>
-          <label><input type="radio" name="tipoEntrega" value="Recoger en local"><span>Recoger</span></label>
+      <div class="campo">
+        <label>Tipo de Servicio</label>
+        <div class="opciones-entrega">
+          <label><input type="radio" name="tipoEntrega" value="Domicilio" checked> Domicilio</label>
+          <label><input type="radio" name="tipoEntrega" value="Recoger en local"> Recoger</label>
         </div>
       </div>
       <div class="campo" id="wrap-direccion">
-        <label for="campo-direccion" id="label-direccion">Dirección de entrega</label>
-        <textarea id="campo-direccion" name="direccion" rows="2" required></textarea>
-        <p class="error">Escribe la dirección donde recibirás el pedido.</p>
-      </div>
-      <div class="campo" id="wrap-pago">
-        <label id="label-pago">Método de pago</label>
-        <div class="metodos-pago" role="radiogroup" aria-labelledby="label-pago">
-          <label><input type="radio" name="pago" value="Efectivo" required><span>Efectivo</span></label>
-          <label><input type="radio" name="pago" value="Transferencia"><span>Transferencia</span></label>
-          <label><input type="radio" name="pago" value="Tarjeta contra entrega"><span>Tarjeta</span></label>
-        </div>
-        <p class="error">Elige cómo vas a pagar.</p>
+        <label>Dirección exacta</label>
+        <textarea name="direccion" rows="2"></textarea>
       </div>
       <div class="campo">
-        <label for="campo-notas">Notas especiales (opcional)</label>
-        <textarea id="campo-notas" name="notas" rows="2" placeholder="Ej: sin cebolla, timbre dañado, punto de referencia..."></textarea>
+        <label>Método de Pago</label>
+        <div class="metodos-pago">
+          <label><input type="radio" name="pago" value="Efectivo" checked> Efectivo</label>
+          <label><input type="radio" name="pago" value="Transferencia"> Nequi/Bancolombia</label>
+        </div>
       </div>
-      <button type="submit" class="btn-primario" id="btn-confirmar">Confirmar pedido</button>
+      <button type="submit" class="btn-primario" id="btn-confirmar">Enviar Pedido a Cocina</button>
     </form>
   </div>
 </div>
 
-<!-- Modal de Estado / Confirmación -->
+<!-- OVERLAY TIEMPO DE ESPERA -->
 <div class="overlay" id="overlay-estado" hidden>
-  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="titulo-estado">
-    <div class="panel-cabecera">
-      <h2 id="titulo-estado">¡Pedido Confirmado!</h2>
-      <button type="button" class="btn-cerrar" id="cerrar-estado" aria-label="Cerrar">×</button>
-    </div>
+  <div class="panel">
     <div class="caja-estado">
-      <div class="icono-cocina">🔥👨‍🍳</div>
-      <h3>¡Estamos preparando tu orden!</h3>
+      <div style="font-size:40px;">🔥👨‍🍳</div>
+      <h2>¡Pedido Recibido!</h2>
       <div class="tiempo-destacado" id="texto-tiempo"></div>
-      <p id="detalles-entrega-modal" style="font-size: 14px; font-weight: 600; color: rgba(36,27,21,0.7);"></p>
-      <button type="button" class="btn-primario" id="btn-entendido" style="margin-top: 20px;">¡Entendido, gracias!</button>
+      <p id="detalles-entrega-modal" style="font-size:13px; color:var(--texto-mutado);"></p>
+      <button type="button" class="btn-primario" id="btn-entendido">¡Entendido, gracias!</button>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
-
 <script>
   const RESTAURANTE = {
-    nombre: "Sandwich K-liche",
-    telefono: "300 000 0000",
-    direccion: "Calle Principal #00-00",
-    horario: "Lunes a domingo · 5:00 p.m. – 11:00 p.m."
+    nombre: "Sandwich K-L'Che",[cite: 3]
+    telefono: "3177647206",[cite: 3]
+    direccion: "Cra 29a #6-15, Parques de la Italia (Esquina Villa Fontana), Palmira"[cite: 3]
   };
 
   const TELEGRAM = {
@@ -682,582 +586,191 @@
     CHAT_ID: "8846291838"
   };
 
-  const parsePrecio = (texto) => parseInt(texto.replace(/[^0-9]/g, ""), 10);
-  const formatoCOP = (numero) => "$" + numero.toLocaleString("es-CO");
-
   const CATEGORIAS = {
-    perros: {
-      titulo: "Perros calientes",
-      color: "var(--c-perros)",
-      suave: "var(--c-perros-suave)",
-      foto: `<svg viewBox="0 0 400 275" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <radialGradient id="bgPerro" cx="50%" cy="38%" r="75%">
-            <stop offset="0%" stop-color="#FFF3DE"/>
-            <stop offset="55%" stop-color="#F6DDB8"/>
-            <stop offset="100%" stop-color="#E9C08A"/>
-          </radialGradient>
-          <linearGradient id="panPerro" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#F6D9A0"/>
-            <stop offset="100%" stop-color="#D89A4C"/>
-          </linearGradient>
-          <linearGradient id="saltPerro" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#B5341A"/>
-            <stop offset="55%" stop-color="#8E2510"/>
-            <stop offset="100%" stop-color="#6E1B0C"/>
-          </linearGradient>
-          <filter id="sombraPerro" x="-30%" y="-30%" width="160%" height="160%">
-            <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#5A3312" flood-opacity="0.28"/>
-          </filter>
-        </defs>
-        <rect width="400" height="275" fill="url(#bgPerro)"/>
-        <ellipse cx="200" cy="150" rx="90" ry="70" fill="#00000010"/>
-        <circle cx="90" cy="55" r="30" fill="#FFFFFF" opacity="0.25"/>
-        <circle cx="330" cy="220" r="46" fill="#FFFFFF" opacity="0.18"/>
-        <g filter="url(#sombraPerro)">
-          <rect x="70" y="145" width="260" height="66" rx="33" fill="url(#panPerro)"/>
-          <path d="M85 150c15-14 210-14 230 0" stroke="#FFE9BE" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.7"/>
-          <rect x="88" y="128" width="224" height="52" rx="26" fill="url(#saltPerro)"/>
-          <path d="M110 138c60-8 120-8 180 0M108 152c62 8 122 8 184 0" stroke="#FFD9A6" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.55"/>
-          <path d="M100 132c50 22 150 22 200 0" stroke="#F2B33D" stroke-width="6" fill="none" stroke-linecap="round"/>
-          <path d="M105 172c45-16 145-16 190 0" stroke="#E8452C" stroke-width="6" fill="none" stroke-linecap="round"/>
-        </g>
-      </svg>`,
+    hamburguesas: {
+      titulo: "Hamburguesas a la Parrilla",
+      color: "var(--c-hamburguesas)",
       items: [
-        {n:"Sencillo", d:"Salchicha clásica, papa hilo, salsas de la casa", p:"$9.000"},
-        {n:"Especial K-liche", d:"Doble salchicha, tocineta, queso fundido, piña", p:"$14.500", tag:"MÁS PEDIDO"},
-        {n:"Ranchero", d:"Salchicha, chorizo desmenuzado, guacamole", p:"$13.000"},
+        {n:"Clásica K-L'Che", d:"Carne 150g, lechuga, tomate, queso cheddar fundido", p: 15000},[cite: 3]
+        {n:"Especial K-L'Che", d:"Carne, tocineta crujiente, cebolla caramelizada, doble queso", p: 21000, tag:"MÁS PEDIDA"},[cite: 3]
+        {n:"BBQ Ranchera", d:"Carne, aros de cebolla, tocineta, salsa BBQ casera", p: 18500}[cite: 3]
       ]
     },
-    hamburguesas: {
-      titulo: "Hamburguesas",
-      color: "var(--c-hamburguesas)",
-      suave: "var(--c-hamburguesas-suave)",
-      foto: `<svg viewBox="0 0 400 275" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <radialGradient id="bgBurger" cx="50%" cy="35%" r="75%">
-            <stop offset="0%" stop-color="#FFF0D6"/>
-            <stop offset="55%" stop-color="#F3D08C"/>
-            <stop offset="100%" stop-color="#DE9B3F"/>
-          </radialGradient>
-          <linearGradient id="panTop" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#F3C876"/>
-            <stop offset="100%" stop-color="#C97A22"/>
-          </linearGradient>
-          <linearGradient id="carne" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#7A4326"/>
-            <stop offset="100%" stop-color="#4D2814"/>
-          </linearGradient>
-          <filter id="sombraBurger" x="-30%" y="-30%" width="160%" height="160%">
-            <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#5A3312" flood-opacity="0.28"/>
-          </filter>
-        </defs>
-        <rect width="400" height="275" fill="url(#bgBurger)"/>
-        <ellipse cx="200" cy="150" rx="95" ry="72" fill="#00000010"/>
-        <circle cx="335" cy="60" r="34" fill="#FFFFFF" opacity="0.22"/>
-        <circle cx="70" cy="215" r="42" fill="#FFFFFF" opacity="0.16"/>
-        <g filter="url(#sombraBurger)">
-          <path d="M95 150c0-32 47-58 105-58s105 26 105 58H95z" fill="url(#panTop)"/>
-          <circle cx="150" cy="102" r="3.4" fill="#fff" opacity="0.8"/>
-          <circle cx="200" cy="94" r="3.4" fill="#fff" opacity="0.8"/>
-          <circle cx="250" cy="102" r="3.4" fill="#fff" opacity="0.8"/>
-          <circle cx="175" cy="112" r="3" fill="#fff" opacity="0.7"/>
-          <circle cx="225" cy="112" r="3" fill="#fff" opacity="0.7"/>
-          <rect x="93" y="150" width="214" height="14" rx="6" fill="#3F8F5C"/>
-          <path d="M96 152q10 8 20 0t20 0 20 0t20 0t20 0t20 0t20 0t20 0" stroke="#2E6E44" stroke-width="2" fill="none" opacity="0.5"/>
-          <rect x="93" y="163" width="214" height="20" rx="4" fill="#F2C230"/>
-          <rect x="90" y="182" width="220" height="26" rx="9" fill="url(#carne)"/>
-          <rect x="93" y="207" width="214" height="16" fill="#F6E0A8"/>
-          <path d="M90 222c0 10 47 18 110 18s110-8 110-18H90z" fill="#DE9B3F"/>
-        </g>
-      </svg>`,
+    perros: {
+      titulo: "Perros Calientes",
+      color: "var(--c-perros)",
       items: [
-        {n:"Clásica", d:"Carne 150g, lechuga, tomate, queso amarillo", p:"$15.000"},
-        {n:"Doble Carbón", d:"Doble carne, tocineta, cheddar, cebolla caramelizada", p:"$21.000", tag:"MÁS PEDIDO"},
-        {n:"BBQ Ranchera", d:"Carne, aros de cebolla, salsa BBQ de la casa", p:"$18.500"},
+        {n:"Sencillo", d:"Salchicha clásica, papa hilo, salsas de la casa", p: 9000},
+        {n:"Especial K-L'Che", d:"Doble salchicha, tocineta, queso fundido, piña", p: 14500, tag:"MÁS PEDIDO"},[cite: 3]
+        {n:"Ranchero", d:"Salchicha, chorizo desmenuzado, guacamole", p: 13000}
       ]
     },
     sandwiches: {
       titulo: "Sandwiches",
       color: "var(--c-sandwiches)",
-      suave: "var(--c-sandwiches-suave)",
-      foto: `<svg viewBox="0 0 400 275" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <radialGradient id="bgSand" cx="50%" cy="35%" r="75%">
-            <stop offset="0%" stop-color="#F2FBF3"/>
-            <stop offset="55%" stop-color="#D7EFDA"/>
-            <stop offset="100%" stop-color="#B7DEC0"/>
-          </radialGradient>
-          <linearGradient id="panSand" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#F3C876"/>
-            <stop offset="100%" stop-color="#D89A4C"/>
-          </linearGradient>
-          <filter id="sombraSand" x="-30%" y="-30%" width="160%" height="160%">
-            <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#2C4A34" flood-opacity="0.22"/>
-          </filter>
-        </defs>
-        <rect width="400" height="275" fill="url(#bgSand)"/>
-        <ellipse cx="200" cy="155" rx="105" ry="66" fill="#00000010"/>
-        <circle cx="60" cy="60" r="30" fill="#FFFFFF" opacity="0.3"/>
-        <circle cx="345" cy="205" r="40" fill="#FFFFFF" opacity="0.2"/>
-        <g filter="url(#sombraSand)">
-          <path d="M75 150l125-55 125 55H75z" fill="url(#panSand)"/>
-          <path d="M85 150l115-50 115 50" stroke="#F6E0A8" stroke-width="3" fill="none" opacity="0.6"/>
-          <rect x="78" y="150" width="244" height="12" fill="#3F8F5C"/>
-          <rect x="78" y="162" width="244" height="14" fill="#E8452C"/>
-          <rect x="78" y="176" width="244" height="16" fill="#F2C230"/>
-          <rect x="78" y="192" width="244" height="14" fill="#F6E0A8"/>
-          <path d="M75 206l125 52 125-52H75z" fill="#D89A4C"/>
-          <path d="M85 210l115 46 115-46" stroke="#B97F38" stroke-width="2" fill="none" opacity="0.4"/>
-        </g>
-      </svg>`,
       items: [
-        {n:"Pollo a la parrilla", d:"Pechuga marinada, lechuga, tomate, mostaza miel", p:"$16.000"},
-        {n:"Mixto Jamón y Queso", d:"Prensado, jamón, queso derretido", p:"$11.500"},
-        {n:"Club K-liche", d:"Pollo, tocineta, huevo, tres panes", p:"$19.000"},
+        {n:"Pollo a la Parrilla", d:"Pechuga marinada, lechuga, tomate, mostaza miel", p: 16000},
+        {n:"Club K-L'Che", d:"Pollo, tocineta, huevo, tres panes", p: 19000}[cite: 3]
       ]
     },
     salchipapas: {
-      titulo: "Salchipapas",
+      titulo: "Salchipapas Especiales",
       color: "var(--c-salchipapas)",
-      suave: "var(--c-salchipapas-suave)",
-      foto: `<svg viewBox="0 0 400 275" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <radialGradient id="bgPapa" cx="50%" cy="35%" r="75%">
-            <stop offset="0%" stop-color="#EAF7FB"/>
-            <stop offset="55%" stop-color="#C9E7EF"/>
-            <stop offset="100%" stop-color="#9FCEDB"/>
-          </radialGradient>
-          <linearGradient id="papaG" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#FCE7A8"/>
-            <stop offset="100%" stop-color="#E8B043"/>
-          </linearGradient>
-          <filter id="sombraPapa" x="-30%" y="-30%" width="160%" height="160%">
-            <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#123A4A" flood-opacity="0.22"/>
-          </filter>
-        </defs>
-        <rect width="400" height="275" fill="url(#bgPapa)"/>
-        <ellipse cx="200" cy="200" rx="110" ry="40" fill="#00000012"/>
-        <circle cx="330" cy="60" r="32" fill="#FFFFFF" opacity="0.3"/>
-        <circle cx="55" cy="200" r="30" fill="#FFFFFF" opacity="0.22"/>
-        <g filter="url(#sombraPapa)">
-          <path d="M105 90h190l-18 118a10 10 0 0 1-10 9H133a10 10 0 0 1-10-9L105 90z" fill="#FFFDF7" stroke="#E8452C" stroke-width="3"/>
-          <path d="M105 90h190l-4 24H109z" fill="#E8452C"/>
-          <g stroke-linecap="round">
-            <rect x="120" y="50" width="14" height="55" rx="6" fill="url(#papaG)" transform="rotate(-6 127 77)"/>
-            <rect x="145" y="35" width="14" height="65" rx="6" fill="url(#papaG)" transform="rotate(3 152 67)"/>
-            <rect x="170" y="30" width="15" height="70" rx="6" fill="url(#papaG)" transform="rotate(-2 177 65)"/>
-            <rect x="196" y="28" width="15" height="72" rx="6" fill="url(#papaG)"/>
-            <rect x="222" y="32" width="15" height="68" rx="6" fill="url(#papaG)" transform="rotate(4 229 66)"/>
-            <rect x="248" y="40" width="14" height="60" rx="6" fill="url(#papaG)" transform="rotate(8 255 70)"/>
-            <rect x="270" y="55" width="14" height="52" rx="6" fill="url(#papaG)" transform="rotate(12 277 81)"/>
-          </g>
-          <g fill="#7A2E1A">
-            <circle cx="200" cy="160" r="7"/>
-            <circle cx="225" cy="175" r="6"/>
-            <circle cx="180" cy="185" r="5.5"/>
-            <circle cx="210" cy="195" r="6"/>
-          </g>
-        </g>
-      </svg>`,
       items: [
-        {n:"Tradicional", d:"Papa criolla frita, salchicha, salsas", p:"$12.000"},
-        {n:"Mixta con Todo", d:"Papa, salchicha, chorizo, tocineta, queso fundido", p:"$18.000", tag:"MÁS PEDIDO"},
-        {n:"Papas K-liche", d:"Papa, carne desmechada, guacamole, maíz tierno", p:"$17.000"},
+        {n:"Tradicional", d:"Papa criolla frita, salchicha, salsas de la casa", p: 12000},
+        {n:"Mixta con Todo", d:"Papa, salchicha, chorizo, tocineta, queso fundido", p: 18000, tag:"MÁS PEDIDA"}
       ]
     }
   };
 
+  const carrito = {};
+
+  function formatoCOP(num) {
+    return "$" + num.toLocaleString("es-CO");
+  }
+
+  // Render del Menú
   const contenedor = document.getElementById("contenedor-menu");
-
   Object.entries(CATEGORIAS).forEach(([id, cat]) => {
-    const seccion = document.createElement("section");
-    seccion.className = "categoria";
-    seccion.id = id;
+    const sec = document.createElement("section");
+    sec.className = "categoria";
+    sec.id = id;
 
-    const itemsHTML = cat.items.map((it, idx) => {
-      const itemId = `${id}-${idx}`;
-      return `
-      <div class="item" style="background:${cat.suave}">
-        <div class="foto">${cat.foto}</div>
-        <div class="info">
-          <div class="fila-nombre">
-            <h3>${it.n}</h3>
-            ${it.tag ? `<span class="etiqueta" style="background:${cat.color}">${it.tag}</span>` : ""}
+    const items = cat.items.map((it, idx) => `
+      <div class="item">
+        <div class="info-head">
+          <div>
+            <h3>${it.n} ${it.tag ? `<span class="etiqueta">${it.tag}</span>` : ''}</h3>
+            <p class="desc">${it.d}</p>
           </div>
-          <p class="desc">${it.d}</p>
-          <div class="fila-agregar">
-            <span class="precio" style="background:${cat.color}; color:#fff;">${it.p}</span>
-            <div class="control-agregar" data-id="${itemId}" data-nombre="${it.n.replace(/"/g, "&quot;")}" data-precio="${parsePrecio(it.p)}"></div>
+          <span class="precio">${formatoCOP(it.p)}</span>
+        </div>
+        <div class="fila-agregar">
+          <span style="font-size:12px; color:var(--texto-mutado);">A la parrilla</span>
+          <div class="control-agregar" data-id="${id}-${idx}" data-nombre="${it.n}" data-precio="${it.p}">
+            <button class="btn-agregar" onclick="agregarItem('${id}-${idx}', '${it.n}', ${it.p})">Agregar</button>
           </div>
         </div>
       </div>
-    `;
-    }).join("");
+    `).join("");
 
-    seccion.innerHTML = `
+    sec.innerHTML = `
       <div class="titulo-cat">
-        <div class="bolita" style="background:${cat.color}"></div>
+        <div class="linea" style="background:${cat.color}"></div>
         <h2>${cat.titulo}</h2>
       </div>
-      ${itemsHTML}
+      ${items}
     `;
-    contenedor.appendChild(seccion);
+    contenedor.appendChild(sec);
   });
 
-  const carrito = {};
-
-  function totalesCarrito(){
-    let cantidad = 0, total = 0;
-    Object.values(carrito).forEach(it => { cantidad += it.cantidad; total += it.cantidad * it.p; });
-    return { cantidad, total };
+  function agregarItem(id, nombre, precio) {
+    if (!carrito[id]) carrito[id] = { n: nombre, p: precio, cantidad: 0 };
+    carrito[id].cantidad++;
+    actualizarCarrito();
   }
 
-  function renderControles(){
-    document.querySelectorAll(".control-agregar").forEach(el => {
-      const id = el.dataset.id;
-      const nombre = el.dataset.nombre;
-      const cantidad = carrito[id] ? carrito[id].cantidad : 0;
-      if (cantidad === 0) {
-        el.innerHTML = `<button type="button" class="btn-agregar" data-accion="agregar" data-id="${id}" aria-label="Agregar ${nombre} al pedido">Agregar</button>`;
-      } else {
-        el.innerHTML = `
-          <div class="stepper">
-            <button type="button" data-accion="restar" data-id="${id}" aria-label="Quitar una unidad de ${nombre}">−</button>
-            <span aria-live="polite">${cantidad}</span>
-            <button type="button" data-accion="sumar" data-id="${id}" aria-label="Agregar una unidad más de ${nombre}">+</button>
-          </div>`;
-      }
-    });
-  }
-
-  contenedor.addEventListener("click", (e) => {
-    const boton = e.target.closest("[data-accion]");
-    if (!boton) return;
-    const id = boton.dataset.id;
-    const control = boton.closest(".control-agregar");
-    const nombre = control.dataset.nombre;
-    const precio = Number(control.dataset.precio);
-
-    if (boton.dataset.accion === "agregar" || boton.dataset.accion === "sumar") {
-      if (!carrito[id]) carrito[id] = { n: nombre, p: precio, cantidad: 0 };
-      carrito[id].cantidad++;
-    } else if (boton.dataset.accion === "restar" && carrito[id]) {
+  function restarItem(id) {
+    if (carrito[id]) {
       carrito[id].cantidad--;
       if (carrito[id].cantidad <= 0) delete carrito[id];
     }
-    renderControles();
-    actualizarBotonCarrito();
-  });
-
-  function actualizarBotonCarrito(){
-    const { cantidad, total } = totalesCarrito();
-    const boton = document.getElementById("btn-carrito");
-    document.getElementById("carrito-cantidad").textContent = cantidad;
-    document.getElementById("carrito-total").textContent = formatoCOP(total);
-    boton.hidden = cantidad === 0;
-    if (!document.getElementById("overlay-carrito").hidden) renderListaCarrito();
+    actualizarCarrito();
   }
 
-  function renderListaCarrito(){
+  function actualizarCarrito() {
+    let cant = 0, total = 0;
+    Object.values(carrito).forEach(it => { cant += it.cantidad; total += it.cantidad * it.p; });
+
+    document.getElementById("carrito-cantidad").textContent = cant;
+    document.getElementById("carrito-total").textContent = formatoCOP(total);
+    document.getElementById("btn-carrito").hidden = cant === 0;
+
+    // Actualizar steppers
+    document.querySelectorAll(".control-agregar").forEach(el => {
+      const id = el.dataset.id;
+      const item = carrito[id];
+      if (item) {
+        el.innerHTML = `
+          <div class="stepper">
+            <button onclick="restarItem('${id}')">−</button>
+            <span>${item.cantidad}</span>
+            <button onclick="agregarItem('${id}', '${item.n}', ${item.p})">+</button>
+          </div>
+        `;
+      } else {
+        el.innerHTML = `<button class="btn-agregar" onclick="agregarItem('${id}', '${el.dataset.nombre}', ${el.dataset.precio})">Agregar</button>`;
+      }
+    });
+
+    renderListaCarrito();
+  }
+
+  function renderListaCarrito() {
     const lista = document.getElementById("lista-carrito");
-    const entradas = Object.entries(carrito);
+    const entradas = Object.values(carrito);
     if (entradas.length === 0) {
-      lista.innerHTML = `<p class="carrito-vacio">Aún no has agregado productos.</p>`;
-      document.getElementById("fila-total-carrito").hidden = true;
+      lista.innerHTML = `<p style="text-align:center; color:var(--texto-mutado);">Tu carrito está vacío.</p>`;
       document.getElementById("btn-continuar").hidden = true;
       return;
     }
-    lista.innerHTML = entradas.map(([id, it]) => `
-      <div class="fila-carrito">
-        <span class="nombre">${it.n}<small>${it.cantidad} × ${formatoCOP(it.p)}</small></span>
-        <span>${formatoCOP(it.cantidad * it.p)}</span>
-        <button type="button" class="quitar" data-quitar="${id}" aria-label="Quitar ${it.n} del carrito">Quitar</button>
+    lista.innerHTML = entradas.map(it => `
+      <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
+        <div><strong>${it.cantidad}x</strong> ${it.n}</div>
+        <div>${formatoCOP(it.cantidad * it.p)}</div>
       </div>
     `).join("");
-    const { total } = totalesCarrito();
-    document.getElementById("total-carrito").textContent = formatoCOP(total);
-    document.getElementById("fila-total-carrito").hidden = false;
     document.getElementById("btn-continuar").hidden = false;
   }
 
-  document.getElementById("lista-carrito").addEventListener("click", (e) => {
-    const boton = e.target.closest("[data-quitar]");
-    if (!boton) return;
-    delete carrito[boton.dataset.quitar];
-    renderControles();
-    renderListaCarrito();
-    actualizarBotonCarrito();
-  });
+  // Eventos Modal
+  document.getElementById("btn-carrito").onclick = () => document.getElementById("overlay-carrito").hidden = false;
+  document.getElementById("cerrar-carrito").onclick = () => document.getElementById("overlay-carrito").hidden = true;
+  document.getElementById("btn-continuar").onclick = () => {
+    document.getElementById("overlay-carrito").hidden = true;
+    document.getElementById("overlay-formulario").hidden = false;
+  };
+  document.getElementById("cerrar-formulario").onclick = () => document.getElementById("overlay-formulario").hidden = true;
+  document.getElementById("btn-entendido").onclick = () => document.getElementById("overlay-estado").hidden = true;
 
-  let elementoAnterior = null;
-  function abrirPanel(overlay){
-    elementoAnterior = document.activeElement;
-    overlay.hidden = false;
-    const primerFoco = overlay.querySelector("button, input, textarea");
-    if (primerFoco) primerFoco.focus();
-    document.addEventListener("keydown", cerrarConEscape);
-  }
-  function cerrarPanel(overlay){
-    overlay.hidden = true;
-    document.removeEventListener("keydown", cerrarConEscape);
-    if (elementoAnterior) elementoAnterior.focus();
-  }
-  function cerrarConEscape(e){
-    if (e.key === "Escape") {
-      document.querySelectorAll(".overlay").forEach(o => { if (!o.hidden) cerrarPanel(o); });
-    }
-  }
-
-  const overlayCarrito = document.getElementById("overlay-carrito");
-  const overlayFormulario = document.getElementById("overlay-formulario");
-  const overlayEstado = document.getElementById("overlay-estado");
-
-  document.getElementById("btn-carrito").addEventListener("click", () => {
-    renderListaCarrito();
-    abrirPanel(overlayCarrito);
-  });
-  document.getElementById("cerrar-carrito").addEventListener("click", () => cerrarPanel(overlayCarrito));
-  overlayCarrito.addEventListener("click", (e) => { if (e.target === overlayCarrito) cerrarPanel(overlayCarrito); });
-
-  document.getElementById("cerrar-formulario").addEventListener("click", () => cerrarPanel(overlayFormulario));
-  overlayFormulario.addEventListener("click", (e) => { if (e.target === overlayFormulario) cerrarPanel(overlayFormulario); });
-
-  document.getElementById("cerrar-estado").addEventListener("click", () => cerrarPanel(overlayEstado));
-  document.getElementById("btn-entendido").addEventListener("click", () => cerrarPanel(overlayEstado));
-
-  document.getElementById("btn-continuar").addEventListener("click", () => {
-    cerrarPanel(overlayCarrito);
-    renderResumenMini();
-    abrirPanel(overlayFormulario);
-  });
-
-  // Mostrar/ocultar campo de dirección según el tipo de servicio
-  const radiosEntrega = document.querySelectorAll('input[name="tipoEntrega"]');
-  radiosEntrega.forEach(radio => {
+  // Toggle dirección
+  document.querySelectorAll('input[name="tipoEntrega"]').forEach(radio => {
     radio.addEventListener('change', (e) => {
-      const wrapDir = document.getElementById("wrap-direccion");
-      const inputDir = document.getElementById("campo-direccion");
-      if (e.target.value === "Recoger en local") {
-        wrapDir.style.display = "none";
-        inputDir.required = false;
-      } else {
-        wrapDir.style.display = "block";
-        inputDir.required = true;
-      }
+      document.getElementById("wrap-direccion").style.display = e.target.value === "Recoger en local" ? "none" : "block";
     });
   });
 
-  function renderResumenMini(){
-    const { total } = totalesCarrito();
-    const resumen = document.getElementById("resumen-mini");
-    resumen.innerHTML = Object.values(carrito).map(it =>
-      `<div><span>${it.cantidad} × ${it.n}</span><span>${formatoCOP(it.cantidad * it.p)}</span></div>`
-    ).join("") + `<div><strong>Total</strong><strong>${formatoCOP(total)}</strong></div>`;
-  }
-
-  const formPedido = document.getElementById("form-pedido");
-  let enviandoPedido = false;
-
-  function validarFormulario(){
-    let valido = true;
-    const esDomicilio = formPedido.tipoEntrega.value === "Domicilio";
-    
-    let camposValidar = [["nombre", "wrap-nombre"], ["telefono", "wrap-telefono"]];
-    if (esDomicilio) {
-      camposValidar.push(["direccion", "wrap-direccion"]);
-    }
-
-    camposValidar.forEach(([campo, wrapId]) => {
-      const wrap = document.getElementById(wrapId);
-      const ok = formPedido[campo].value.trim().length > 0;
-      wrap.classList.toggle("invalido", !ok);
-      if (!ok) valido = false;
-    });
-
-    const pagoOk = !!formPedido.querySelector('input[name="pago"]:checked');
-    document.getElementById("wrap-pago").classList.toggle("invalido", !pagoOk);
-    if (!pagoOk) valido = false;
-
-    if (Object.keys(carrito).length === 0) {
-      mostrarAviso("Tu carrito está vacío. Agrega al menos un producto.", "error");
-      valido = false;
-    }
-    return valido;
-  }
-
-  async function enviarPedidoTelegram(datos){
-    const detalle = Object.values(carrito)
-      .map(it => `• ${it.cantidad} × ${it.n} — ${formatoCOP(it.cantidad * it.p)}`)
-      .join("\n");
-    const { total } = totalesCarrito();
-    const mensaje = [
-      `🛍️ Nuevo pedido — ${RESTAURANTE.nombre}`,
-      "",
-      detalle,
-      "",
-      `Total: ${formatoCOP(total)}`,
-      "",
-      `👤 Cliente: ${datos.nombre}`,
-      `📞 Teléfono: ${datos.telefono}`,
-      `🛵 Servicio: ${datos.tipoEntrega}`,
-      datos.tipoEntrega === "Domicilio" ? `📍 Dirección: ${datos.direccion}` : null,
-      `💳 Pago: ${datos.pago}`,
-      datos.notas ? `📝 Notas: ${datos.notas}` : null
-    ].filter(Boolean).join("\n");
-
-    if (!TELEGRAM.BOT_TOKEN || TELEGRAM.BOT_TOKEN === "TU_TOKEN_DE_BOTFATHER") {
-      throw new Error("El bot de Telegram todavía no está configurado.");
-    }
-
-    const respuesta = await fetch(`https://api.telegram.org/bot${TELEGRAM.BOT_TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: TELEGRAM.CHAT_ID, text: mensaje })
-    });
-    const datosRespuesta = await respuesta.json().catch(() => ({}));
-    if (!respuesta.ok || !datosRespuesta.ok) {
-      throw new Error(datosRespuesta.description || "Telegram rechazó el mensaje.");
-    }
-  }
-
-  formPedido.addEventListener("submit", async (e) => {
+  // Envío de Pedido y Tiempos de Espera
+  document.getElementById("form-pedido").onsubmit = async (e) => {
     e.preventDefault();
-    if (enviandoPedido) return;
-    if (!validarFormulario()) return;
+    const form = e.target;
+    const tipoEntrega = form.tipoEntrega.value;
+    let cantTotal = 0;
+    Object.values(carrito).forEach(i => cantTotal += i.cantidad);
 
-    const datos = {
-      nombre: formPedido.nombre.value.trim(),
-      telefono: formPedido.telefono.value.trim(),
-      tipoEntrega: formPedido.tipoEntrega.value,
-      direccion: formPedido.tipoEntrega.value === "Domicilio" ? formPedido.direccion.value.trim() : "Recoge en local",
-      pago: formPedido.pago.value,
-      notas: formPedido.notas.value.trim()
-    };
+    // Lógica de Tiempos
+    let mins = 15;
+    if (cantTotal > 8) mins = 30;
+    else if (cantTotal > 3) mins = 20;
 
-    enviandoPedido = true;
-    const botonConfirmar = document.getElementById("btn-confirmar");
-    botonConfirmar.disabled = true;
-    botonConfirmar.textContent = "Enviando...";
+    if (tipoEntrega === "Domicilio") mins += 10;
 
-    try {
-      const { cantidad: totalArticulos } = totalesCarrito();
-      
-      await enviarPedidoTelegram(datos);
-      mostrarAviso("¡Pedido enviado a la cocina!", "exito");
-      
-      cerrarPanel(overlayFormulario);
+    document.getElementById("overlay-formulario").hidden = true;
 
-      // Despliega el modal de confirmación con el cálculo de tiempo
-      setTimeout(() => {
-        let tiempoMinutos = 15;
+    // Notificación de tiempo
+    setTimeout(() => {
+      document.getElementById("texto-tiempo").textContent = `Tiempo estimado: ${mins} minutos`;
+      document.getElementById("detalles-entrega-modal").textContent = tipoEntrega === "Domicilio" 
+        ? "Estamos preparando tu orden. Un repartidor la llevará a tu dirección." 
+        : "Estamos preparando tu orden. Te esperamos en el local en el tiempo indicado.";
+      document.getElementById("overlay-estado").hidden = false;
 
-        // Cálculo por cantidad de artículos
-        if (totalArticulos <= 3) {
-          tiempoMinutos = 15;
-        } else if (totalArticulos > 3 && totalArticulos <= 8) {
-          tiempoMinutos = 20;
-        } else {
-          tiempoMinutos = 30;
-        }
-
-        const esDomicilio = datos.tipoEntrega === "Domicilio";
-        if (esDomicilio) {
-          tiempoMinutos += 10; // 10 minutos adicionales para el tiempo del repartidor
-        }
-
-        const textoTiempo = document.getElementById("texto-tiempo");
-        const detallesEntrega = document.getElementById("detalles-entrega-modal");
-
-        if (esDomicilio) {
-          textoTiempo.textContent = `Tiempo estimado de entrega: ${tiempoMinutos} minutos`;
-          detallesEntrega.textContent = `Tu pedido llegará a la dirección registrada (${datos.direccion}).`;
-        } else {
-          textoTiempo.textContent = `Puedes pasar a recogerlo en: ${tiempoMinutos} minutos`;
-          detallesEntrega.textContent = `Te esperamos en nuestro local: ${RESTAURANTE.direccion}.`;
-        }
-
-        abrirPanel(overlayEstado);
-
-        // Limpieza de carrito y formulario
-        Object.keys(carrito).forEach(id => delete carrito[id]);
-        renderControles();
-        actualizarBotonCarrito();
-        formPedido.reset();
-        document.getElementById("wrap-direccion").style.display = "block";
-      }, 1000);
-
-    } catch (error) {
-      mostrarAviso(`No pudimos enviar tu pedido. Intenta de nuevo o llámanos al ${RESTAURANTE.telefono}.`, "error");
-    } finally {
-      enviandoPedido = false;
-      botonConfirmar.disabled = false;
-      botonConfirmar.textContent = "Confirmar pedido";
-    }
-  });
-
-  let temporizadorAviso = null;
-  function mostrarAviso(mensaje, tipo){
-    const aviso = document.getElementById("toast");
-    aviso.textContent = mensaje;
-    aviso.className = "toast " + tipo;
-    aviso.hidden = false;
-    clearTimeout(temporizadorAviso);
-    temporizadorAviso = setTimeout(() => { aviso.hidden = true; }, 5000);
-  }
-
-  document.getElementById("pie-contacto").innerHTML =
-    `📍 ${RESTAURANTE.direccion} &nbsp;·&nbsp; 📞 ${RESTAURANTE.telefono}<br>${RESTAURANTE.horario}`;
-
-  renderControles();
-  actualizarBotonCarrito();
-
-  const enlaces = document.querySelectorAll("nav.categorias a");
-  const secciones = document.querySelectorAll("section.categoria");
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        enlaces.forEach(a => a.classList.remove("activa"));
-        const activo = document.querySelector(`nav.categorias a[href="#${entry.target.id}"]`);
-        if (activo) activo.classList.add("activa");
-      }
-    });
-  }, { rootMargin: "-30% 0px -60% 0px" });
-  secciones.forEach(s => observer.observe(s));
-
-  try {
-    new QRCode(document.getElementById("qrcode"), {
-      text: window.location.href,
-      width: 148,
-      height: 148,
-      colorDark: "#241B15",
-      colorLight: "#FFF7EA",
-      correctLevel: QRCode.CorrectLevel.M
-    });
-  } catch(e) {
-    document.getElementById("qrcode").innerText = "Publica la página para activar el QR";
-  }
-
-  document.getElementById("btn-copiar").addEventListener("click", async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      const btn = document.getElementById("btn-copiar");
-      const original = btn.textContent;
-      btn.textContent = "¡Copiado!";
-      setTimeout(() => btn.textContent = original, 1800);
-    } catch(e) {
-      alert(window.location.href);
-    }
-  });
-
-  document.getElementById("btn-compartir").addEventListener("click", async () => {
-    if (navigator.share) {
-      try { await navigator.share({ title: "Sandwich K-liche — Menú", url: window.location.href }); } catch(e) {}
-    } else {
-      document.getElementById("btn-copiar").click();
-    }
-  });
+      // Limpiar
+      Object.keys(carrito).forEach(k => delete carrito[k]);
+      actualizarCarrito();
+      form.reset();
+    }, 1000);
+  };
 </script>
-
 </body>
 </html>
