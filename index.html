@@ -255,6 +255,283 @@
   @media (prefers-reduced-motion: reduce){
     *{ transition: none !important; }
   }
+
+  /* ======================================================
+     CARRITO, PEDIDO Y TELEGRAM
+     ====================================================== */
+
+  /* ---------- Botón flotante del carrito ---------- */
+  .btn-carrito{
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--tinta);
+    color: var(--crema);
+    border: none;
+    padding: 14px 20px;
+    border-radius: 999px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 14.5px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(36,27,21,0.35);
+    min-height: 52px;
+  }
+  .btn-carrito .contador{
+    background: var(--c-perros);
+    color: #fff;
+    border-radius: 999px;
+    padding: 2px 9px;
+    font-size: 12.5px;
+  }
+  .btn-carrito[hidden]{ display:none; }
+
+  /* ---------- Agregar producto en cada tarjeta ---------- */
+  .fila-agregar{
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .btn-agregar{
+    border: none;
+    background: var(--tinta);
+    color: var(--crema);
+    font-weight: 800;
+    font-size: 13px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    min-height: 40px;
+  }
+  .stepper{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--tinta);
+    border-radius: 999px;
+    padding: 4px 6px;
+  }
+  .stepper button{
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: var(--crema);
+    color: var(--tinta);
+    font-size: 18px;
+    font-weight: 800;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .stepper span{
+    color: var(--crema);
+    font-weight: 800;
+    min-width: 16px;
+    text-align: center;
+  }
+
+  /* ---------- Paneles superpuestos (carrito / formulario) ---------- */
+  .overlay{
+    position: fixed;
+    inset: 0;
+    background: rgba(36,27,21,0.55);
+    z-index: 50;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+  }
+  .overlay[hidden]{ display: none; }
+  .panel{
+    background: var(--crema);
+    width: 100%;
+    max-width: 480px;
+    max-height: 88vh;
+    overflow-y: auto;
+    border-radius: 26px 26px 0 0;
+    padding: 26px 22px 30px;
+  }
+  @media (min-width: 560px){
+    .overlay{ align-items: center; }
+    .panel{ border-radius: 26px; }
+  }
+  .panel-cabecera{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .panel-cabecera h2{ font-size: 22px; }
+  .btn-cerrar{
+    border: none;
+    background: none;
+    font-size: 26px;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--tinta);
+    padding: 6px;
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  .fila-carrito{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(36,27,21,0.12);
+  }
+  .fila-carrito .nombre{ flex: 1; font-weight: 700; font-size: 14.5px; }
+  .fila-carrito .nombre small{
+    display: block;
+    font-weight: 600;
+    color: rgba(36,27,21,0.55);
+    font-size: 12.5px;
+  }
+  .fila-carrito .quitar{
+    border: none;
+    background: none;
+    color: var(--c-perros);
+    font-weight: 800;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 8px;
+  }
+  .carrito-vacio{
+    text-align: center;
+    padding: 30px 0;
+    font-weight: 700;
+    color: rgba(36,27,21,0.55);
+  }
+  .resumen-total{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 800;
+    font-size: 18px;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 2.5px solid var(--tinta);
+  }
+  .btn-primario{
+    width: 100%;
+    margin-top: 20px;
+    border: none;
+    background: var(--c-perros);
+    color: #fff;
+    font-weight: 800;
+    font-size: 15.5px;
+    padding: 15px;
+    border-radius: 999px;
+    cursor: pointer;
+    min-height: 52px;
+  }
+  .btn-primario:disabled{ opacity: 0.6; cursor: not-allowed; }
+
+  /* ---------- Formulario de pedido ---------- */
+  .resumen-mini{
+    background: #fff;
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    font-size: 13.5px;
+    font-weight: 700;
+  }
+  .resumen-mini div{ display: flex; justify-content: space-between; padding: 3px 0; }
+
+  .campo{ margin-bottom: 16px; }
+  .campo label{ display: block; font-weight: 800; font-size: 13.5px; margin-bottom: 6px; }
+  .campo input,
+  .campo textarea{
+    width: 100%;
+    border: 2.5px solid rgba(36,27,21,0.18);
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--tinta);
+    background: #fff;
+  }
+  .campo input:focus,
+  .campo textarea:focus{
+    outline: 3px solid var(--c-perros);
+    outline-offset: 1px;
+    border-color: var(--c-perros);
+  }
+  .campo .error{
+    color: var(--c-perros);
+    font-size: 12.5px;
+    font-weight: 700;
+    margin-top: 5px;
+    display: none;
+  }
+  .campo.invalido input,
+  .campo.invalido textarea{ border-color: var(--c-perros); }
+  .campo.invalido .error{ display: block; }
+
+  .metodos-pago{ display: flex; flex-wrap: wrap; gap: 8px; }
+  .metodos-pago label{
+    position: relative;
+    flex: 1;
+    min-width: 100px;
+    text-align: center;
+    border: 2.5px solid rgba(36,27,21,0.18);
+    border-radius: 14px;
+    padding: 12px 8px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .metodos-pago input{
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+  .metodos-pago input:checked + span{ color: var(--c-perros); }
+  .metodos-pago label:has(input:checked){
+    border-color: var(--c-perros);
+    background: var(--c-perros-suave);
+  }
+
+  /* ---------- Aviso (éxito / error) ---------- */
+  .toast{
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+    background: var(--tinta);
+    color: var(--crema);
+    font-weight: 700;
+    font-size: 14px;
+    padding: 14px 22px;
+    border-radius: 999px;
+    z-index: 70;
+    max-width: 90%;
+    text-align: center;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.3);
+  }
+  .toast.exito{ background: #2E6E44; }
+  .toast.error{ background: #B5341A; }
+  .toast[hidden]{ display: none; }
+
+  /* ---------- Pie de página con contacto ---------- */
+  footer.pie{ margin-top: 34px; text-align: center; }
+  footer.pie .contacto{
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(36,27,21,0.65);
+    margin-bottom: 8px;
+    line-height: 1.6;
+  }
+  footer.pie .nota{ font-size: 11.5px; font-weight: 700; color: rgba(36,27,21,0.4); }
 </style>
 </head>
 <body>
@@ -286,11 +563,100 @@
     </div>
   </section>
 
-  <footer>Sandwich K-liche · Menú sujeto a cambios sin previo aviso</footer>
+  <footer class="pie">
+    <p class="contacto" id="pie-contacto"></p>
+    <p class="nota">Sandwich K-liche · Menú sujeto a cambios sin previo aviso</p>
+  </footer>
 
 </div>
 
+<!-- ---------- Botón flotante del carrito ---------- -->
+<button type="button" class="btn-carrito" id="btn-carrito" hidden aria-haspopup="dialog">
+  🛒 <span class="contador"><span id="carrito-cantidad">0</span></span> <span id="carrito-total">$0</span>
+</button>
+
+<!-- ---------- Panel del carrito ---------- -->
+<div class="overlay" id="overlay-carrito" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="titulo-carrito">
+    <div class="panel-cabecera">
+      <h2 id="titulo-carrito">Tu pedido</h2>
+      <button type="button" class="btn-cerrar" id="cerrar-carrito" aria-label="Cerrar carrito">×</button>
+    </div>
+    <div id="lista-carrito"></div>
+    <div class="resumen-total" id="fila-total-carrito" hidden>
+      <span>Total</span><span id="total-carrito">$0</span>
+    </div>
+    <button type="button" class="btn-primario" id="btn-continuar" hidden>Continuar con el pedido</button>
+  </div>
+</div>
+
+<!-- ---------- Panel del formulario de pedido ---------- -->
+<div class="overlay" id="overlay-formulario" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="titulo-formulario">
+    <div class="panel-cabecera">
+      <h2 id="titulo-formulario">Datos del pedido</h2>
+      <button type="button" class="btn-cerrar" id="cerrar-formulario" aria-label="Cerrar formulario">×</button>
+    </div>
+    <div class="resumen-mini" id="resumen-mini"></div>
+    <form id="form-pedido" novalidate>
+      <div class="campo" id="wrap-nombre">
+        <label for="campo-nombre">Nombre completo</label>
+        <input type="text" id="campo-nombre" name="nombre" autocomplete="name" required>
+        <p class="error">Escribe tu nombre para continuar.</p>
+      </div>
+      <div class="campo" id="wrap-telefono">
+        <label for="campo-telefono">Teléfono</label>
+        <input type="tel" id="campo-telefono" name="telefono" autocomplete="tel" inputmode="tel" required>
+        <p class="error">Escribe un teléfono de contacto.</p>
+      </div>
+      <div class="campo" id="wrap-direccion">
+        <label for="campo-direccion">Dirección de entrega</label>
+        <textarea id="campo-direccion" name="direccion" rows="2" required></textarea>
+        <p class="error">Escribe la dirección donde recibirás el pedido.</p>
+      </div>
+      <div class="campo" id="wrap-pago">
+        <label id="label-pago">Método de pago</label>
+        <div class="metodos-pago" role="radiogroup" aria-labelledby="label-pago">
+          <label><input type="radio" name="pago" value="Efectivo" required><span>Efectivo</span></label>
+          <label><input type="radio" name="pago" value="Transferencia"><span>Transferencia</span></label>
+          <label><input type="radio" name="pago" value="Tarjeta contra entrega"><span>Tarjeta</span></label>
+        </div>
+        <p class="error">Elige cómo vas a pagar.</p>
+      </div>
+      <div class="campo">
+        <label for="campo-notas">Notas especiales (opcional)</label>
+        <textarea id="campo-notas" name="notas" rows="2" placeholder="Ej: sin cebolla, timbre dañado, punto de referencia..."></textarea>
+      </div>
+      <button type="submit" class="btn-primario" id="btn-confirmar">Confirmar pedido</button>
+    </form>
+  </div>
+</div>
+
+<!-- ---------- Aviso de éxito / error ---------- -->
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
 <script>
+  // ============================================================
+  //  CONFIGURACIÓN DEL RESTAURANTE — edita solo aquí
+  // ============================================================
+  const RESTAURANTE = {
+    nombre: "Sandwich K-liche",
+    telefono: "300 000 0000",           // Se usa en el pie de página y en el mensaje de error
+    direccion: "Calle Principal #00-00",
+    horario: "Lunes a domingo · 5:00 p.m. – 11:00 p.m."
+  };
+
+  // Credenciales del bot de Telegram — reemplaza los dos valores.
+  // Instrucciones completas para crear el bot y obtener el CHAT_ID en INSTRUCCIONES.md
+  const TELEGRAM = {
+    BOT_TOKEN: "TU_TOKEN_DE_BOTFATHER",
+    CHAT_ID: "TU_CHAT_ID"
+  };
+
+  // ---------- Utilidades de precio ----------
+  const parsePrecio = (texto) => parseInt(texto.replace(/[^0-9]/g, ""), 10);
+  const formatoCOP = (numero) => "$" + numero.toLocaleString("es-CO");
+
   // ---------- SISTEMA DE PLANTILLA: agrega o edita platos solo aquí ----------
   // "foto" es una ilustración con look de fotografía gastronómica (fondo desenfocado,
   // sombra suave, degradados) porque todavía no hay fotos reales del restaurante.
@@ -485,7 +851,9 @@
     seccion.className = "categoria";
     seccion.id = id;
 
-    const itemsHTML = cat.items.map(it => `
+    const itemsHTML = cat.items.map((it, idx) => {
+      const itemId = `${id}-${idx}`;
+      return `
       <div class="item" style="background:${cat.suave}">
         <div class="foto">${cat.foto}</div>
         <div class="info">
@@ -494,10 +862,14 @@
             ${it.tag ? `<span class="etiqueta" style="background:${cat.color}">${it.tag}</span>` : ""}
           </div>
           <p class="desc">${it.d}</p>
-          <span class="precio" style="background:${cat.color}; color:#fff;">${it.p}</span>
+          <div class="fila-agregar">
+            <span class="precio" style="background:${cat.color}; color:#fff;">${it.p}</span>
+            <div class="control-agregar" data-id="${itemId}" data-nombre="${it.n.replace(/"/g, "&quot;")}" data-precio="${parsePrecio(it.p)}"></div>
+          </div>
         </div>
       </div>
-    `).join("");
+    `;
+    }).join("");
 
     seccion.innerHTML = `
       <div class="titulo-cat">
@@ -508,6 +880,255 @@
     `;
     contenedor.appendChild(seccion);
   });
+
+  // ============================================================
+  //  CARRITO DE COMPRAS
+  // ============================================================
+  const carrito = {}; // { "categoria-idx": { n, p, cantidad } }
+
+  function totalesCarrito(){
+    let cantidad = 0, total = 0;
+    Object.values(carrito).forEach(it => { cantidad += it.cantidad; total += it.cantidad * it.p; });
+    return { cantidad, total };
+  }
+
+  // Dibuja el botón "Agregar" o el contador +/- dentro de cada tarjeta
+  function renderControles(){
+    document.querySelectorAll(".control-agregar").forEach(el => {
+      const id = el.dataset.id;
+      const nombre = el.dataset.nombre;
+      const cantidad = carrito[id] ? carrito[id].cantidad : 0;
+      if (cantidad === 0) {
+        el.innerHTML = `<button type="button" class="btn-agregar" data-accion="agregar" data-id="${id}" aria-label="Agregar ${nombre} al pedido">Agregar</button>`;
+      } else {
+        el.innerHTML = `
+          <div class="stepper">
+            <button type="button" data-accion="restar" data-id="${id}" aria-label="Quitar una unidad de ${nombre}">−</button>
+            <span aria-live="polite">${cantidad}</span>
+            <button type="button" data-accion="sumar" data-id="${id}" aria-label="Agregar una unidad más de ${nombre}">+</button>
+          </div>`;
+      }
+    });
+  }
+
+  // Un solo listener para todos los botones "Agregar" / "+" / "−" del menú
+  contenedor.addEventListener("click", (e) => {
+    const boton = e.target.closest("[data-accion]");
+    if (!boton) return;
+    const id = boton.dataset.id;
+    const control = boton.closest(".control-agregar");
+    const nombre = control.dataset.nombre;
+    const precio = Number(control.dataset.precio);
+
+    if (boton.dataset.accion === "agregar" || boton.dataset.accion === "sumar") {
+      if (!carrito[id]) carrito[id] = { n: nombre, p: precio, cantidad: 0 };
+      carrito[id].cantidad++;
+    } else if (boton.dataset.accion === "restar" && carrito[id]) {
+      carrito[id].cantidad--;
+      if (carrito[id].cantidad <= 0) delete carrito[id];
+    }
+    renderControles();
+    actualizarBotonCarrito();
+  });
+
+  function actualizarBotonCarrito(){
+    const { cantidad, total } = totalesCarrito();
+    const boton = document.getElementById("btn-carrito");
+    document.getElementById("carrito-cantidad").textContent = cantidad;
+    document.getElementById("carrito-total").textContent = formatoCOP(total);
+    boton.hidden = cantidad === 0;
+    if (!document.getElementById("overlay-carrito").hidden) renderListaCarrito();
+  }
+
+  function renderListaCarrito(){
+    const lista = document.getElementById("lista-carrito");
+    const entradas = Object.entries(carrito);
+    if (entradas.length === 0) {
+      lista.innerHTML = `<p class="carrito-vacio">Aún no has agregado productos.</p>`;
+      document.getElementById("fila-total-carrito").hidden = true;
+      document.getElementById("btn-continuar").hidden = true;
+      return;
+    }
+    lista.innerHTML = entradas.map(([id, it]) => `
+      <div class="fila-carrito">
+        <span class="nombre">${it.n}<small>${it.cantidad} × ${formatoCOP(it.p)}</small></span>
+        <span>${formatoCOP(it.cantidad * it.p)}</span>
+        <button type="button" class="quitar" data-quitar="${id}" aria-label="Quitar ${it.n} del carrito">Quitar</button>
+      </div>
+    `).join("");
+    const { total } = totalesCarrito();
+    document.getElementById("total-carrito").textContent = formatoCOP(total);
+    document.getElementById("fila-total-carrito").hidden = false;
+    document.getElementById("btn-continuar").hidden = false;
+  }
+
+  document.getElementById("lista-carrito").addEventListener("click", (e) => {
+    const boton = e.target.closest("[data-quitar]");
+    if (!boton) return;
+    delete carrito[boton.dataset.quitar];
+    renderControles();
+    renderListaCarrito();
+    actualizarBotonCarrito();
+  });
+
+  // ---------- Abrir / cerrar paneles con manejo de foco ----------
+  let elementoAnterior = null;
+  function abrirPanel(overlay){
+    elementoAnterior = document.activeElement;
+    overlay.hidden = false;
+    const primerFoco = overlay.querySelector("button, input, textarea");
+    if (primerFoco) primerFoco.focus();
+    document.addEventListener("keydown", cerrarConEscape);
+  }
+  function cerrarPanel(overlay){
+    overlay.hidden = true;
+    document.removeEventListener("keydown", cerrarConEscape);
+    if (elementoAnterior) elementoAnterior.focus();
+  }
+  function cerrarConEscape(e){
+    if (e.key === "Escape") {
+      document.querySelectorAll(".overlay").forEach(o => { if (!o.hidden) cerrarPanel(o); });
+    }
+  }
+
+  const overlayCarrito = document.getElementById("overlay-carrito");
+  const overlayFormulario = document.getElementById("overlay-formulario");
+
+  document.getElementById("btn-carrito").addEventListener("click", () => {
+    renderListaCarrito();
+    abrirPanel(overlayCarrito);
+  });
+  document.getElementById("cerrar-carrito").addEventListener("click", () => cerrarPanel(overlayCarrito));
+  overlayCarrito.addEventListener("click", (e) => { if (e.target === overlayCarrito) cerrarPanel(overlayCarrito); });
+
+  document.getElementById("cerrar-formulario").addEventListener("click", () => cerrarPanel(overlayFormulario));
+  overlayFormulario.addEventListener("click", (e) => { if (e.target === overlayFormulario) cerrarPanel(overlayFormulario); });
+
+  document.getElementById("btn-continuar").addEventListener("click", () => {
+    cerrarPanel(overlayCarrito);
+    renderResumenMini();
+    abrirPanel(overlayFormulario);
+  });
+
+  function renderResumenMini(){
+    const { total } = totalesCarrito();
+    const resumen = document.getElementById("resumen-mini");
+    resumen.innerHTML = Object.values(carrito).map(it =>
+      `<div><span>${it.cantidad} × ${it.n}</span><span>${formatoCOP(it.cantidad * it.p)}</span></div>`
+    ).join("") + `<div><strong>Total</strong><strong>${formatoCOP(total)}</strong></div>`;
+  }
+
+  // ============================================================
+  //  FORMULARIO DE PEDIDO Y ENVÍO A TELEGRAM
+  // ============================================================
+  const formPedido = document.getElementById("form-pedido");
+  let enviandoPedido = false;
+
+  function validarFormulario(){
+    let valido = true;
+    [["nombre", "wrap-nombre"], ["telefono", "wrap-telefono"], ["direccion", "wrap-direccion"]].forEach(([campo, wrapId]) => {
+      const wrap = document.getElementById(wrapId);
+      const ok = formPedido[campo].value.trim().length > 0;
+      wrap.classList.toggle("invalido", !ok);
+      if (!ok) valido = false;
+    });
+    const pagoOk = !!formPedido.querySelector('input[name="pago"]:checked');
+    document.getElementById("wrap-pago").classList.toggle("invalido", !pagoOk);
+    if (!pagoOk) valido = false;
+    if (Object.keys(carrito).length === 0) {
+      mostrarAviso("Tu carrito está vacío. Agrega al menos un producto.", "error");
+      valido = false;
+    }
+    return valido;
+  }
+
+  async function enviarPedidoTelegram(datos){
+    const detalle = Object.values(carrito)
+      .map(it => `• ${it.cantidad} × ${it.n} — ${formatoCOP(it.cantidad * it.p)}`)
+      .join("\n");
+    const { total } = totalesCarrito();
+    const mensaje = [
+      `🛍️ Nuevo pedido — ${RESTAURANTE.nombre}`,
+      "",
+      detalle,
+      "",
+      `Total: ${formatoCOP(total)}`,
+      "",
+      `👤 Cliente: ${datos.nombre}`,
+      `📞 Teléfono: ${datos.telefono}`,
+      `📍 Dirección: ${datos.direccion}`,
+      `💳 Pago: ${datos.pago}`,
+      datos.notas ? `📝 Notas: ${datos.notas}` : null
+    ].filter(Boolean).join("\n");
+
+    if (!TELEGRAM.BOT_TOKEN || TELEGRAM.BOT_TOKEN === "TU_TOKEN_DE_BOTFATHER") {
+      throw new Error("El bot de Telegram todavía no está configurado (ver INSTRUCCIONES.md).");
+    }
+
+    const respuesta = await fetch(`https://api.telegram.org/bot${TELEGRAM.BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: TELEGRAM.CHAT_ID, text: mensaje })
+    });
+    const datosRespuesta = await respuesta.json().catch(() => ({}));
+    if (!respuesta.ok || !datosRespuesta.ok) {
+      throw new Error(datosRespuesta.description || "Telegram rechazó el mensaje.");
+    }
+  }
+
+  formPedido.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (enviandoPedido) return;
+    if (!validarFormulario()) return;
+
+    const datos = {
+      nombre: formPedido.nombre.value.trim(),
+      telefono: formPedido.telefono.value.trim(),
+      direccion: formPedido.direccion.value.trim(),
+      pago: formPedido.pago.value,
+      notas: formPedido.notas.value.trim()
+    };
+
+    enviandoPedido = true;
+    const botonConfirmar = document.getElementById("btn-confirmar");
+    botonConfirmar.disabled = true;
+    botonConfirmar.textContent = "Enviando...";
+
+    try {
+      await enviarPedidoTelegram(datos);
+      mostrarAviso("¡Pedido enviado! Te contactaremos pronto para confirmar.", "exito");
+      Object.keys(carrito).forEach(id => delete carrito[id]);
+      renderControles();
+      actualizarBotonCarrito();
+      formPedido.reset();
+      cerrarPanel(overlayFormulario);
+    } catch (error) {
+      mostrarAviso(`No pudimos enviar tu pedido. Intenta de nuevo o llámanos al ${RESTAURANTE.telefono}.`, "error");
+    } finally {
+      enviandoPedido = false;
+      botonConfirmar.disabled = false;
+      botonConfirmar.textContent = "Confirmar pedido";
+    }
+  });
+
+  // ---------- Aviso flotante (éxito / error) ----------
+  let temporizadorAviso = null;
+  function mostrarAviso(mensaje, tipo){
+    const aviso = document.getElementById("toast");
+    aviso.textContent = mensaje;
+    aviso.className = "toast " + tipo;
+    aviso.hidden = false;
+    clearTimeout(temporizadorAviso);
+    temporizadorAviso = setTimeout(() => { aviso.hidden = true; }, 5000);
+  }
+
+  // ---------- Datos de contacto en el pie de página ----------
+  document.getElementById("pie-contacto").innerHTML =
+    `📍 ${RESTAURANTE.direccion} &nbsp;·&nbsp; 📞 ${RESTAURANTE.telefono}<br>${RESTAURANTE.horario}`;
+
+  // Dibuja los controles de cada producto con el estado inicial del carrito
+  renderControles();
+  actualizarBotonCarrito();
 
   // ---------- Nav activa al hacer scroll ----------
   const enlaces = document.querySelectorAll("nav.categorias a");
