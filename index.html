@@ -1,776 +1,441 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sandwich K-L'Che · Palmira</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<style>
-  :root {
-    --bg-oscuro: #120E0C;
-    --bg-tarjeta: #1C1613;
-    --bg-tarjeta-hover: #261E1A;
-    --texto-principal: #FFF8F0;
-    --texto-mutado: #AFA096;
-    
-    --rojo-marca: #E52521;
-    --amarillo-marca: #FFC700;
-    --verde-whatsapp: #25D366;
-    
-    --c-perros: #E52521;
-    --c-hamburguesas: #FFC700;
-    --c-sandwiches: #3F8F5C;
-    --c-salchipapas: #1E7FA6;
-  }
+background: var(--crema);
+color: var(--tinta);
+border: none;
+padding: 11px 20px;
+border-radius: 999px;
+cursor: pointer;
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+footer{
+text-align: center;
+margin-top: 34px;
+font-size: 11.5px;
+font-weight: 700;
+color: rgba(36,27,21,0.4);
+}
 
-  body {
-    background-color: var(--bg-oscuro);
-    color: var(--texto-principal);
-    font-family: 'Nunito', sans-serif;
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-  }
+@media (prefers-reduced-motion: reduce){
+*{ transition: none !important; }
+}
 
-  h1, h2, h3, .fuente-titulo {
-    font-family: 'Baloo 2', cursive, sans-serif;
-  }
+/* ======================================================
+    CARRITO, PEDIDO Y TELEGRAM
+    ====================================================== */
 
-  .contenedor {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 0 16px 100px;
-  }
+  /* ---------- Botón flotante del carrito ---------- */
+.btn-carrito{
+position: fixed;
+right: 18px;
+@@ -290,7 +289,6 @@
+}
+.btn-carrito[hidden]{ display:none; }
 
-  /* BARRA TOP DE CONTACTO */
-  .barrita-top {
-    background: #0A0807;
-    padding: 8px 16px;
-    font-size: 12px;
-    font-weight: 700;
+  /* ---------- Agregar producto en cada tarjeta ---------- */
+.fila-agregar{
+margin-top: 10px;
+display: flex;
+@@ -337,7 +335,6 @@
+text-align: center;
+}
+
+  /* ---------- Paneles superpuestos (carrito / formulario) ---------- */
+.overlay{
+position: fixed;
+inset: 0;
+@@ -435,7 +432,6 @@
+}
+.btn-primario:disabled{ opacity: 0.6; cursor: not-allowed; }
+
+  /* ---------- Formulario de pedido ---------- */
+.resumen-mini{
+background: #fff;
+border-radius: 16px;
+@@ -476,8 +472,8 @@
+.campo.invalido textarea{ border-color: var(--c-perros); }
+.campo.invalido .error{ display: block; }
+
+  .metodos-pago{ display: flex; flex-wrap: wrap; gap: 8px; }
+  .metodos-pago label{
+  .metodos-pago, .opciones-entrega{ display: flex; flex-wrap: wrap; gap: 8px; }
+  .metodos-pago label, .opciones-entrega label{
+position: relative;
+flex: 1;
+min-width: 100px;
+@@ -489,19 +485,18 @@
+font-size: 13px;
+cursor: pointer;
+}
+  .metodos-pago input{
+  .metodos-pago input, .opciones-entrega input{
+position: absolute;
+opacity: 0;
+width: 1px;
+height: 1px;
+}
+  .metodos-pago input:checked + span{ color: var(--c-perros); }
+  .metodos-pago label:has(input:checked){
+  .metodos-pago input:checked + span, .opciones-entrega input:checked + span{ color: var(--c-perros); }
+  .metodos-pago label:has(input:checked), .opciones-entrega label:has(input:checked){
+border-color: var(--c-perros);
+background: var(--c-perros-suave);
+}
+
+  /* ---------- Aviso (éxito / error) ---------- */
+.toast{
+position: fixed;
+left: 50%;
+@@ -522,7 +517,26 @@
+.toast.error{ background: #B5341A; }
+.toast[hidden]{ display: none; }
+
+  /* ---------- Pie de página con contacto ---------- */
+  /* ---------- Modal Confirmación Estado ---------- */
+  .caja-estado {
     text-align: center;
-    color: var(--amarillo-marca);
-    border-bottom: 1px solid rgba(255,199,0,0.15);
+    padding: 10px 0;
   }
-
-  /* HERO CON IMAGEN REAL */
-  header.hero {
-    position: relative;
-    border-radius: 24px;
-    margin-top: 16px;
-    overflow: hidden;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.6);
-    border: 1px solid rgba(255,255,255,0.08);
-  }
-
-  .hero-img-container {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 10;
-  }
-
-  .hero-img-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .hero-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(18,14,12,0.2) 0%, rgba(18,14,12,0.95) 90%);
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 20px;
-    text-align: center;
-  }
-
-  .hero h1 {
-    font-size: clamp(28px, 7.5vw, 40px);
-    line-height: 1.1;
-    color: #FFF;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-  }
-
-  .hero h1 span { color: var(--amarillo-marca); }
-
-  .hero .tagline {
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--texto-mutado);
-    margin-top: 6px;
-  }
-
-  /* ACCESOS RÁPIDOS */
-  .accesos-rapidos {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 14px;
-  }
-
-  .btn-acceso {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background: var(--bg-tarjeta);
-    color: var(--texto-principal);
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 10px 14px;
-    border-radius: 14px;
-    text-decoration: none;
-    font-weight: 800;
-    font-size: 13px;
-    transition: 0.2s;
-  }
-
-  .btn-acceso.wa {
-    background: var(--verde-whatsapp);
-    color: #000;
-    grid-column: span 2;
-    font-size: 15px;
-  }
-
-  /* NAV CATEGORÍAS */
-  nav.categorias {
-    position: sticky;
-    top: 0;
-    z-index: 30;
-    background: rgba(18,14,12,0.92);
-    backdrop-filter: blur(10px);
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding: 14px 0;
-    margin-top: 20px;
-    scrollbar-width: none;
-  }
-  nav.categorias::-webkit-scrollbar { display: none; }
-
-  nav.categorias a {
-    flex: 0 0 auto;
-    text-decoration: none;
-    font-weight: 800;
-    font-size: 14px;
-    color: var(--texto-mutado);
-    background: var(--bg-tarjeta);
-    padding: 10px 18px;
-    border-radius: 999px;
-    border: 1.5px solid rgba(255,255,255,0.08);
-    transition: 0.2s;
-  }
-
-  nav.categorias a.activa {
-    background: var(--rojo-marca);
-    color: #FFF;
-    border-color: var(--rojo-marca);
-    box-shadow: 0 4px 14px rgba(229,37,33,0.4);
-  }
-
-  /* SECCIONES Y PRODUCTOS */
-  section.categoria {
-    padding-top: 32px;
-    scroll-margin-top: 70px;
-  }
-
-  .titulo-cat {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-
-  .titulo-cat .linea {
-    width: 6px;
-    height: 24px;
-    border-radius: 4px;
-  }
-
-  .titulo-cat h2 {
-    font-size: 24px;
-    color: #FFF;
-  }
-
-  .item {
-    background: var(--bg-tarjeta);
-    border: 1px solid rgba(255,255,255,0.06);
-    border-radius: 18px;
-    margin-bottom: 16px;
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .item .info-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .item h3 {
-    font-size: 18px;
-    color: #FFF;
-    line-height: 1.2;
-  }
-
-  .item p.desc {
-    font-size: 13px;
-    color: var(--texto-mutado);
-    font-weight: 600;
-  }
-
-  .item .precio {
-    font-family: 'Baloo 2', sans-serif;
-    font-size: 18px;
-    font-weight: 800;
-    color: var(--amarillo-marca);
-  }
-
-  .etiqueta {
-    background: var(--rojo-marca);
-    color: #FFF;
-    font-size: 10px;
-    font-weight: 800;
-    padding: 2px 8px;
-    border-radius: 6px;
-    text-transform: uppercase;
-  }
-
-  .fila-agregar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid rgba(255,255,255,0.05);
-    padding-top: 12px;
-  }
-
-  .btn-agregar {
-    background: var(--rojo-marca);
-    color: #FFF;
-    border: none;
-    font-weight: 800;
-    font-size: 13px;
-    padding: 8px 18px;
-    border-radius: 999px;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(229,37,33,0.3);
-  }
-
-  .stepper {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: rgba(0,0,0,0.4);
-    border-radius: 999px;
-    padding: 4px 10px;
-    border: 1px solid rgba(255,255,255,0.1);
-  }
-
-  .stepper button {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    border: none;
-    background: var(--rojo-marca);
-    color: #FFF;
-    font-size: 16px;
-    font-weight: 800;
-    cursor: pointer;
-  }
-
-  .stepper span {
-    font-weight: 800;
-    color: #FFF;
-    font-size: 14px;
-  }
-
-  /* PRUEBA SOCIAL / TESTIMONIOS */
-  .testimonios {
-    margin-top: 40px;
-    background: var(--bg-tarjeta);
-    border-radius: 20px;
-    padding: 20px;
-    border: 1px solid rgba(255,255,255,0.06);
-    text-align: center;
-  }
-
-  .testimonios h3 {
-    color: var(--amarillo-marca);
-    font-size: 20px;
+  .icono-cocina {
+    font-size: 48px;
     margin-bottom: 12px;
   }
-
-  .cita {
-    font-style: italic;
-    font-size: 13.5px;
-    color: var(--texto-mutado);
-    margin-bottom: 8px;
-  }
-
-  .autor {
-    font-weight: 800;
-    font-size: 12px;
-    color: #FFF;
-  }
-
-  /* CARRITO Y OVERLAYS */
-  .btn-carrito {
-    position: fixed;
-    right: 18px;
-    bottom: 20px;
-    z-index: 40;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--rojo-marca);
-    color: #FFF;
-    border: none;
-    padding: 14px 22px;
-    border-radius: 999px;
-    font-weight: 800;
-    font-size: 15px;
-    box-shadow: 0 8px 26px rgba(229,37,33,0.5);
-    cursor: pointer;
-  }
-
-  .btn-carrito .contador {
-    background: #FFF;
-    color: var(--rojo-marca);
-    padding: 2px 8px;
-    border-radius: 999px;
-    font-size: 12px;
-  }
-
-  .overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.8);
-    backdrop-filter: blur(4px);
-    z-index: 50;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-  }
-  .overlay[hidden] { display: none; }
-
-  .panel {
-    background: var(--bg-tarjeta);
-    width: 100%;
-    max-width: 500px;
-    max-height: 85vh;
-    overflow-y: auto;
-    border-radius: 24px 24px 0 0;
-    padding: 24px 20px 30px;
-    border-top: 1px solid rgba(255,255,255,0.1);
-  }
-
-  .panel-cabecera {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-  }
-
-  .btn-cerrar {
-    background: none;
-    border: none;
-    color: var(--texto-mutado);
-    font-size: 24px;
-    cursor: pointer;
-  }
-
-  .campo { margin-bottom: 14px; }
-  .campo label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--texto-mutado); }
-  .campo input, .campo textarea {
-    width: 100%;
-    background: rgba(0,0,0,0.3);
-    border: 1.5px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    padding: 12px;
-    color: #FFF;
-    font-family: inherit;
-  }
-
-  .metodos-pago, .opciones-entrega { display: flex; gap: 8px; }
-  .metodos-pago label, .opciones-entrega label {
-    flex: 1;
-    text-align: center;
-    background: rgba(0,0,0,0.3);
-    border: 1.5px solid rgba(255,255,255,0.1);
-    padding: 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  .metodos-pago input, .opciones-entrega input { display: none; }
-  .metodos-pago label:has(input:checked), .opciones-entrega label:has(input:checked) {
-    border-color: var(--amarillo-marca);
-    background: rgba(255,199,0,0.1);
-    color: var(--amarillo-marca);
-  }
-
-  .btn-primario {
-    width: 100%;
-    background: var(--verde-whatsapp);
-    color: #000;
-    border: none;
-    font-weight: 800;
-    font-size: 16px;
-    padding: 14px;
-    border-radius: 999px;
-    cursor: pointer;
-    margin-top: 16px;
-  }
-
-  /* MODAL ESTADO */
-  .caja-estado { text-align: center; padding: 10px 0; }
   .tiempo-destacado {
-    background: rgba(255,199,0,0.1);
-    color: var(--amarillo-marca);
+    background: var(--c-perros-suave);
+    color: var(--c-perros);
     font-weight: 800;
     font-size: 20px;
-    padding: 14px;
+    padding: 12px;
     border-radius: 16px;
     margin: 16px 0;
-    border: 1.5px dashed var(--amarillo-marca);
+    border: 2px dashed var(--c-perros);
   }
 
-  footer {
-    text-align: center;
-    margin-top: 40px;
-    font-size: 12px;
-    color: var(--texto-mutado);
-  }
-</style>
-</head>
-<body>
-
-<div class="barrita-top">
-  📍 Cra 29a #6-15, Parques de la Italia (Esquina Villa Fontana)[cite: 3]
-</div>
-
-<div class="contenedor">
-
-  <header class="hero">
-    <div class="hero-img-container">
-      <img src="ChatGPT Image 21 sept 2026, 06_59_32 p.m..png" alt="Hamburguesa Sandwich K-L'Che Palmira">[cite: 3]
-      <div class="hero-overlay">
-        <h1>Sandwich <span>K-L'Che</span></h1>[cite: 3]
-        <p class="tagline">¿La mejor hamburguesa de Palmira? Compruébalo tú mismo.[cite: 3]</p>
-      </div>
-    </div>
-  </header>
-
-  <div class="accesos-rapidos">
-    <a href="https://wa.me/573177647206" target="_blank" class="btn-acceso wa">
-      💬 Pedir directo por WhatsApp (317 764 7206)[cite: 3]
-    </a>
-    <a href="https://maps.google.com/?q=Cra+29a+%236-15+Palmira" target="_blank" class="btn-acceso">
-      📍 Cómo llegar[cite: 3]
-    </a>
-    <a href="tel:3177647206" class="btn-acceso">
-      📞 Llamar al local[cite: 3]
-    </a>
-  </div>
-
-  <nav class="categorias" id="nav-cat">
-    <a href="#hamburguesas" class="activa">🍔 Hamburguesas</a>
-    <a href="#perros">🌭 Perros</a>
-    <a href="#sandwiches">🥪 Sandwiches</a>
-    <a href="#salchipapas">🍟 Salchipapas</a>
-  </nav>
-
-  <main id="contenedor-menu"></main>
-
-  <section class="testimonios">
-    <h3>⭐ Sabor Real, Buena Comida, Buena Gente ⭐</h3>[cite: 3]
-    <p class="cita">"Las mejores hamburguesas a la parrilla de toda Palmira. La atención en Parques de la Italia es excelente."</p>[cite: 3]
-    <p class="autor">— Cliente frecuente en Palmira</p>[cite: 3]
-  </section>
-
-  <footer>
-    <p>Sandwich K-L'Che · Palmira, Valle del Cauca</p>[cite: 3]
-    <p>Desde Siempre en Palmira[cite: 3]</p>
-  </footer>
+footer.pie{ margin-top: 34px; text-align: center; }
+footer.pie .contacto{
+font-size: 13px;
+@@ -570,12 +584,10 @@
 
 </div>
 
-<!-- BOTÓN FLOTANTE CARRITO -->
-<button type="button" class="btn-carrito" id="btn-carrito" hidden>
-  🛒 Ver pedido (<span id="carrito-cantidad">0</span>) <span id="carrito-total">$0</span>
+<!-- ---------- Botón flotante del carrito ---------- -->
+<button type="button" class="btn-carrito" id="btn-carrito" hidden aria-haspopup="dialog">
+🛒 <span class="contador"><span id="carrito-cantidad">0</span></span> <span id="carrito-total">$0</span>
 </button>
 
-<!-- OVERLAY CARRITO -->
+<!-- ---------- Panel del carrito ---------- -->
 <div class="overlay" id="overlay-carrito" hidden>
-  <div class="panel">
-    <div class="panel-cabecera">
-      <h2>Tu Pedido</h2>
-      <button class="btn-cerrar" id="cerrar-carrito">×</button>
-    </div>
-    <div id="lista-carrito"></div>
-    <button type="button" class="btn-primario" id="btn-continuar" hidden>Continuar con los datos</button>
-  </div>
+<div class="panel" role="dialog" aria-modal="true" aria-labelledby="titulo-carrito">
+<div class="panel-cabecera">
+@@ -590,7 +602,6 @@
+</div>
 </div>
 
-<!-- OVERLAY FORMULARIO -->
+<!-- ---------- Panel del formulario de pedido ---------- -->
 <div class="overlay" id="overlay-formulario" hidden>
-  <div class="panel">
+<div class="panel" role="dialog" aria-modal="true" aria-labelledby="titulo-formulario">
+<div class="panel-cabecera">
+@@ -609,8 +620,15 @@
+<input type="tel" id="campo-telefono" name="telefono" autocomplete="tel" inputmode="tel" required>
+<p class="error">Escribe un teléfono de contacto.</p>
+</div>
+      <div class="campo" id="wrap-tipo-entrega">
+        <label id="label-entrega">Tipo de servicio</label>
+        <div class="opciones-entrega" role="radiogroup" aria-labelledby="label-entrega">
+          <label><input type="radio" name="tipoEntrega" value="Domicilio" checked required><span>Domicilio</span></label>
+          <label><input type="radio" name="tipoEntrega" value="Recoger en local"><span>Recoger</span></label>
+        </div>
+      </div>
+<div class="campo" id="wrap-direccion">
+        <label for="campo-direccion">Dirección de entrega</label>
+        <label for="campo-direccion" id="label-direccion">Dirección de entrega</label>
+<textarea id="campo-direccion" name="direccion" rows="2" required></textarea>
+<p class="error">Escribe la dirección donde recibirás el pedido.</p>
+</div>
+@@ -632,35 +650,41 @@
+</div>
+</div>
+
+<!-- ---------- Aviso de éxito / error ---------- -->
+<!-- Modal de Estado / Confirmación -->
+<div class="overlay" id="overlay-estado" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="titulo-estado">
     <div class="panel-cabecera">
-      <h2>Datos de Entrega</h2>
-      <button class="btn-cerrar" id="cerrar-formulario">×</button>
+      <h2 id="titulo-estado">¡Pedido Confirmado!</h2>
+      <button type="button" class="btn-cerrar" id="cerrar-estado" aria-label="Cerrar">×</button>
     </div>
-    <form id="form-pedido">
-      <div class="campo">
-        <label>Nombre Completo</label>
-        <input type="text" name="nombre" required>
-      </div>
-      <div class="campo">
-        <label>Teléfono de Contacto</label>
-        <input type="tel" name="telefono" required>
-      </div>
-      <div class="campo">
-        <label>Tipo de Servicio</label>
-        <div class="opciones-entrega">
-          <label><input type="radio" name="tipoEntrega" value="Domicilio" checked> Domicilio</label>
-          <label><input type="radio" name="tipoEntrega" value="Recoger en local"> Recoger</label>
-        </div>
-      </div>
-      <div class="campo" id="wrap-direccion">
-        <label>Dirección exacta</label>
-        <textarea name="direccion" rows="2"></textarea>
-      </div>
-      <div class="campo">
-        <label>Método de Pago</label>
-        <div class="metodos-pago">
-          <label><input type="radio" name="pago" value="Efectivo" checked> Efectivo</label>
-          <label><input type="radio" name="pago" value="Transferencia"> Nequi/Bancolombia</label>
-        </div>
-      </div>
-      <button type="submit" class="btn-primario" id="btn-confirmar">Enviar Pedido a Cocina</button>
-    </form>
+    <div class="caja-estado">
+      <div class="icono-cocina">🔥👨‍🍳</div>
+      <h3>¡Estamos preparando tu orden!</h3>
+      <div class="tiempo-destacado" id="texto-tiempo"></div>
+      <p id="detalles-entrega-modal" style="font-size: 14px; font-weight: 600; color: rgba(36,27,21,0.7);"></p>
+      <button type="button" class="btn-primario" id="btn-entendido" style="margin-top: 20px;">¡Entendido, gracias!</button>
+    </div>
   </div>
 </div>
 
-<!-- OVERLAY TIEMPO DE ESPERA -->
-<div class="overlay" id="overlay-estado" hidden>
-  <div class="panel">
-    <div class="caja-estado">
-      <div style="font-size:40px;">🔥👨‍🍳</div>
-      <h2>¡Pedido Recibido!</h2>
-      <div class="tiempo-destacado" id="texto-tiempo"></div>
-      <p id="detalles-entrega-modal" style="font-size:13px; color:var(--texto-mutado);"></p>
-      <button type="button" class="btn-primario" id="btn-entendido">¡Entendido, gracias!</button>
-    </div>
-  </div>
-</div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
 <script>
-  const RESTAURANTE = {
-    nombre: "Sandwich K-L'Che",[cite: 3]
-    telefono: "3177647206",[cite: 3]
-    direccion: "Cra 29a #6-15, Parques de la Italia (Esquina Villa Fontana), Palmira"[cite: 3]
-  };
+  // ============================================================
+  //  CONFIGURACIÓN DEL RESTAURANTE — edita solo aquí
+  // ============================================================
+const RESTAURANTE = {
+nombre: "Sandwich K-liche",
+    telefono: "300 000 0000",           // Se usa en el pie de página y en el mensaje de error
+    telefono: "300 000 0000",
+direccion: "Calle Principal #00-00",
+horario: "Lunes a domingo · 5:00 p.m. – 11:00 p.m."
+};
 
-  const TELEGRAM = {
-    BOT_TOKEN: "8328237181:AAE1BOWJoBKYCSbutgG4adRIEAQrJ-AAwj0",
-    CHAT_ID: "8846291838"
-  };
+  // Credenciales del bot de Telegram — reemplaza los dos valores.
+  // Instrucciones completas para crear el bot y obtener el CHAT_ID en INSTRUCCIONES.md
+const TELEGRAM = {
+BOT_TOKEN: "8328237181:AAE1BOWJoBKYCSbutgG4adRIEAQrJ-AAwj0",
+CHAT_ID: "8846291838"
+};
 
-  const CATEGORIAS = {
-    hamburguesas: {
-      titulo: "Hamburguesas a la Parrilla",
-      color: "var(--c-hamburguesas)",
-      items: [
-        {n:"Clásica K-L'Che", d:"Carne 150g, lechuga, tomate, queso cheddar fundido", p: 15000},[cite: 3]
-        {n:"Especial K-L'Che", d:"Carne, tocineta crujiente, cebolla caramelizada, doble queso", p: 21000, tag:"MÁS PEDIDA"},[cite: 3]
-        {n:"BBQ Ranchera", d:"Carne, aros de cebolla, tocineta, salsa BBQ casera", p: 18500}[cite: 3]
-      ]
-    },
-    perros: {
-      titulo: "Perros Calientes",
-      color: "var(--c-perros)",
-      items: [
-        {n:"Sencillo", d:"Salchicha clásica, papa hilo, salsas de la casa", p: 9000},
-        {n:"Especial K-L'Che", d:"Doble salchicha, tocineta, queso fundido, piña", p: 14500, tag:"MÁS PEDIDO"},[cite: 3]
-        {n:"Ranchero", d:"Salchicha, chorizo desmenuzado, guacamole", p: 13000}
-      ]
-    },
-    sandwiches: {
-      titulo: "Sandwiches",
-      color: "var(--c-sandwiches)",
-      items: [
-        {n:"Pollo a la Parrilla", d:"Pechuga marinada, lechuga, tomate, mostaza miel", p: 16000},
-        {n:"Club K-L'Che", d:"Pollo, tocineta, huevo, tres panes", p: 19000}[cite: 3]
-      ]
-    },
-    salchipapas: {
-      titulo: "Salchipapas Especiales",
-      color: "var(--c-salchipapas)",
-      items: [
-        {n:"Tradicional", d:"Papa criolla frita, salchicha, salsas de la casa", p: 12000},
-        {n:"Mixta con Todo", d:"Papa, salchicha, chorizo, tocineta, queso fundido", p: 18000, tag:"MÁS PEDIDA"}
-      ]
-    }
-  };
+  // ---------- Utilidades de precio ----------
+const parsePrecio = (texto) => parseInt(texto.replace(/[^0-9]/g, ""), 10);
+const formatoCOP = (numero) => "$" + numero.toLocaleString("es-CO");
 
+  // ---------- SISTEMA DE PLANTILLA: agrega o edita platos solo aquí ----------
+  // "foto" es una ilustración con look de fotografía gastronómica (fondo desenfocado,
+  // sombra suave, degradados) porque todavía no hay fotos reales del restaurante.
+  // Cuando tengas fotos de verdad, se reemplaza cada "foto" por <img src="tu-foto.jpg">.
+const CATEGORIAS = {
+perros: {
+titulo: "Perros calientes",
+@@ -881,18 +905,14 @@
+contenedor.appendChild(seccion);
+});
+
+  // ============================================================
+  //  CARRITO DE COMPRAS
+  // ============================================================
+  const carrito = {}; // { "categoria-idx": { n, p, cantidad } }
   const carrito = {};
 
-  function formatoCOP(num) {
-    return "$" + num.toLocaleString("es-CO");
-  }
+function totalesCarrito(){
+let cantidad = 0, total = 0;
+Object.values(carrito).forEach(it => { cantidad += it.cantidad; total += it.cantidad * it.p; });
+return { cantidad, total };
+}
 
-  // Render del Menú
-  const contenedor = document.getElementById("contenedor-menu");
-  Object.entries(CATEGORIAS).forEach(([id, cat]) => {
-    const sec = document.createElement("section");
-    sec.className = "categoria";
-    sec.id = id;
+  // Dibuja el botón "Agregar" o el contador +/- dentro de cada tarjeta
+function renderControles(){
+document.querySelectorAll(".control-agregar").forEach(el => {
+const id = el.dataset.id;
+@@ -911,7 +931,6 @@
+});
+}
 
-    const items = cat.items.map((it, idx) => `
-      <div class="item">
-        <div class="info-head">
-          <div>
-            <h3>${it.n} ${it.tag ? `<span class="etiqueta">${it.tag}</span>` : ''}</h3>
-            <p class="desc">${it.d}</p>
-          </div>
-          <span class="precio">${formatoCOP(it.p)}</span>
-        </div>
-        <div class="fila-agregar">
-          <span style="font-size:12px; color:var(--texto-mutado);">A la parrilla</span>
-          <div class="control-agregar" data-id="${id}-${idx}" data-nombre="${it.n}" data-precio="${it.p}">
-            <button class="btn-agregar" onclick="agregarItem('${id}-${idx}', '${it.n}', ${it.p})">Agregar</button>
-          </div>
-        </div>
-      </div>
-    `).join("");
+  // Un solo listener para todos los botones "Agregar" / "+" / "−" del menú
+contenedor.addEventListener("click", (e) => {
+const boton = e.target.closest("[data-accion]");
+if (!boton) return;
+@@ -971,7 +990,6 @@
+actualizarBotonCarrito();
+});
 
-    sec.innerHTML = `
-      <div class="titulo-cat">
-        <div class="linea" style="background:${cat.color}"></div>
-        <h2>${cat.titulo}</h2>
-      </div>
-      ${items}
-    `;
-    contenedor.appendChild(sec);
-  });
+  // ---------- Abrir / cerrar paneles con manejo de foco ----------
+let elementoAnterior = null;
+function abrirPanel(overlay){
+elementoAnterior = document.activeElement;
+@@ -993,6 +1011,7 @@
 
-  function agregarItem(id, nombre, precio) {
-    if (!carrito[id]) carrito[id] = { n: nombre, p: precio, cantidad: 0 };
-    carrito[id].cantidad++;
-    actualizarCarrito();
-  }
+const overlayCarrito = document.getElementById("overlay-carrito");
+const overlayFormulario = document.getElementById("overlay-formulario");
+  const overlayEstado = document.getElementById("overlay-estado");
 
-  function restarItem(id) {
-    if (carrito[id]) {
-      carrito[id].cantidad--;
-      if (carrito[id].cantidad <= 0) delete carrito[id];
-    }
-    actualizarCarrito();
-  }
+document.getElementById("btn-carrito").addEventListener("click", () => {
+renderListaCarrito();
+@@ -1004,12 +1023,31 @@
+document.getElementById("cerrar-formulario").addEventListener("click", () => cerrarPanel(overlayFormulario));
+overlayFormulario.addEventListener("click", (e) => { if (e.target === overlayFormulario) cerrarPanel(overlayFormulario); });
 
-  function actualizarCarrito() {
-    let cant = 0, total = 0;
-    Object.values(carrito).forEach(it => { cant += it.cantidad; total += it.cantidad * it.p; });
+  document.getElementById("cerrar-estado").addEventListener("click", () => cerrarPanel(overlayEstado));
+  document.getElementById("btn-entendido").addEventListener("click", () => cerrarPanel(overlayEstado));
 
-    document.getElementById("carrito-cantidad").textContent = cant;
-    document.getElementById("carrito-total").textContent = formatoCOP(total);
-    document.getElementById("btn-carrito").hidden = cant === 0;
+document.getElementById("btn-continuar").addEventListener("click", () => {
+cerrarPanel(overlayCarrito);
+renderResumenMini();
+abrirPanel(overlayFormulario);
+});
 
-    // Actualizar steppers
-    document.querySelectorAll(".control-agregar").forEach(el => {
-      const id = el.dataset.id;
-      const item = carrito[id];
-      if (item) {
-        el.innerHTML = `
-          <div class="stepper">
-            <button onclick="restarItem('${id}')">−</button>
-            <span>${item.cantidad}</span>
-            <button onclick="agregarItem('${id}', '${item.n}', ${item.p})">+</button>
-          </div>
-        `;
+  // Mostrar/ocultar campo de dirección según el tipo de servicio
+  const radiosEntrega = document.querySelectorAll('input[name="tipoEntrega"]');
+  radiosEntrega.forEach(radio => {
+    radio.addEventListener('change', (e) => {
+      const wrapDir = document.getElementById("wrap-direccion");
+      const inputDir = document.getElementById("campo-direccion");
+      if (e.target.value === "Recoger en local") {
+        wrapDir.style.display = "none";
+        inputDir.required = false;
       } else {
-        el.innerHTML = `<button class="btn-agregar" onclick="agregarItem('${id}', '${el.dataset.nombre}', ${el.dataset.precio})">Agregar</button>`;
+        wrapDir.style.display = "block";
+        inputDir.required = true;
       }
     });
-
-    renderListaCarrito();
-  }
-
-  function renderListaCarrito() {
-    const lista = document.getElementById("lista-carrito");
-    const entradas = Object.values(carrito);
-    if (entradas.length === 0) {
-      lista.innerHTML = `<p style="text-align:center; color:var(--texto-mutado);">Tu carrito está vacío.</p>`;
-      document.getElementById("btn-continuar").hidden = true;
-      return;
-    }
-    lista.innerHTML = entradas.map(it => `
-      <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
-        <div><strong>${it.cantidad}x</strong> ${it.n}</div>
-        <div>${formatoCOP(it.cantidad * it.p)}</div>
-      </div>
-    `).join("");
-    document.getElementById("btn-continuar").hidden = false;
-  }
-
-  // Eventos Modal
-  document.getElementById("btn-carrito").onclick = () => document.getElementById("overlay-carrito").hidden = false;
-  document.getElementById("cerrar-carrito").onclick = () => document.getElementById("overlay-carrito").hidden = true;
-  document.getElementById("btn-continuar").onclick = () => {
-    document.getElementById("overlay-carrito").hidden = true;
-    document.getElementById("overlay-formulario").hidden = false;
-  };
-  document.getElementById("cerrar-formulario").onclick = () => document.getElementById("overlay-formulario").hidden = true;
-  document.getElementById("btn-entendido").onclick = () => document.getElementById("overlay-estado").hidden = true;
-
-  // Toggle dirección
-  document.querySelectorAll('input[name="tipoEntrega"]').forEach(radio => {
-    radio.addEventListener('change', (e) => {
-      document.getElementById("wrap-direccion").style.display = e.target.value === "Recoger en local" ? "none" : "block";
-    });
   });
 
-  // Envío de Pedido y Tiempos de Espera
-  document.getElementById("form-pedido").onsubmit = async (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const tipoEntrega = form.tipoEntrega.value;
-    let cantTotal = 0;
-    Object.values(carrito).forEach(i => cantTotal += i.cantidad);
+function renderResumenMini(){
+const { total } = totalesCarrito();
+const resumen = document.getElementById("resumen-mini");
+@@ -1018,23 +1056,29 @@
+).join("") + `<div><strong>Total</strong><strong>${formatoCOP(total)}</strong></div>`;
+}
 
-    // Lógica de Tiempos
-    let mins = 15;
-    if (cantTotal > 8) mins = 30;
-    else if (cantTotal > 3) mins = 20;
+  // ============================================================
+  //  FORMULARIO DE PEDIDO Y ENVÍO A TELEGRAM
+  // ============================================================
+const formPedido = document.getElementById("form-pedido");
+let enviandoPedido = false;
 
-    if (tipoEntrega === "Domicilio") mins += 10;
+function validarFormulario(){
+let valido = true;
+    [["nombre", "wrap-nombre"], ["telefono", "wrap-telefono"], ["direccion", "wrap-direccion"]].forEach(([campo, wrapId]) => {
+    const esDomicilio = formPedido.tipoEntrega.value === "Domicilio";
+    
+    let camposValidar = [["nombre", "wrap-nombre"], ["telefono", "wrap-telefono"]];
+    if (esDomicilio) {
+      camposValidar.push(["direccion", "wrap-direccion"]);
+    }
 
-    document.getElementById("overlay-formulario").hidden = true;
+    camposValidar.forEach(([campo, wrapId]) => {
+const wrap = document.getElementById(wrapId);
+const ok = formPedido[campo].value.trim().length > 0;
+wrap.classList.toggle("invalido", !ok);
+if (!ok) valido = false;
+});
 
-    // Notificación de tiempo
-    setTimeout(() => {
-      document.getElementById("texto-tiempo").textContent = `Tiempo estimado: ${mins} minutos`;
-      document.getElementById("detalles-entrega-modal").textContent = tipoEntrega === "Domicilio" 
-        ? "Estamos preparando tu orden. Un repartidor la llevará a tu dirección." 
-        : "Estamos preparando tu orden. Te esperamos en el local en el tiempo indicado.";
-      document.getElementById("overlay-estado").hidden = false;
+const pagoOk = !!formPedido.querySelector('input[name="pago"]:checked');
+document.getElementById("wrap-pago").classList.toggle("invalido", !pagoOk);
+if (!pagoOk) valido = false;
 
-      // Limpiar
-      Object.keys(carrito).forEach(k => delete carrito[k]);
-      actualizarCarrito();
-      form.reset();
-    }, 1000);
-  };
-</script>
-</body>
-</html>
+if (Object.keys(carrito).length === 0) {
+mostrarAviso("Tu carrito está vacío. Agrega al menos un producto.", "error");
+valido = false;
+@@ -1056,13 +1100,14 @@
+"",
+`👤 Cliente: ${datos.nombre}`,
+`📞 Teléfono: ${datos.telefono}`,
+      `📍 Dirección: ${datos.direccion}`,
+      `🛵 Servicio: ${datos.tipoEntrega}`,
+      datos.tipoEntrega === "Domicilio" ? `📍 Dirección: ${datos.direccion}` : null,
+`💳 Pago: ${datos.pago}`,
+datos.notas ? `📝 Notas: ${datos.notas}` : null
+].filter(Boolean).join("\n");
+
+if (!TELEGRAM.BOT_TOKEN || TELEGRAM.BOT_TOKEN === "TU_TOKEN_DE_BOTFATHER") {
+      throw new Error("El bot de Telegram todavía no está configurado (ver INSTRUCCIONES.md).");
+      throw new Error("El bot de Telegram todavía no está configurado.");
+}
+
+const respuesta = await fetch(`https://api.telegram.org/bot${TELEGRAM.BOT_TOKEN}/sendMessage`, {
+@@ -1084,7 +1129,8 @@
+const datos = {
+nombre: formPedido.nombre.value.trim(),
+telefono: formPedido.telefono.value.trim(),
+      direccion: formPedido.direccion.value.trim(),
+      tipoEntrega: formPedido.tipoEntrega.value,
+      direccion: formPedido.tipoEntrega.value === "Domicilio" ? formPedido.direccion.value.trim() : "Recoge en local",
+pago: formPedido.pago.value,
+notas: formPedido.notas.value.trim()
+};
+@@ -1095,13 +1141,52 @@
+botonConfirmar.textContent = "Enviando...";
+
+try {
+      const { cantidad: totalArticulos } = totalesCarrito();
+      
+await enviarPedidoTelegram(datos);
+      mostrarAviso("¡Pedido enviado! Te contactaremos pronto para confirmar.", "exito");
+      Object.keys(carrito).forEach(id => delete carrito[id]);
+      renderControles();
+      actualizarBotonCarrito();
+      formPedido.reset();
+      mostrarAviso("¡Pedido enviado a la cocina!", "exito");
+      
+cerrarPanel(overlayFormulario);
+
+      // Despliega el modal de confirmación con el cálculo de tiempo
+      setTimeout(() => {
+        let tiempoMinutos = 15;
+
+        // Cálculo por cantidad de artículos
+        if (totalArticulos <= 3) {
+          tiempoMinutos = 15;
+        } else if (totalArticulos > 3 && totalArticulos <= 8) {
+          tiempoMinutos = 20;
+        } else {
+          tiempoMinutos = 30;
+        }
+
+        const esDomicilio = datos.tipoEntrega === "Domicilio";
+        if (esDomicilio) {
+          tiempoMinutos += 10; // 10 minutos adicionales para el tiempo del repartidor
+        }
+
+        const textoTiempo = document.getElementById("texto-tiempo");
+        const detallesEntrega = document.getElementById("detalles-entrega-modal");
+
+        if (esDomicilio) {
+          textoTiempo.textContent = `Tiempo estimado de entrega: ${tiempoMinutos} minutos`;
+          detallesEntrega.textContent = `Tu pedido llegará a la dirección registrada (${datos.direccion}).`;
+        } else {
+          textoTiempo.textContent = `Puedes pasar a recogerlo en: ${tiempoMinutos} minutos`;
+          detallesEntrega.textContent = `Te esperamos en nuestro local: ${RESTAURANTE.direccion}.`;
+        }
+
+        abrirPanel(overlayEstado);
+
+        // Limpieza de carrito y formulario
+        Object.keys(carrito).forEach(id => delete carrito[id]);
+        renderControles();
+        actualizarBotonCarrito();
+        formPedido.reset();
+        document.getElementById("wrap-direccion").style.display = "block";
+      }, 1000);
+
+} catch (error) {
+mostrarAviso(`No pudimos enviar tu pedido. Intenta de nuevo o llámanos al ${RESTAURANTE.telefono}.`, "error");
+} finally {
+@@ -1111,7 +1196,6 @@
+}
+});
+
+  // ---------- Aviso flotante (éxito / error) ----------
+let temporizadorAviso = null;
+function mostrarAviso(mensaje, tipo){
+const aviso = document.getElementById("toast");
+@@ -1122,15 +1206,12 @@
+temporizadorAviso = setTimeout(() => { aviso.hidden = true; }, 5000);
+}
+
+  // ---------- Datos de contacto en el pie de página ----------
+document.getElementById("pie-contacto").innerHTML =
+`📍 ${RESTAURANTE.direccion} &nbsp;·&nbsp; 📞 ${RESTAURANTE.telefono}<br>${RESTAURANTE.horario}`;
+
+  // Dibuja los controles de cada producto con el estado inicial del carrito
+renderControles();
+actualizarBotonCarrito();
+
+  // ---------- Nav activa al hacer scroll ----------
+const enlaces = document.querySelectorAll("nav.categorias a");
+const secciones = document.querySelectorAll("section.categoria");
+const observer = new IntersectionObserver((entries) => {
+@@ -1144,7 +1225,6 @@
+}, { rootMargin: "-30% 0px -60% 0px" });
+secciones.forEach(s => observer.observe(s));
+
+  // ---------- QR dinámico ----------
+try {
+new QRCode(document.getElementById("qrcode"), {
+text: window.location.href,
+@@ -1158,7 +1238,6 @@
+document.getElementById("qrcode").innerText = "Publica la página para activar el QR";
+}
+
+  // ---------- Copiar / compartir ----------
+document.getElementById("btn-copiar").addEventListener("click", async () => {
+try {
+await navigator.clipboard.writeText(window.location.href);
